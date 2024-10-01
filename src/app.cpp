@@ -560,12 +560,59 @@ int main(int argc, char *argv[])
 		astar_cell * target;
 		size_t N = 0;
 		const size_t N_limit = 10000;
-
 		const size_t channel_count = reader->channel_count;
-		
+
+		const bool use_buffering = true;
+		uint16_t * region_data = nullptr;
+
+		int region_start_x = std::min(start->x, end->x);
+		int region_end_x = std::max(start->x, end->x);
+		int region_start_y = std::min(start->y, end->y);
+		int region_end_y = std::max(start->y, end->y);
+		int region_start_z = std::min(start->z, end->z);
+		int region_end_z = std::max(start->z, end->z);
+
+		const int window = 5; // window to dilate sampled region by for overlaps 
+
+		region_start_x -= window;
+		region_end_x += window;
+		region_start_y -= window;
+		region_end_y += window;
+		region_start_z -= window;
+		region_end_z += window;
+
+		region_start_x = std::max(region_start_x, (int) 0);
+		region_start_y = std::max(region_start_y, (int) 0);
+		region_start_z = std::max(region_start_z, (int) 0);
+		region_end_x = std::min(region_end_x, (int) reader->sizex); 
+		region_end_y = std::min(region_end_y, (int) reader->sizey); 
+		region_end_z = std::min(region_end_z, (int) reader->sizez); 
+
+		const size_t region_size_x = region_end_x - region_start_x;
+		const size_t region_size_y = region_end_y - region_start_y;
+		const size_t region_size_z = region_end_z - region_start_z;
+
+		if(true) { 
+			std::cout << "Getting range: [" << region_start_x << "," << region_end_x << "], ["
+					<< region_start_y << "," << region_end_y << "], [" << region_start_z << ","
+					<< region_end_z << "]" << std::endl;
+		}
+
+		if (use_buffering)
+		{
+			region_data = reader->load_region(1, region_start_x, region_end_x, region_start_y, region_end_y, region_start_z, region_end_z);
+		}
+
 		while (!open_set.empty() && N<N_limit) {
 			target = open_set.top();
-			//std::cout << "Found " << target->x << ',' << target->y << ',' << target->z << " f=" << target->f() << "  c=" << target->color_intensity << std::endl;
+			if(true) {
+				std::cout << "Found " << target->x << ',' << target->y << ',' << target->z
+					<< " f=" << target->f() 
+					//<< " g=" << target->g()
+					//<< " h=" << target->h()
+					<< " c=" << target->color_intensity
+					<< std::endl;
+			}
 			open_set.pop();
 
 			if(*target == *end) {
@@ -584,30 +631,64 @@ int main(int argc, char *argv[])
 
 				const double new_g = target->g + ds;
 
-				if(new_x < 0 || new_y < 0 || new_z < 0 || new_x >= reader->sizex || new_y >= reader->sizey || new_z >= reader->sizez) {
+				if (new_x < 0 || new_y < 0 || new_z < 0 || new_x >= reader->sizex || new_y >= reader->sizey || new_z >= reader->sizez)
+				{
 					continue;
 				}
 
-				astar_cell * new_pt = new astar_cell(new_x, new_y, new_z, new_g, 0, target);
+				if (use_buffering)
+				{
+					if (new_x < region_start_x ||
+						new_x >= region_end_x ||
+						new_y < region_start_y ||
+						new_y >= region_end_y ||
+						new_z < region_start_z ||
+						new_z >= region_end_z)
+					{
+						continue;
+					}
+				}
+
+				astar_cell *new_pt = new astar_cell(new_x, new_y, new_z, new_g, 0, target);
 				new_pt->h = new_pt->euclidean_distance(end);
 
 				bool dont_add = false;
-				for(int i = closed_set.size() - 1; i >= 0 && !dont_add; i--) {
+				for (int i = closed_set.size() - 1; i >= 0 && !dont_add; i--)
+				{
 					dont_add |= (*closed_set[i] == *new_pt);
 				}
 
-				if(!dont_add) {
-					const size_t window_size = 2;
-					new_pt->load_color(reader, window_size);
+				if (!dont_add)
+				{
+					if (!use_buffering)
+					{
+						const size_t window_size = 2;
+						new_pt->load_color(reader, window_size);
+					}
+					else
+					{
+						new_pt->define_color_vector(channel_count);
+						for (size_t c = 0; c < channel_count; c++)
+						{
+							size_t offset = (c * region_size_x * region_size_y * region_size_z) +
+											((new_pt->z - region_start_z) * region_size_y * region_size_x) +
+											((new_pt->y - region_start_y) * region_size_x) +
+											(new_pt->x - region_start_x);
+
+							new_pt->color_vector[c] += region_data[offset];
+						}
+						new_pt->calculate_intensity_average();
+					}
+
 					dont_add |= avg_color_threshold > new_pt->color_intensity;
 				}
 
-				if(!dont_add && new_pt->channel_count > 1) {
+				if (!dont_add && new_pt->channel_count > 1)
+				{
 					double color_angle = start->color_angle(new_pt);
 					dont_add |= color_angle > .5;
 				}
 
-	
 				//for(size_t i = 0; i < new_pt->channel_count; i++) {
 				//	std::cout << new_pt->color_vector[i];
 				//	if(i != new_pt->channel_count - 1) std::cout << ',';
@@ -624,6 +705,10 @@ int main(int argc, char *argv[])
 			}
 
 			N++;
+		}
+
+		if(use_buffering) {
+			free(region_data);
 		}
 
 		// Print results
