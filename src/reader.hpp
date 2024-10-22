@@ -435,19 +435,18 @@ public:
         dilation_y -= std::floor(dilation_y);
         dilation_z -= std::floor(dilation_z);
 
-        size_x_out -= dilation_x * this->mcountx;
-        size_y_out -= dilation_y * this->mcounty;
-        size_z_out -= dilation_z * this->mcountz;
+        dilation_x *= this->mcountx;
+        dilation_y *= this->mcounty;
+        dilation_z *= this->mcountz;
 
-        //size_t size_x_out = this->mcountx * (this->mchunkx / scale);
-        //size_t size_y_out = this->mcounty * (this->mchunky / scale);
-        //size_t size_z_out = this->mcountz * (this->mchunkz / scale);
-
-        //size_x_out += (this->sizex % this->mchunkx) / scale;
-        //size_y_out += (this->sizey % this->mchunky) / scale;
-        //size_z_out += (this->sizez % this->mchunkz) / scale;
-
-        // Add scaling dilation
+        // round up
+        dilation_x = std::ceil(dilation_x);
+        dilation_y = std::ceil(dilation_y);
+        dilation_z = std::ceil(dilation_z);
+        
+        size_x_out -= dilation_x;
+        size_y_out -= dilation_y;
+        size_z_out -= dilation_z;
 
         return std::make_tuple(size_x_out, size_y_out, size_z_out);
     }
