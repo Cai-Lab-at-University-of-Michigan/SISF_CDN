@@ -431,6 +431,10 @@ public:
         size_t size_y_out = this->mcounty * (this->mchunky / scale);
         size_t size_z_out = this->mcountz * (this->mchunkz / scale);
 
+        size_x_out += (this->sizex % this->mchunkx) / scale;
+        size_y_out += (this->sizey % this->mchunky) / scale;
+        size_z_out += (this->sizez % this->mchunkz) / scale;
+
         return std::make_tuple(size_x_out, size_y_out, size_z_out);
     }
 
