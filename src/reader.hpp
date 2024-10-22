@@ -426,9 +426,7 @@ public:
         //size_t size_x_out = sizex / scale;
         //size_t size_y_out = sizey / scale;
         //size_t size_z_out = sizez / scale;
-
-        std::cout << this->mchunkx / scale << std::endl;
-
+        
         size_t size_x_out = this->mcountx * (this->mchunkx / scale);
         size_t size_y_out = this->mcounty * (this->mchunky / scale);
         size_t size_z_out = this->mcountz * (this->mchunkz / scale);
