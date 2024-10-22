@@ -423,17 +423,32 @@ public:
 
     std::tuple<size_t, size_t, size_t> get_size(size_t scale)
     {
-        // size_t size_x_out = sizex / scale;
-        // size_t size_y_out = sizey / scale;
-        // size_t size_z_out = sizez / scale;
+        size_t size_x_out = sizex / scale;
+        size_t size_y_out = sizey / scale;
+        size_t size_z_out = sizez / scale;
 
-        size_t size_x_out = this->mcountx * (this->mchunkx / scale);
-        size_t size_y_out = this->mcounty * (this->mchunky / scale);
-        size_t size_z_out = this->mcountz * (this->mchunkz / scale);
+        double dilation_x = this->mchunkx / scale;
+        double dilation_y = this->mchunky / scale;
+        double dilation_z = this->mchunkz / scale;
 
-        size_x_out += (this->sizex % this->mchunkx) / scale;
-        size_y_out += (this->sizey % this->mchunky) / scale;
-        size_z_out += (this->sizez % this->mchunkz) / scale;
+        dilation_x -= std::floor(dilation_x);
+        dilation_y -= std::floor(dilation_y);
+        dilation_z -= std::floor(dilation_z);
+
+        size_x_out -= dilation_x * this->mcountx;
+        size_y_out -= dilation_y * this->mcounty;
+        size_z_out -= dilation_z * this->mcountz;
+
+        //size_t size_x_out = this->mcountx * (this->mchunkx / scale);
+        //size_t size_y_out = this->mcounty * (this->mchunky / scale);
+        //size_t size_z_out = this->mcountz * (this->mchunkz / scale);
+
+        //size_x_out += (this->sizex % this->mchunkx) / scale;
+        //size_y_out += (this->sizey % this->mchunky) / scale;
+        //size_z_out += (this->sizez % this->mchunkz) / scale;
+
+        // Add scaling dilation
+        size_x_out -= 
 
         return std::make_tuple(size_x_out, size_y_out, size_z_out);
     }
