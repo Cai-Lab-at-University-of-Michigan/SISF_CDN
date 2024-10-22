@@ -423,10 +423,10 @@ public:
 
     std::tuple<size_t, size_t, size_t> get_size(size_t scale)
     {
-        //size_t size_x_out = sizex / scale;
-        //size_t size_y_out = sizey / scale;
-        //size_t size_z_out = sizez / scale;
-        
+        // size_t size_x_out = sizex / scale;
+        // size_t size_y_out = sizey / scale;
+        // size_t size_z_out = sizez / scale;
+
         size_t size_x_out = this->mcountx * (this->mchunkx / scale);
         size_t size_y_out = this->mcounty * (this->mchunky / scale);
         size_t size_z_out = this->mcountz * (this->mchunkz / scale);
@@ -436,9 +436,15 @@ public:
 
     std::tuple<size_t, size_t, size_t> get_res(size_t scale)
     {
-        size_t resx_out = resx * scale;
-        size_t resy_out = resy * scale;
-        size_t resz_out = resz * scale;
+        std::tuple<size_t, size_t, size_t> size = this->get_size();
+
+        // size_t resx_out = resx * scale;
+        // size_t resy_out = resy * scale;
+        // size_t resz_out = resz * scale;
+
+        size_t resx_out = resx * sizex / std::get<0>(size);
+        size_t resx_out = resy * sizey / std::get<1>(size);
+        size_t resx_out = resz * sizez / std::get<2>(size);
 
         return std::make_tuple(resx_out, resy_out, resz_out);
     }
