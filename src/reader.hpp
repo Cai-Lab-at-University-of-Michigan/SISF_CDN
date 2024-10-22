@@ -443,8 +443,8 @@ public:
         // size_t resz_out = resz * scale;
 
         size_t resx_out = resx * sizex / std::get<0>(size);
-        size_t resx_out = resy * sizey / std::get<1>(size);
-        size_t resx_out = resz * sizez / std::get<2>(size);
+        size_t resy_out = resy * sizey / std::get<1>(size);
+        size_t resz_out = resz * sizez / std::get<2>(size);
 
         return std::make_tuple(resx_out, resy_out, resz_out);
     }
