@@ -427,10 +427,15 @@ public:
         size_t size_y_out = sizey / scale;
         size_t size_z_out = sizez / scale;
 
-        // Calculate dilation at given scale
-        double dilation_x = this->mchunkx / scale;
-        double dilation_y = this->mchunky / scale;
-        double dilation_z = this->mchunkz / scale;
+        // Start with the size of one chunk
+        double dilation_x = this->mchunkx;
+        double dilation_y = this->mchunky;
+        double dilation_z = this->mchunkz;
+
+        // Divide by scale
+        dilation_x /= scale;
+        dilation_y /= scale;
+        dilation_z /= scale;
 
         // Isolate fractional part of dilation
         dilation_x -= std::floor(dilation_x);
