@@ -448,7 +448,6 @@ public:
         //size_z_out += (this->sizez % this->mchunkz) / scale;
 
         // Add scaling dilation
-        size_x_out -= 
 
         return std::make_tuple(size_x_out, size_y_out, size_z_out);
     }
