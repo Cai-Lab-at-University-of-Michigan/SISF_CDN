@@ -436,7 +436,7 @@ public:
 
     std::tuple<size_t, size_t, size_t> get_res(size_t scale)
     {
-        std::tuple<size_t, size_t, size_t> size = this->get_size();
+        std::tuple<size_t, size_t, size_t> size = this->get_size(scale);
 
         // size_t resx_out = resx * scale;
         // size_t resy_out = resy * scale;
