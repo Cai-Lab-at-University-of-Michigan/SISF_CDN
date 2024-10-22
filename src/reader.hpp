@@ -423,9 +423,13 @@ public:
 
     std::tuple<size_t, size_t, size_t> get_size(size_t scale)
     {
-        size_t size_x_out = sizex / scale;
-        size_t size_y_out = sizey / scale;
-        size_t size_z_out = sizez / scale;
+        //size_t size_x_out = sizex / scale;
+        //size_t size_y_out = sizey / scale;
+        //size_t size_z_out = sizez / scale;
+
+        size_t size_x_out = this->mcountx * (this->mchunkx / scale);
+        size_t size_y_out = this->mcounty * (this->mchunky / scale);
+        size_t size_z_out = this->mcountz * (this->mchunkz / scale);
 
         return std::make_tuple(size_x_out, size_y_out, size_z_out);
     }
