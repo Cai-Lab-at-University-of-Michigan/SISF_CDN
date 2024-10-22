@@ -427,14 +427,17 @@ public:
         size_t size_y_out = sizey / scale;
         size_t size_z_out = sizez / scale;
 
+        // Calculate dilation at given scale
         double dilation_x = this->mchunkx / scale;
         double dilation_y = this->mchunky / scale;
         double dilation_z = this->mchunkz / scale;
 
+        // Isolate fractional part of dilation
         dilation_x -= std::floor(dilation_x);
         dilation_y -= std::floor(dilation_y);
         dilation_z -= std::floor(dilation_z);
 
+        // Scale dilation by number of tiles
         dilation_x *= this->mcountx;
         dilation_y *= this->mcounty;
         dilation_z *= this->mcountz;
@@ -447,6 +450,8 @@ public:
         size_x_out -= dilation_x;
         size_y_out -= dilation_y;
         size_z_out -= dilation_z;
+
+        std::cout << dilation_x << " " << dilation_y << " " << dilation_z << std::endl;
 
         return std::make_tuple(size_x_out, size_y_out, size_z_out);
     }
