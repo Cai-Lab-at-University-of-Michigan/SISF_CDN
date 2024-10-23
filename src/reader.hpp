@@ -465,15 +465,23 @@ public:
     {
         std::tuple<size_t, size_t, size_t> size = this->get_size(scale);
 
-        // size_t resx_out = resx * scale;
-        // size_t resy_out = resy * scale;
-        // size_t resz_out = resz * scale;
-
         size_t resx_out = resx * sizex / std::get<0>(size);
         size_t resy_out = resy * sizey / std::get<1>(size);
         size_t resz_out = resz * sizez / std::get<2>(size);
 
-        return std::make_tuple(resx_out, resy_out, resz_out);
+        double resx_out = resx;
+        double resy_out = resy;
+        double resz_out = resz;
+
+        resx_out *= sizex;
+        resy_out *= sizey;
+        resz_out *= sizez;
+
+        resx_out /= std::get<0>(size);
+        resy_out /= std::get<1>(size);
+        resz_out /= std::get<2>(size);
+
+        return std::make_tuple((size_t) resx_out, (size_t) resy_out, (size_t) resz_out);
     }
 
     std::tuple<size_t, size_t, size_t> inline find_index(size_t x, size_t y, size_t z)
