@@ -465,10 +465,6 @@ public:
     {
         std::tuple<size_t, size_t, size_t> size = this->get_size(scale);
 
-        size_t resx_out = resx * sizex / std::get<0>(size);
-        size_t resy_out = resy * sizey / std::get<1>(size);
-        size_t resz_out = resz * sizez / std::get<2>(size);
-
         double resx_out = resx;
         double resy_out = resy;
         double resz_out = resz;
