@@ -79,7 +79,7 @@ pixtype *decode_stack(size_t sizex, size_t sizey, size_t sizez, void *buffer, si
     std::vector<char> buf = res.first.buf;
     size_t buf_size = buf.size();
     
-    //std::cerr << "Got " << buf_size << std::endl;
+    std::cerr << "Got " << buf_size << std::endl;
 
     if (buf_size < stack_size) {
 
