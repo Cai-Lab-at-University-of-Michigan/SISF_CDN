@@ -74,7 +74,7 @@ pixtype *decode_stack(size_t sizex, size_t sizey, size_t sizez, void *buffer, si
     //size_t s = p->send((char *)buffer, buffer_size);
     //std::cerr << "SENT " << s << std::endl;
 
-    std::pair<OutBuffer, ErrBuffer> res = p->communicate((char *) buffer, buffer_size);
+    std::pair<subprocess::OutBuffer, subprocess::ErrBuffer> res = p->communicate((char *) buffer, buffer_size);
     
     std::vector<char> buf = res.first.buf;
     size_t buf_size = buf.size();
