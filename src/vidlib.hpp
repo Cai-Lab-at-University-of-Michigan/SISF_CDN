@@ -7,6 +7,7 @@
 #include <thread>
 #include <mutex>
 #include <vector>
+#include <stdexcept>
 
 #include "x264.h"
 
@@ -17,6 +18,8 @@ extern "C"
 #include <libavutil/frame.h>
 #include <libavutil/imgutils.h>
 #include <libswscale/swscale.h>
+#include <libavutil/avutil.h>
+#include <libavutil/opt.h>
 }
 
 #define IMAGE_GAIN 10
