@@ -88,6 +88,7 @@ pixtype *decode_stack(size_t sizex, size_t sizey, size_t sizez, void *buffer, si
     char *out = (char *) calloc(stack_size, sizeof(char));
 
     // Data stored in ZXY, remap to XYZ
+    /*
     for(size_t x = 0; x < sizex; x++) {
         for(size_t y = 0; y < sizey; y++) {
             for(size_t z = 0; z < sizez; z++) {
@@ -99,6 +100,7 @@ pixtype *decode_stack(size_t sizex, size_t sizey, size_t sizez, void *buffer, si
             }
         }
     }
+    */
 
     delete p;
 
