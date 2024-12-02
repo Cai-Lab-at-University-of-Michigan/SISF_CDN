@@ -72,28 +72,6 @@ pixtype *decode_stack(size_t w, size_t h, size_t t, void *buffer, size_t buffer_
 
     //std::cerr << "GOT " << buffer_size << std::endl;
 
-    //{
-    //    std::ofstream file("test.h256", std::ios::binary);
-    //    file.write((char *)buffer, buffer_size);
-    //    file.close();
-    //}
-
-/*
-    const size_t send_chunk_size = 1000;
-    for(size_t i = 0; i < buffer_size; i+=send_chunk_size) {
-        char * buffer_offset = (char *) buffer;
-        buffer_offset += i;
-
-        std::cerr << "PREPPING " << i << std::endl;
-
-        size_t tosend = std::min(send_chunk_size, buffer_size - i);
-
-        size_t s = p->send(buffer_offset, tosend);
-
-        std::cerr << "SENTT " << s << std::endl;
-    }
-    */
-
     //size_t s = p->send((char *)buffer, buffer_size);
     //std::cerr << "SENT " << s << std::endl;
 
