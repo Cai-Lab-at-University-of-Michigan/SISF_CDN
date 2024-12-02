@@ -6,8 +6,18 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <vector>
 
 #include "x264.h"
+
+extern "C"
+{
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libavutil/frame.h>
+#include <libavutil/imgutils.h>
+#include <libswscale/swscale.h>
+}
 
 #define IMAGE_GAIN 10
 
@@ -318,6 +328,8 @@ std::pair<size_t, void *> encode_stack_x264(size_t w_in, size_t h_in, size_t t_i
 
     return {out_offset, out};
 }
+
+
 
 pixtype *uint16_to_pixtype(uint16_t *buffer, size_t len)
 {
