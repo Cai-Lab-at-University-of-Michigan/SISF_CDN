@@ -95,7 +95,8 @@ pixtype *decode_stack(size_t sizex, size_t sizey, size_t sizez, void *buffer, si
 
                 const size_t out_offset = (x * sizey * sizez) + (y * sizez) + z;
 
-                out[out_offset] = 1; //buf[in_offset];
+                if(in_offset < buf.size())
+                out[out_offset] = buf[in_offset];
             }
         }
     }
