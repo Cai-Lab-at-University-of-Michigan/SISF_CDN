@@ -13,8 +13,7 @@
 
 std::mutex pthread_mutex;
 
-std::string ffmpeg_location = "./ffmpeg";
-// std::string ffmpeg_location = "/Users/loganaw/Downloads/ffmpeg";
+std::string ffmpeg_location = "ffmpeg";
 std::string null_redirect = ""; // "2>/dev/null";
 std::string encoder_name = "libx264";
 std::string other_encode_settings = "";
@@ -55,10 +54,10 @@ void read_threaded(void **buffer_ret, size_t *buffer_size, FILE *file, size_t si
     buffer_ret[0] = buffer;
 }
 
-pixtype *decode_stack(size_t w, size_t h, size_t t, void *buffer, size_t buffer_size)
+pixtype *decode_stack(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
 {
-    const size_t frame_size = w * h * sizeof(pixtype);
-    const size_t stack_size = frame_size * t;
+    const size_t frame_size = sizex * sizey * sizeof(pixtype);
+    const size_t stack_size = frame_size * sizez;
 
     std::string cmd = ffmpeg_location + " " + decode_params;
 
@@ -75,20 +74,35 @@ pixtype *decode_stack(size_t w, size_t h, size_t t, void *buffer, size_t buffer_
     //size_t s = p->send((char *)buffer, buffer_size);
     //std::cerr << "SENT " << s << std::endl;
 
-    auto buf = p->communicate((char *) buffer, buffer_size).first.buf;
-
-    //auto buf = p->communicate().first.buf;
-
+    std::pair<OutBuffer, ErrBuffer> res = p->communicate((char *) buffer, buffer_size);
+    
+    std::vector<char> buf = res.first.buf;
     size_t buf_size = buf.size();
+    
     //std::cerr << "Got " << buf_size << std::endl;
-    void *out = malloc(buf_size);
-    memcpy(out, buf.data(), buf_size);
 
-    if (buf_size != stack_size) {
+    if (buf_size < stack_size) {
 
     }
 
     delete p;
+
+    // Data stored in ZXY, remap to XYZ
+
+    char *out = (char *) calloc(stack_size, sizeof(char));
+
+    for(size_t x = 0; x < sizex; x++) {
+        for(size_t y = 0; y < sizey; y++) {
+            for(size_t z = 0; z < sizez; z++) {
+                const size_t in_offset = (z * (sizex * sizey)) + (x * sizey) + y;
+
+                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + z;
+
+                out[out_offset] = buf[in_offset];
+            }
+        }
+    }
+
 
     return (pixtype *)out;
 }
