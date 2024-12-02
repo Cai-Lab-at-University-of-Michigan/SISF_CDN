@@ -67,35 +67,36 @@ pixtype *decode_stack(size_t sizex, size_t sizey, size_t sizez, void *buffer, si
         subprocess::output{subprocess::PIPE},
         subprocess::input{subprocess::PIPE},
         subprocess::error{subprocess::PIPE},
-        subprocess::bufsize{(int) 256 * 256 * 256 * 2});
+        subprocess::bufsize{(int)256 * 256 * 256 * 2});
 
-    //size_t s = p->send((char *)buffer, buffer_size);
-    //std::cerr << "SENT " << s << std::endl;
+    // size_t s = p->send((char *)buffer, buffer_size);
+    // std::cerr << "SENT " << s << std::endl;
 
-    //std::pair<subprocess::OutBuffer, subprocess::ErrBuffer> res = p->communicate((char *) buffer, buffer_size);
-    //std::vector<char> buf = res.first.buf;
+    // std::pair<subprocess::OutBuffer, subprocess::ErrBuffer> res = p->communicate((char *) buffer, buffer_size);
+    // std::vector<char> buf = res.first.buf;
 
-    auto buf = p->communicate((char *) buffer, buffer_size).first.buf;
+    auto buf = p->communicate((char *)buffer, buffer_size).first.buf;
     size_t buf_size = buf.size();
-    
-    std::cerr << "Got " << buf_size << std::endl;
 
-    if (buf_size < stack_size) {
+    // std::cerr << "Got " << buf_size << std::endl;
 
-    }
-
-    char *out = (char *) calloc(stack_size, sizeof(char));
+    char *out = (char *)calloc(stack_size, sizeof(char));
 
     // Data stored in ZXY, remap to XYZ
-    for(size_t x = 0; x < sizex; x++) {
-        for(size_t y = 0; y < sizey; y++) {
-            for(size_t z = 0; z < sizez; z++) {
+    for (size_t x = 0; x < sizex; x++)
+    {
+        for (size_t y = 0; y < sizey; y++)
+        {
+            for (size_t z = 0; z < sizez; z++)
+            {
                 const size_t in_offset = (z * (sizex * sizey)) + (x * sizey) + y;
 
                 const size_t out_offset = (x * sizey * sizez) + (y * sizez) + z;
 
-                if(in_offset < buf.size())
-                out[out_offset] = buf[in_offset];
+                if (in_offset < buf_size)
+                {
+                    out[out_offset] = buf[in_offset];
+                }
             }
         }
     }
@@ -155,7 +156,7 @@ std::pair<size_t, void *> encode_stack(size_t w, size_t h, size_t t, pixtype *st
         subprocess::input{subprocess::PIPE},
         subprocess::error{subprocess::PIPE},
         subprocess::close_fds{false},
-        subprocess::bufsize{(int) 256 * 256 * 256 * 2},
+        subprocess::bufsize{(int)256 * 256 * 256 * 2},
         subprocess::shell{false});
 
     auto [outb, errb] = p->communicate((char *)stack, stack_size);
@@ -177,13 +178,13 @@ std::pair<size_t, void *> encode_stack_AV1_encapp(size_t w, size_t h, size_t t, 
 {
     std::stringstream cmd_build;
     cmd_build << SVT_AV1_location << " "
-            << "--crf 20 "
-            << "--lp 4 "
-            << "-i - "
-            << "-w " << w << " "
-            << "-h " << h << " "
-            << "--fps " << target_framerate << " "
-            << "-b -";
+              << "--crf 20 "
+              << "--lp 4 "
+              << "-i - "
+              << "-w " << w << " "
+              << "-h " << h << " "
+              << "--fps " << target_framerate << " "
+              << "-b -";
 
     // Use subprocess
     subprocess::Popen *p = new subprocess::Popen(
@@ -192,7 +193,7 @@ std::pair<size_t, void *> encode_stack_AV1_encapp(size_t w, size_t h, size_t t, 
         subprocess::input{subprocess::PIPE},
         subprocess::error{subprocess::PIPE},
         subprocess::close_fds{false},
-        subprocess::bufsize{(int) (w * h * t * 2)},
+        subprocess::bufsize{(int)(w * h * t * 2)},
         subprocess::shell{false});
 
     auto [outb, errb] = p->communicate((char *)stack, stack_size_in);
@@ -330,7 +331,6 @@ pixtype *uint16_to_pixtype(uint16_t *buffer, size_t len)
 
         v *= IMAGE_GAIN; // Apply input gain
         v = sqrt(v);     // sqrt image to do 16->8bit conversion
-
 
         if (v <= 0)
             v = 0; // Clip lower
