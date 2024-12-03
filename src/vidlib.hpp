@@ -488,7 +488,7 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
     if (!buffer || buffer_size == 0)
     {
         std::cerr << "[H264Decode] Failed to load buffer" << std::endl;
-        return (pixtype *)out;
+        return (uint16_t *)out;
     }
 
     // Create memory buffer context
@@ -499,7 +499,7 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
     if (!formatContext)
     {
         std::cerr << "[H264Decode] Could not allocate format context" << std::endl;
-        return (pixtype *)out;
+        return (uint16_t *)out;
     }
 
     // Create custom I/O context
@@ -517,7 +517,7 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
     {
         std::cerr << "[H264Decode] Could not create I/O context" << std::endl;
         avformat_free_context(formatContext);
-        return (pixtype *)out;
+        return (uint16_t *)out;
     }
 
     // Assign custom I/O context to format context
@@ -534,7 +534,7 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
         // Cleanup
         avio_context_free(&ioContext);
         avformat_free_context(formatContext);
-        return (pixtype *)out;
+        return (uint16_t *)out;
     }
 
     // Retrieve stream information
@@ -545,7 +545,7 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
 
         // Cleanup
         avformat_close_input(&formatContext);
-        return (pixtype *)out;
+        return (uint16_t *)out;
     }
 
     // Print some information about the media
@@ -565,7 +565,7 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
     if (video_stream_idx == -1)
     {
         std::cerr << "[H264Decode] Could not find video stream" << std::endl;
-        return (pixtype *)out;
+        return (uint16_t *)out;
     }
 
     // Get codec parameters and codec context
@@ -578,7 +578,7 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
     if (avcodec_open2(codec_ctx, codec, nullptr) < 0)
     {
         std::cerr << "[H264Decode] Could not open codec" << std::endl;
-        return (pixtype *)out;
+        return (uint16_t *)out;
     }
 
     // Allocate frame and packet
@@ -624,7 +624,7 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
                         float v = frame->data[0][in_offset];
                         v *= v; // ^2
 
-                        out[out_offset] = const_cast<uint16_t>(v);
+                        out[out_offset] = (uint16_t) v;
                     }
                 }
 
@@ -657,7 +657,7 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
                 float v = frame->data[0][in_offset];
                 v *= v; // ^2
 
-                out[out_offset] = const_cast<uint16_t>(v);
+                out[out_offset] = (uint16_t) v;
             }
         }
 
