@@ -612,20 +612,6 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                     break;
                 }
 
-/*
-                // Print basic frame properties
-                std::cout << "Frame " << codec_ctx->frame_number
-                          << " (" << frame->format << ")"
-                          //<< " (" << av_image_get_buffer_size(frame->format, frame->width, frame->height, 1) << ")"
-                          << "(";
-
-                for (size_t i = 0; i < 10; i++)
-                    std::cout << (int)frame->data[0][i] << ' ';
-                std::cout << ")"
-                          << " (type=" << av_get_picture_type_char(frame->pict_type)
-                          << ", size=" << frame->pkt_size
-                          << " bytes) "
-                          << std::endl;*/
 
                 for (size_t x = 0; x < sizex; x++)
                 {
@@ -636,7 +622,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                         //const size_t in_offset =  (y * sizex) + x;
                         const size_t in_offset = (x * frame->linesize[0]) + y;
 
-                        const size_t out_offset = (x * sizey * sizez) + (y * sizez) + codec_ctx->frame_number;
+                        const size_t out_offset = (x * sizey * sizez) + (y * sizez) + (codec_ctx->frame_number - 1);
 
                         out[out_offset] = frame->data[0][in_offset];
                     }
@@ -659,13 +645,6 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
             break;
         }
 
-        // Print basic frame properties
-        /*std::cout << "Frame " << codec_ctx->frame_number
-                  << " (type=" << av_get_picture_type_char(frame->pict_type)
-                  << ", size=" << frame->pkt_size
-                  << " bytes) "
-                  << std::endl;*/
-
         for (size_t x = 0; x < sizex; x++)
         {
             for (size_t y = 0; y < sizey; y++)
@@ -673,7 +652,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                 //const size_t in_offset = (y * sizex) + x;
                 const size_t in_offset = (x * frame->linesize[0]) + y;
 
-                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + codec_ctx->frame_number;
+                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + (codec_ctx->frame_number - 1);
 
                 out[out_offset] = frame->data[0][in_offset];
             }
