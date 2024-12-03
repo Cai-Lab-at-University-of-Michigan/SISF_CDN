@@ -631,7 +631,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                 {
                     for (size_t y = 0; y < sizey; y++)
                     {
-                        const size_t in_offset = (x * sizey) + y;
+                        const size_t in_offset =  (y * sizex) + x;
 
                         const size_t out_offset = (x * sizey * sizez) + (y * sizez) + codec_ctx->frame_number;
 
@@ -671,7 +671,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
 
                 const size_t out_offset = (x * sizey * sizez) + (y * sizez) + codec_ctx->frame_number;
 
-                out[out_offset] = codec_ctx->frame_number; //frame->data[0][in_offset];
+                out[out_offset] = frame->data[0][in_offset];
             }
         }
     }
