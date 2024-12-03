@@ -631,6 +631,8 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                 {
                     for (size_t y = 0; y < sizey; y++)
                     {
+                        std::cout << frame->width << "x" << frame->height << std::endl;
+
                         const size_t in_offset =  (y * sizex) + x;
 
                         const size_t out_offset = (x * sizey * sizez) + (y * sizez) + codec_ctx->frame_number;
