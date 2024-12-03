@@ -480,10 +480,10 @@ static int memorybuffer_read_packet(void *opaque, uint8_t *buf, int buf_size)
     return bytesToRead;
 }
 
-pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
+uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
 {
     // Allocate output buffer
-    uint8_t *out = (uint8_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
+    uint16_t *out = (uint16_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
 
     if (!buffer || buffer_size == 0)
     {
@@ -621,7 +621,10 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                         const size_t in_offset = (x * frame->linesize[0]) + y;
                         const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
 
-                        out[out_offset] = frame->data[0][in_offset];
+                        float v = frame->data[0][in_offset];
+                        v *= v; // ^2
+
+                        out[out_offset] = const_cast<uint16_t>(v);
                     }
                 }
 
@@ -651,7 +654,10 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                 const size_t in_offset = (x * frame->linesize[0]) + y;
                 const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
 
-                out[out_offset] = frame->data[0][in_offset];
+                float v = frame->data[0][in_offset];
+                v *= v; // ^2
+
+                out[out_offset] = const_cast<uint16_t>(v);
             }
         }
 
