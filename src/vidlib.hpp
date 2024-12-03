@@ -546,7 +546,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
     }
 
     // Print some information about the media
-    av_dump_format(formatContext, 0, nullptr, 0);
+    //av_dump_format(formatContext, 0, nullptr, 0);
 
     // Find video stream
     int video_stream_idx = -1;
@@ -612,6 +612,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                     break;
                 }
 
+/*
                 // Print basic frame properties
                 std::cout << "Frame " << codec_ctx->frame_number
                           << " (" << frame->format << ")"
@@ -624,7 +625,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                           << " (type=" << av_get_picture_type_char(frame->pict_type)
                           << ", size=" << frame->pkt_size
                           << " bytes) "
-                          << std::endl;
+                          << std::endl;*/
 
                 for (size_t x = 0; x < sizex; x++)
                 {
@@ -656,11 +657,11 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
         }
 
         // Print basic frame properties
-        std::cout << "Frame " << codec_ctx->frame_number
+        /*std::cout << "Frame " << codec_ctx->frame_number
                   << " (type=" << av_get_picture_type_char(frame->pict_type)
                   << ", size=" << frame->pkt_size
                   << " bytes) "
-                  << std::endl;
+                  << std::endl;*/
 
         for (size_t x = 0; x < sizex; x++)
         {
