@@ -266,7 +266,7 @@ public:
 
             case 2:
                 // Decompress with vidlib
-                read_decomp_buffer = decode_stack_h264(chunkx, chunky, chunkz, read_buffer, sel->size);
+                read_decomp_buffer = (char*)decode_stack_h264(chunkx, chunky, chunkz, read_buffer, sel->size);
                 break;
 
             case 3:

@@ -669,5 +669,5 @@ uint16_t *decode_stack_h264(size_t sizex, size_t sizey, size_t sizez, void *buff
     // Cleanup
     avformat_close_input(&formatContext);
 
-    return (pixtype *)out;
+    return (uint16_t *)out;
 }
