@@ -489,14 +489,14 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
     }
 
     // Create memory buffer context
-    FFmpegMemoryBuffer memBuffer(buffer, bufferSize);
+    FFmpegMemoryBuffer memBuffer(buffer, buffer_size);
 
     // Allocate AVFormatContext
     AVFormatContext *formatContext = avformat_alloc_context();
     if (!formatContext)
     {
         std::cerr << "Could not allocate format context" << std::endl;
-        return -1;
+        //return -1;
     }
 
     // Create custom I/O context
