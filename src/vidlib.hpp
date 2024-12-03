@@ -586,6 +586,8 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
     AVPacket packet;
     av_init_packet(&packet);
 
+    size_t frame_cnt = 0;
+
     // Read frames from the video stream
     while (av_read_frame(formatContext, &packet) >= 0)
     {
@@ -617,11 +619,13 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                     for (size_t y = 0; y < sizey; y++)
                     {
                         const size_t in_offset = (x * frame->linesize[0]) + y;
-                        const size_t out_offset = (x * sizey * sizez) + (y * sizez) + (codec_ctx->frame_number - 1);
+                        const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
 
                         out[out_offset] = frame->data[0][in_offset];
                     }
                 }
+
+                frame_cnt++;
             }
         }
     }
@@ -645,11 +649,13 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
             for (size_t y = 0; y < sizey; y++)
             {
                 const size_t in_offset = (x * frame->linesize[0]) + y;
-                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + (codec_ctx->frame_number - 1);
+                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
 
                 out[out_offset] = frame->data[0][in_offset];
             }
         }
+
+        frame_cnt++;
     }
 
     av_packet_unref(&packet);
