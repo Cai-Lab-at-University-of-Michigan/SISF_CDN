@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <thread>
 #include <mutex>
 #include <vector>
@@ -332,8 +333,6 @@ std::pair<size_t, void *> encode_stack_x264(size_t w_in, size_t h_in, size_t t_i
     return {out_offset, out};
 }
 
-
-
 pixtype *uint16_to_pixtype(uint16_t *buffer, size_t len)
 {
     pixtype *out = (pixtype *)calloc(len, sizeof(pixtype));
@@ -447,4 +446,239 @@ uint16_t *pixtype_to_uint16_YUV420(pixtype *buffer, size_t w, size_t h, size_t t
     }
 
     return out_buffer;
+}
+
+// Custom I/O context for reading from memory
+class FFmpegMemoryBuffer
+{
+public:
+    const uint8_t *data;
+    size_t size;
+    size_t pos;
+
+    FFmpegMemoryBuffer(const uint8_t *buffer, size_t bufferSize)
+        : data(buffer), size(bufferSize), pos(0) {}
+};
+
+// Custom read function for memory buffer
+static int memorybuffer_read_packet(void *opaque, uint8_t *buf, int buf_size)
+{
+    FFmpegMemoryBuffer *memBuffer = static_cast<FFmpegMemoryBuffer *>(opaque);
+
+    // Calculate how much we can read
+    int bytesToRead = std::min(buf_size, static_cast<int>(memBuffer->size - memBuffer->pos));
+
+    if (bytesToRead <= 0)
+    {
+        return AVERROR_EOF;
+    }
+
+    // Copy data from memory buffer
+    memcpy(buf, memBuffer->data + memBuffer->pos, bytesToRead);
+    memBuffer->pos += bytesToRead;
+
+    return bytesToRead;
+}
+
+pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
+{
+    if (!buffer || buffer_size == 0)
+    {
+        std::cerr << "Failed to load buffer" << std::endl;
+        // return -1;
+    }
+
+    // Create memory buffer context
+    FFmpegMemoryBuffer memBuffer(buffer, bufferSize);
+
+    // Allocate AVFormatContext
+    AVFormatContext *formatContext = avformat_alloc_context();
+    if (!formatContext)
+    {
+        std::cerr << "Could not allocate format context" << std::endl;
+        return -1;
+    }
+
+    // Create custom I/O context
+    AVIOContext *ioContext = avio_alloc_context(
+        static_cast<unsigned char *>(av_malloc(4096)), // Internal buffer
+        4096,                                          // Buffer size
+        0,                                             // Write flag (0 for read-only)
+        &memBuffer,                                    // Opaque pointer
+        memorybuffer_read_packet,                      // Read callback
+        nullptr,                                       // Write callback (not needed)
+        nullptr                                        // Seek callback (optional)
+    );
+
+    if (!ioContext)
+    {
+        std::cerr << "Could not create I/O context" << std::endl;
+        avformat_free_context(formatContext);
+        // return -1;
+    }
+
+    // Assign custom I/O context to format context
+    formatContext->pb = ioContext;
+
+    // Open input from memory buffer
+    int ret = avformat_open_input(&formatContext, nullptr, nullptr, nullptr);
+    if (ret < 0)
+    {
+        char errbuf[AV_ERROR_MAX_STRING_SIZE];
+        av_strerror(ret, errbuf, AV_ERROR_MAX_STRING_SIZE);
+        std::cerr << "Could not open input: " << errbuf << std::endl;
+
+        // Cleanup
+        avio_context_free(&ioContext);
+        avformat_free_context(formatContext);
+        return -1;
+    }
+
+    // Retrieve stream information
+    ret = avformat_find_stream_info(formatContext, nullptr);
+    if (ret < 0)
+    {
+        std::cerr << "Could not find stream information" << std::endl;
+
+        // Cleanup
+        avformat_close_input(&formatContext);
+        return -1;
+    }
+
+    // Print some information about the media
+    av_dump_format(formatContext, 0, nullptr, 0);
+
+    // Find video stream
+    int video_stream_idx = -1;
+    for (unsigned int i = 0; i < formatContext->nb_streams; ++i)
+    {
+        if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+        {
+            video_stream_idx = i;
+            break;
+        }
+    }
+
+    if (video_stream_idx == -1)
+    {
+        std::cerr << "Could not find video stream" << std::endl;
+        return 4;
+    }
+
+    // Get codec parameters and codec context
+    AVCodecParameters *codecpar = formatContext->streams[video_stream_idx]->codecpar;
+    AVCodec *codec = (AVCodec *)avcodec_find_decoder(codecpar->codec_id);
+    AVCodecContext *codec_ctx = avcodec_alloc_context3(codec);
+    avcodec_parameters_to_context(codec_ctx, codecpar);
+
+    // Open codec
+    if (avcodec_open2(codec_ctx, codec, nullptr) < 0)
+    {
+        std::cerr << "Could not open codec" << std::endl;
+        return 5;
+    }
+
+    // Allocate output buffer
+    uint8_t *out = (uint8_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
+
+    // Allocate frame and packet
+    AVFrame *frame = av_frame_alloc();
+    AVPacket packet;
+    av_init_packet(&packet);
+
+    // Read frames from the video stream
+    while (av_read_frame(formatContext, &packet) >= 0)
+    {
+        if (packet.stream_index == video_stream_idx)
+        {
+            // Decode video frame
+            int ret = avcodec_send_packet(codec_ctx, &packet);
+            if (ret < 0)
+            {
+                std::cerr << "Error sending packet for decoding" << std::endl;
+                break;
+            }
+
+            while (ret >= 0)
+            {
+                ret = avcodec_receive_frame(codec_ctx, frame);
+                if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+                {
+                    break;
+                }
+                else if (ret < 0)
+                {
+                    std::cerr << "Error during decoding" << std::endl;
+                    break;
+                }
+
+                // Print basic frame properties
+                std::cout << "Frame " << codec_ctx->frame_number
+                          << " (" << frame->format << ")"
+                          //<< " (" << av_image_get_buffer_size(frame->format, frame->width, frame->height, 1) << ")"
+                          << "(";
+
+                for (size_t i = 0; i < 10; i++)
+                    std::cout << (int)frame->data[0][i] << ' ';
+                std::cout << ")"
+                          << " (type=" << av_get_picture_type_char(frame->pict_type)
+                          << ", size=" << frame->pkt_size
+                          << " bytes) "
+                          << std::endl;
+
+                for (size_t x = 0; x < sizex; x++)
+                {
+                    for (size_t y = 0; y < sizey; y++)
+                    {
+                        const size_t in_offset = (x * sizey) + y;
+
+                        const size_t out_offset = (x * sizey * sizez) + (y * sizez) + z;
+
+                        out[out_offset] = frame->data[0][in_offset];
+                    }
+                }
+            }
+        }
+    }
+
+    while (true)
+    {
+        avcodec_send_packet(codec_ctx, nullptr);
+        int ret = avcodec_receive_frame(codec_ctx, frame);
+        if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+        {
+            break;
+        }
+        else if (ret < 0)
+        {
+            std::cerr << "Error during decoding" << std::endl;
+            break;
+        }
+
+        // Print basic frame properties
+        std::cout << "Frame " << codec_ctx->frame_number
+                  << " (type=" << av_get_picture_type_char(frame->pict_type)
+                  << ", size=" << frame->pkt_size
+                  << " bytes) "
+                  << std::endl;
+
+        for (size_t x = 0; x < sizex; x++)
+        {
+            for (size_t y = 0; y < sizey; y++)
+            {
+                const size_t in_offset = (x * sizey) + y;
+
+                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + z;
+
+                out[out_offset] = frame->data[0][in_offset];
+            }
+        }
+    }
+
+    av_packet_unref(&packet);
+
+    // Cleanup
+    avformat_close_input(&formatContext);
+
+    return out;
 }
