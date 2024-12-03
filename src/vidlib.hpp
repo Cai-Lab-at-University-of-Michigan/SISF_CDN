@@ -68,7 +68,7 @@ void read_threaded(void **buffer_ret, size_t *buffer_size, FILE *file, size_t si
     buffer_ret[0] = buffer;
 }
 
-pixtype *decode_stack(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
+pixtype *decode_stack_subprocess(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
 {
     const size_t frame_size = sizex * sizey * sizeof(pixtype);
     const size_t stack_size = frame_size * sizez;
@@ -482,21 +482,24 @@ static int memorybuffer_read_packet(void *opaque, uint8_t *buf, int buf_size)
 
 pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
 {
+    // Allocate output buffer
+    uint8_t *out = (uint8_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
+
     if (!buffer || buffer_size == 0)
     {
-        std::cerr << "Failed to load buffer" << std::endl;
-        // return -1;
+        std::cerr << "[H264Decode] Failed to load buffer" << std::endl;
+        return (pixtype *)out;
     }
 
     // Create memory buffer context
-    FFmpegMemoryBuffer memBuffer((const uint8_t *) buffer, buffer_size);
+    FFmpegMemoryBuffer memBuffer((const uint8_t *)buffer, buffer_size);
 
     // Allocate AVFormatContext
     AVFormatContext *formatContext = avformat_alloc_context();
     if (!formatContext)
     {
-        std::cerr << "Could not allocate format context" << std::endl;
-        //return -1;
+        std::cerr << "[H264Decode] Could not allocate format context" << std::endl;
+        return (pixtype *)out;
     }
 
     // Create custom I/O context
@@ -512,9 +515,9 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
 
     if (!ioContext)
     {
-        std::cerr << "Could not create I/O context" << std::endl;
+        std::cerr << "[H264Decode] Could not create I/O context" << std::endl;
         avformat_free_context(formatContext);
-        // return -1;
+        return (pixtype *)out;
     }
 
     // Assign custom I/O context to format context
@@ -526,27 +529,27 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
     {
         char errbuf[AV_ERROR_MAX_STRING_SIZE];
         av_strerror(ret, errbuf, AV_ERROR_MAX_STRING_SIZE);
-        std::cerr << "Could not open input: " << errbuf << std::endl;
+        std::cerr << "[H264Decode] Could not open input: " << errbuf << std::endl;
 
         // Cleanup
         avio_context_free(&ioContext);
         avformat_free_context(formatContext);
-        //return -1;
+        return (pixtype *)out;
     }
 
     // Retrieve stream information
     ret = avformat_find_stream_info(formatContext, nullptr);
     if (ret < 0)
     {
-        std::cerr << "Could not find stream information" << std::endl;
+        std::cerr << "[H264Decode] Could not find stream information" << std::endl;
 
         // Cleanup
         avformat_close_input(&formatContext);
-        //return -1;
+        return (pixtype *)out;
     }
 
     // Print some information about the media
-    //av_dump_format(formatContext, 0, nullptr, 0);
+    // av_dump_format(formatContext, 0, nullptr, 0);
 
     // Find video stream
     int video_stream_idx = -1;
@@ -561,8 +564,8 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
 
     if (video_stream_idx == -1)
     {
-        std::cerr << "Could not find video stream" << std::endl;
-        //return 4;
+        std::cerr << "[H264Decode] Could not find video stream" << std::endl;
+        return (pixtype *)out;
     }
 
     // Get codec parameters and codec context
@@ -574,12 +577,9 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
     // Open codec
     if (avcodec_open2(codec_ctx, codec, nullptr) < 0)
     {
-        std::cerr << "Could not open codec" << std::endl;
-        //return 5;
+        std::cerr << "[H264Decode] Could not open codec" << std::endl;
+        return (pixtype *)out;
     }
-
-    // Allocate output buffer
-    uint8_t *out = (uint8_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
 
     // Allocate frame and packet
     AVFrame *frame = av_frame_alloc();
@@ -595,7 +595,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
             int ret = avcodec_send_packet(codec_ctx, &packet);
             if (ret < 0)
             {
-                std::cerr << "Error sending packet for decoding" << std::endl;
+                std::cerr << "[H264Decode] Error sending packet for decoding" << std::endl;
                 break;
             }
 
@@ -608,20 +608,15 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                 }
                 else if (ret < 0)
                 {
-                    std::cerr << "Error during decoding" << std::endl;
+                    std::cerr << "[H264Decode] Error during decoding" << std::endl;
                     break;
                 }
-
 
                 for (size_t x = 0; x < sizex; x++)
                 {
                     for (size_t y = 0; y < sizey; y++)
                     {
-                        //std::cout << frame->width << "x" << frame->height << std::endl;
-
-                        //const size_t in_offset =  (y * sizex) + x;
                         const size_t in_offset = (x * frame->linesize[0]) + y;
-
                         const size_t out_offset = (x * sizey * sizez) + (y * sizez) + (codec_ctx->frame_number - 1);
 
                         out[out_offset] = frame->data[0][in_offset];
@@ -641,7 +636,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
         }
         else if (ret < 0)
         {
-            std::cerr << "Error during decoding" << std::endl;
+            std::cerr << "[H264Decode] Error during decoding" << std::endl;
             break;
         }
 
@@ -649,9 +644,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
         {
             for (size_t y = 0; y < sizey; y++)
             {
-                //const size_t in_offset = (y * sizex) + x;
                 const size_t in_offset = (x * frame->linesize[0]) + y;
-
                 const size_t out_offset = (x * sizey * sizez) + (y * sizez) + (codec_ctx->frame_number - 1);
 
                 out[out_offset] = frame->data[0][in_offset];
@@ -664,5 +657,5 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
     // Cleanup
     avformat_close_input(&formatContext);
 
-    return (pixtype*) out;
+    return (pixtype *)out;
 }
