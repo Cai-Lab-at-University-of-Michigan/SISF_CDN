@@ -531,7 +531,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
         // Cleanup
         avio_context_free(&ioContext);
         avformat_free_context(formatContext);
-        return -1;
+        //return -1;
     }
 
     // Retrieve stream information
@@ -542,7 +542,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
 
         // Cleanup
         avformat_close_input(&formatContext);
-        return -1;
+        //return -1;
     }
 
     // Print some information about the media
@@ -562,7 +562,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
     if (video_stream_idx == -1)
     {
         std::cerr << "Could not find video stream" << std::endl;
-        return 4;
+        //return 4;
     }
 
     // Get codec parameters and codec context
@@ -575,7 +575,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
     if (avcodec_open2(codec_ctx, codec, nullptr) < 0)
     {
         std::cerr << "Could not open codec" << std::endl;
-        return 5;
+        //return 5;
     }
 
     // Allocate output buffer
@@ -632,7 +632,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
                     {
                         const size_t in_offset = (x * sizey) + y;
 
-                        const size_t out_offset = (x * sizey * sizez) + (y * sizez) + z;
+                        const size_t out_offset = (x * sizey * sizez) + (y * sizez) + codec_ctx->frame_number;
 
                         out[out_offset] = frame->data[0][in_offset];
                     }
@@ -668,7 +668,7 @@ pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, 
             {
                 const size_t in_offset = (x * sizey) + y;
 
-                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + z;
+                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + codec_ctx->frame_number;
 
                 out[out_offset] = frame->data[0][in_offset];
             }
