@@ -256,6 +256,7 @@ public:
 
             // 1 -> zstd
             // 2 -> 264
+            // 3 -> AV1
             switch (compression_type)
             {
             case 1:
@@ -273,7 +274,7 @@ public:
 
             case 3:
                 // Decompress with vidlib 2
-                read_decomp_buffer_pt = decode_stack_AV1_decapp(chunkx, chunky, chunkz, read_buffer, sel->size).second;
+                read_decomp_buffer_pt = decode_stack_AV1(chunkx, chunky, chunkz, read_buffer, sel->size).second;
                 read_decomp_buffer = (char *)pixtype_to_uint16_YUV420(read_decomp_buffer_pt, chunkx, chunky, chunkz);
                 free(read_decomp_buffer_pt);
                 break;
