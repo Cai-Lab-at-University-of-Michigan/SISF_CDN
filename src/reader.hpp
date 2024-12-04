@@ -276,7 +276,7 @@ public:
                 // Decompress with vidlib 2
                 read_decomp_buffer_pt = decode_stack_AV1(chunkx, chunky, chunkz, read_buffer, sel->size).second;
                 //read_decomp_buffer = (char *)pixtype_to_uint16_YUV420(read_decomp_buffer_pt, chunkx, chunky, chunkz);
-                read_decomp_buffer = (char *)pixtype_to_uint16(read_decomp_buffer_pt, chunkx, chunky, chunkz);
+                read_decomp_buffer = (char *)pixtype_to_uint16(read_decomp_buffer_pt, chunkx * chunky * chunkz);
                 free(read_decomp_buffer_pt);
                 break;
             }
