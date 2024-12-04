@@ -480,7 +480,7 @@ static int memorybuffer_read_packet(void *opaque, uint8_t *buf, int buf_size)
     return bytesToRead;
 }
 
-pixtype *decode_stack_2(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
+pixtype *decode_stack_264(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
 {
     // Allocate output buffer
     uint8_t *out = (uint8_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
