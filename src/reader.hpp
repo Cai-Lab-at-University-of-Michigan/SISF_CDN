@@ -177,7 +177,7 @@ public:
 
             if (file.fail())
             {
-                std::cerr << "Fopen failed" << std::endl;
+                std::cerr << "Fopen failed (metadata)" << std::endl;
                 continue;
             }
 
