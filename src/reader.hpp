@@ -199,6 +199,12 @@ public:
         uint16_t *out = (uint16_t *)calloc(max_chunk_size, 1);
         metadata_entry *sel = load_meta_entry(id);
 
+        if(sel->size == 0) { 
+            // Failed to read metadata (impossible for chunk size to be 0)
+            free(sel);
+            return out;
+        }
+
         uint16_t *from_cache = 0;
 
         if (global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
