@@ -390,8 +390,18 @@ public:
 
     ~archive_reader() {}
 
-    void load_metadata_zarr() {
-        // TODO
+    void load_metadata_zarr()
+    {
+        auto store_future = tensorstore::Open({{"driver", "zarr"},
+                                               {"kvstore", {{"driver", "file"}, {"path", "my_data.zarr"}}}});
+        auto store_result = store_future.result();
+
+        if (!store_result.ok())
+        {
+            std::cerr << "Error opening TensorStore: " << store_result.status() << std::endl;
+        }
+
+        auto store = std::move(store_result.value());
     }
 
     void load_metadata_sisf()
