@@ -818,8 +818,6 @@ public:
                         // std::cout << "s:" << array.num_elements() << std::endl;
                         // Access example: std::cout << "T: " << array[{xs, ys, zs, 0}] << std::endl;
 
-                        tensorstore::Index indicies[4];
-
                         for (size_t c = 0; c < channel_count; c++)
                         {
                             for (size_t i = xs; i < xe; i++)
@@ -833,12 +831,7 @@ public:
                                                                ((j - ys) * osizex) +            // Y
                                                                ((i - xs));                      // X
 
-                                        indicies[0] = i;
-                                        indicies[1] = j;
-                                        indicies[2] = k;
-                                        indicies[3] = c;
-
-                                        out_buffer[ooffset] = ((uint16_t *) array.operator()(&indicies))[0];
+                                        //out_buffer[ooffset] = ((uint16_t *) array.operator()(&indicies))[0];
                                     }
                                 }
                             }
