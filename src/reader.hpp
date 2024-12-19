@@ -822,7 +822,7 @@ public:
                 */
 
                 auto array = tensorstore::Read(
-                                 store | AllDims().SizedInterval(
+                                 store | tensorstore::AllDims().SizedInterval(
                                     {(tensorstore::Index)xs, (tensorstore::Index)ys, (tensorstore::Index)zs, 0},
                                     {(tensorstore::Index)osizex, (tensorstore::Index)osizey, (tensorstore::Index)osizey, (tensorstore::Index)channel_count}
                                 )).value();
