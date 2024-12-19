@@ -37,6 +37,7 @@
 #include "tensorstore/index_space/dim_expression.h"
 #include "tensorstore/index_space/index_transform.h"
 #include "tensorstore/index_space/transformed_array.h"
+#include "tensorstore/index_space/index_transform_builder.h"
 #include "tensorstore/open.h"
 #include "tensorstore/open_mode.h"
 #include "tensorstore/progress.h"
@@ -791,7 +792,32 @@ public:
                 free(it->second);
             }
         } else if (type == ZARR) {
-            
+            auto store_future = tensorstore::Open({{"driver", "zarr3"},
+                                                   {"kvstore", {{"driver", "file"}, {"path", fname}}}});
+
+            auto store_result = store_future.result();
+
+            if (!store_result.ok())
+            {
+                std::cerr << "Error opening TensorStore: " << store_result.status() << std::endl;
+            }
+            else
+            {
+                auto store = std::move(store_result.value());
+
+                auto domain = tensorstore::IndexTransformBuilder<>(4, 4)
+                                  .input_origin({xs, ys, zs, 0})                        // Start indices
+                                  .input_shape({osizex, osizey, osizey, channel_count}) // Block size
+                                  .Finalize()
+                                  .value();
+
+                auto read_result = store->Read(domain, out_buffer).result();
+
+                if (!read_result.ok())
+                {
+                    std::cerr << "Failed to read block: " << read_result.status() << "\n";
+                }
+            }
         }
 
         if (CHUNK_TIMER)
