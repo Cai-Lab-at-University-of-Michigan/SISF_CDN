@@ -1,5 +1,7 @@
 #include "crow.h"
-#include "json.hpp"
+
+#include <nlohmann/json.hpp>
+
 #include "reader.hpp"
 #include "utils.hpp"
 

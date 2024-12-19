@@ -20,9 +20,37 @@
 
 #include "../zstd/lib/zstd.h"
 
-#include <tensorstore/tensorstore.h>
+#include "absl/flags/flag.h"
+#include "absl/flags/marshalling.h"
+#include "absl/status/status.h"
+#include "absl/strings/numbers.h"
+#include "absl/strings/str_join.h"
+#include "absl/strings/str_split.h"
+#include <half.hpp>
+#include "tensorstore/array.h"
+#include "tensorstore/context.h"
+#include "tensorstore/contiguous_layout.h"
+#include "tensorstore/data_type.h"
+#include "examples/data_type_invoker.h"
+#include "absl/flags/parse.h"
+#include "tensorstore/index.h"
+#include "tensorstore/index_space/dim_expression.h"
+#include "tensorstore/index_space/index_transform.h"
+#include "tensorstore/index_space/transformed_array.h"
 #include "tensorstore/open.h"
+#include "tensorstore/open_mode.h"
+#include "tensorstore/progress.h"
+#include "tensorstore/rank.h"
+#include "tensorstore/spec.h"
+#include "tensorstore/tensorstore.h"
 #include "tensorstore/util/future.h"
+#include "tensorstore/util/iterate_over_index_range.h"
+#include "tensorstore/util/json_absl_flag.h"
+#include "tensorstore/util/result.h"
+#include "tensorstore/util/span.h"
+#include "tensorstore/util/status.h"
+#include "tensorstore/util/str_cat.h"
+#include "tensorstore/util/utf8_string.h"
 
 #define CHUNK_TIMER 0
 #define DEBUG_SLICING 0
@@ -405,7 +433,7 @@ public:
                 {"path", fname}
             }}
         }); 
-        
+
         auto store_result = store_future.result();
 
         if (!store_result.ok())
