@@ -393,8 +393,9 @@ public:
 
     void load_metadata_zarr()
     {
-        auto store_future = tensorstore::Open({{"driver", "zarr"},
-                                               {"kvstore", {{"driver", "file"}, {"path", fname}}}});
+        const std::string spec = "{{\"driver\", \"zarr3\"}, {\"kvstore\", {{\"driver\", \"file\"}, {\"path\", " + fname + "}}}}";
+
+        auto store_future = tensorstore::Open(spec);
         auto store_result = store_future.result();
 
         if (!store_result.ok())
