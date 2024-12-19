@@ -808,7 +808,7 @@ public:
                 auto store = std::move(store_result.value());
 
                 const size_t read_buffer_size = osizex * osizey * osizez * sizeof(uint16_t) * channel_count;
-                uint16_t * read_buffer = (uint16_t *) malloc(read_buffer_size)
+                uint16_t * read_buffer = (uint16_t *) malloc(read_buffer_size);
                 //auto array_result = tensorstore::Read(
                 //                 store | tensorstore::AllDims().SizedInterval(
                 //                    {(tensorstore::Index)xs, (tensorstore::Index)ys, (tensorstore::Index)zs, 0},
