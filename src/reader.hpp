@@ -813,6 +813,7 @@ public:
                                 )).result();
 
                 if(array_result.ok()) {
+                        // tensorstore::Array<tensorstore::Shared<void>, -1, tensorstore::ArrayOriginKind::offset, tensorstore::ContainerKind::container>
                         auto array = array_result.value();
 
                         // std::cout << "s:" << array.num_elements() << std::endl;
@@ -833,8 +834,8 @@ public:
 
                                         uint16_t v = 0;
 
-                                        //v = (int) array[{i, j, k, c}];
-                                        v = array({i,j,k,c});
+                                        // v = (int) array[{i, j, k, c}];
+                                        // v = array({i,j,k,c});
 
                                         out_buffer[ooffset] = v;
                                     }
