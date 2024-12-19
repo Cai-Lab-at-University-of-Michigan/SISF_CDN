@@ -841,7 +841,7 @@ public:
                                         indicies[3] = c;
 
                                         //v = (int) array[{i, j, k, c}];
-                                        v = array(indicies);
+                                        v = array(*indicies);
 
                                         out_buffer[ooffset] = v;
                                     }
