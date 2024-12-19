@@ -838,7 +838,7 @@ public:
                                         indicies[2] = k;
                                         indicies[3] = c;
 
-                                        out_buffer[ooffset] = ((uint16_t *) array.operator()(indicies)[0];
+                                        out_buffer[ooffset] = ((uint16_t *) array.operator()(indicies))[0];
                                     }
                                 }
                             }
