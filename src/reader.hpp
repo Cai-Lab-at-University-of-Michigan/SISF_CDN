@@ -833,7 +833,8 @@ public:
 
                                         uint16_t v = 0;
 
-                                        v = (int) array[{i, j, k, c}];
+                                        //v = (int) array[{i, j, k, c}];
+                                        v = array(i, j, k, c);
 
                                         out_buffer[ooffset] = v;
                                     }
