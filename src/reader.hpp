@@ -816,7 +816,7 @@ public:
                         auto array = std::move(array_result.value());
 
                         std::cout << "s:" << array.num_elements() << std::endl;
-                        std::cout << "T: " << array(0,0,0,0) << std::endl;
+                        std::cout << "T: " << array({0,0,0,0}) << std::endl;
 
                         std::memcpy(out_buffer, array.data(), buffer_size);
                 } else {
