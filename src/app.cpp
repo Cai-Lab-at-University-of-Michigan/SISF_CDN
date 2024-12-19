@@ -47,35 +47,39 @@ void load_inventory()
 {
 	std::cout << "|================AVAILABLE DATASETS==================|" << std::endl;
 
-	std::vector<std::string> fnames = glob_tool(std::string(DATA_PATH + "*/metadata.bin"));
-	for (std::vector<std::string>::iterator i = fnames.begin(); i != fnames.end(); i++)
 	{
-		size_t loc = i->find_last_of("/");
+		std::vector<std::string> fnames = glob_tool(std::string(DATA_PATH + "*/metadata.bin"));
+		for (std::vector<std::string>::iterator i = fnames.begin(); i != fnames.end(); i++)
+		{
+			size_t loc = i->find_last_of("/");
 
-		std::string froot = std::string(i->c_str(), i->c_str() + loc);
+			std::string froot = std::string(i->c_str(), i->c_str() + loc);
 
-		loc = froot.find_last_of('/');
-		std::string dset_name = froot.substr(loc + 1);
+			loc = froot.find_last_of('/');
+			std::string dset_name = froot.substr(loc + 1);
 
-		archive_inventory[dset_name] = new archive_reader(froot, SISF);
+			archive_inventory[dset_name] = new archive_reader(froot, SISF);
 
-		std::cout << froot << " -(sisf)-> " << dset_name << std::endl;
-		archive_inventory[dset_name]->print_info();
+			std::cout << froot << " -(sisf)-> " << dset_name << std::endl;
+			archive_inventory[dset_name]->print_info();
+		}
 	}
 
-	std::vector<std::string> fnames = glob_tool(std::string(DATA_PATH + "*/zarr.json"));
-	for (std::vector<std::string>::iterator i = fnames.begin(); i != fnames.end(); i++)
 	{
-		size_t loc = i->find_last_of("/");
+		std::vector<std::string> fnames = glob_tool(std::string(DATA_PATH + "*/zarr.json"));
+		for (std::vector<std::string>::iterator i = fnames.begin(); i != fnames.end(); i++)
+		{
+			size_t loc = i->find_last_of("/");
 
-		std::string froot = std::string(i->c_str(), i->c_str() + loc);
+			std::string froot = std::string(i->c_str(), i->c_str() + loc);
 
-		loc = froot.find_last_of('/');
-		std::string dset_name = froot.substr(loc + 1);
+			loc = froot.find_last_of('/');
+			std::string dset_name = froot.substr(loc + 1);
 
-		archive_inventory[dset_name] = new archive_reader(froot, ZARR);
+			archive_inventory[dset_name] = new archive_reader(froot, ZARR);
 
-		std::cout << froot << " -(zarr)-> " << dset_name << std::endl;
+			std::cout << froot << " -(zarr)-> " << dset_name << std::endl;
+		}
 	}
 
 	std::cout << "|====================================================|" << std::endl;
