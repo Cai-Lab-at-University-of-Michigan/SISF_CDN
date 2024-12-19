@@ -813,12 +813,14 @@ public:
                                 )).result();
 
                 if(array_result.ok()) {
-                        auto array = std::move(array_result.value());
+                        auto array = array_result.value();
 
                         std::cout << "s:" << array.num_elements() << std::endl;
                         std::cout << "T: " << array[{0,0,0,0}] << std::endl;
 
-                        std::memcpy(out_buffer, array.data(), buffer_size);
+
+
+                        //std::memcpy(out_buffer, array.data(), buffer_size);
                 } else {
                     std::cerr << "Error reading from TensorStore: " << array_result.status() << std::endl;
                 }
