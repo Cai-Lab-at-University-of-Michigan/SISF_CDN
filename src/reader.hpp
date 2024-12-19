@@ -405,6 +405,8 @@ public:
 
     ArchiveType type;
 
+    auto ts_store;
+
     archive_reader(std::string name_in, enum ArchiveType type_in)
     {
         fname = name_in;
@@ -439,7 +441,7 @@ public:
             std::cerr << "Error opening TensorStore: " << store_result.status() << std::endl;
         }
 
-        auto store = std::move(store_result.value());
+        ts_store = std::move(store_result.value());
     }
 
     void load_metadata_sisf()
