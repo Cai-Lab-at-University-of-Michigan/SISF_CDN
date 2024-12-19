@@ -34,5 +34,6 @@
 src/util/traces.sql
 .DS_Store
 
-
+# CMake
 CMakeFiles/
+CMakeCache.txt
