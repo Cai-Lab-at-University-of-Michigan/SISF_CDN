@@ -816,7 +816,7 @@ public:
                         auto array = array_result.value();
 
                         std::cout << "s:" << array.num_elements() << std::endl;
-                        std::cout << "T: " << array[{0,0,0,0}] << std::endl;
+                        std::cout << "T: " << array[{xs,ys,zs,0}] << std::endl;
 
 
 
