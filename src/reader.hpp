@@ -39,6 +39,7 @@
 #include "tensorstore/index_space/transformed_array.h"
 #include "tensorstore/index_space/index_transform_builder.h"
 #include "tensorstore/open.h"
+#include "tensorstore/read.h"
 #include "tensorstore/open_mode.h"
 #include "tensorstore/progress.h"
 #include "tensorstore/rank.h"
