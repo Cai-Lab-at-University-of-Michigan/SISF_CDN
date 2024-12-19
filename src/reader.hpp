@@ -838,8 +838,8 @@ public:
                                     for (size_t k = zs; k < ze; k++)
                                     {
                                         // Calculate the coordinates of the input and output inside their respective buffers
-                                        const size_t coffset = ((i - xs) * cysize * czsize * channel_count) + // X
-                                                               ((j - ys) * czsize * channel_count) +          // Y
+                                        const size_t coffset = ((i - xs) * osizey * osizez * channel_count) + // X
+                                                               ((j - ys) * osizez * channel_count) +          // Y
                                                                (k - zs) * channel_count + c;                  // Z and C
 
                                         const size_t ooffset = (c * osizey * osizex * osizez) + // C
