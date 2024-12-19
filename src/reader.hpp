@@ -815,6 +815,8 @@ public:
                 if(array_result.ok()) {
                         auto array = std::move(array_result.value());
 
+                        std::cout << "s:" << array.size() << std::endl;
+
                         std::memcpy(out_buffer, array.data(), buffer_size);
                 } else {
                     // TODO ERROR
