@@ -821,11 +821,19 @@ public:
                 }
                 */
 
-                auto array = tensorstore::Read(
+                auto array_result = tensorstore::Read(
                                  store | tensorstore::AllDims().SizedInterval(
                                     {(tensorstore::Index)xs, (tensorstore::Index)ys, (tensorstore::Index)zs, 0},
                                     {(tensorstore::Index)osizex, (tensorstore::Index)osizey, (tensorstore::Index)osizey, (tensorstore::Index)channel_count}
-                                )).value();
+                                )).result();
+
+                if(array_result.ok()) {
+                        auto array = std::move(array_result.value());
+
+                        std::memcpy(out_buffer, array.data(), buffer_size);
+                } else {
+                    // TODO ERROR
+                }
             }
         }
 
