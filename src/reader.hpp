@@ -27,6 +27,7 @@
 #include "absl/strings/str_join.h"
 #include "absl/strings/str_split.h"
 #include <half.hpp>
+
 #include "tensorstore/array.h"
 #include "tensorstore/context.h"
 #include "tensorstore/contiguous_layout.h"
@@ -806,11 +807,21 @@ public:
             {
                 auto store = std::move(store_result.value());
 
+                const size_t read_buffer_size = osizex * osizey * osizez * sizeof(uint16_t) * channel_count;
+                uint16_t * read_buffer = (uint16_t *) malloc(read_buffer_size)
+                //auto array_result = tensorstore::Read(
+                //                 store | tensorstore::AllDims().SizedInterval(
+                //                    {(tensorstore::Index)xs, (tensorstore::Index)ys, (tensorstore::Index)zs, 0},
+                //                    {(tensorstore::Index)osizex, (tensorstore::Index)osizey, (tensorstore::Index)osizez, (tensorstore::Index)channel_count}
+                //                )).result();
+
                 auto array_result = tensorstore::Read(
-                                 store | tensorstore::AllDims().SizedInterval(
+                    store | tensorstore::AllDims().SizedInterval(
                                     {(tensorstore::Index)xs, (tensorstore::Index)ys, (tensorstore::Index)zs, 0},
                                     {(tensorstore::Index)osizex, (tensorstore::Index)osizey, (tensorstore::Index)osizez, (tensorstore::Index)channel_count}
-                                )).result();
+                    ),
+                    tensorstore::span(read_buffer, read_buffer_size)
+                ).result();
 
                 if(array_result.ok()) {
                         // tensorstore::Array<tensorstore::Shared<void>, -1, tensorstore::ArrayOriginKind::offset, tensorstore::ContainerKind::container>
@@ -836,6 +847,8 @@ public:
 
                                         // v = (int) array[{i, j, k, c}];
                                         // v = array({i,j,k,c});
+                                        //v = static_cast<uint16_t>(array(i,j,k,c));
+                                        
 
                                         out_buffer[ooffset] = v;
                                     }
