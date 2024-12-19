@@ -33,3 +33,6 @@
 .vscode/settings.json
 src/util/traces.sql
 .DS_Store
+
+
+CMakeFiles/
