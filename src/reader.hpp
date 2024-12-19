@@ -823,7 +823,8 @@ public:
                         // tensorstore::Array<tensorstore::Shared<void>, -1, tensorstore::ArrayOriginKind::offset, tensorstore::ContainerKind::container>
                         auto array = array_result.value();
 
-                        uint16_t * array_ptr = array.data();
+                        // TODO detect datatype automatically
+                        uint16_t * array_ptr = (uint16_t*) array.data();
 
                         // std::cout << "s:" << array.num_elements() << std::endl;
                         // Access example: std::cout << "T: " << array[{xs, ys, zs, 0}] << std::endl;
