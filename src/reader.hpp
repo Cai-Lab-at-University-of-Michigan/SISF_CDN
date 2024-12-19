@@ -819,7 +819,7 @@ public:
 
                         std::memcpy(out_buffer, array.data(), buffer_size);
                 } else {
-                    // TODO ERROR
+                    std::cerr << "Error reading from TensorStore: " << store_result.status() << std::endl;
                 }
             }
         }
