@@ -812,8 +812,6 @@ public:
                                     {(tensorstore::Index)osizex, (tensorstore::Index)osizey, (tensorstore::Index)osizez, (tensorstore::Index)channel_count}
                                 )).result();
 
-                tensorstore::Index * indicies = (tensorstore::Index *) calloc(sizeof(tensorstore::Index), 4);
-
                 if(array_result.ok()) {
                         auto array = array_result.value();
 
@@ -835,13 +833,8 @@ public:
 
                                         uint16_t v = 0;
 
-                                        indicies[0] = i;
-                                        indicies[1] = j;
-                                        indicies[2] = k;
-                                        indicies[3] = c;
-
                                         //v = (int) array[{i, j, k, c}];
-                                        v = array(*indicies);
+                                        v = array({i,j,k,c});
 
                                         out_buffer[ooffset] = v;
                                     }
