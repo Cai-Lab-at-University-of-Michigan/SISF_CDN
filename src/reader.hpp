@@ -19,7 +19,10 @@
 #include "vidlib.hpp"
 
 #include "../zstd/lib/zstd.h"
+
 #include <tensorstore/tensorstore.h>
+#include "tensorstore/open.h"
+#include "tensorstore/util/future.h"
 
 #define CHUNK_TIMER 0
 #define DEBUG_SLICING 0
@@ -393,9 +396,15 @@ public:
 
     void load_metadata_zarr()
     {
-        const std::string spec = "{{\"driver\", \"zarr3\"}, {\"kvstore\", {{\"driver\", \"file\"}, {\"path\", " + fname + "}}}}";
+        // const std::string spec = "{{\"driver\", \"zarr3\"}, {\"kvstore\", {{\"driver\", \"file\"}, {\"path\", " + fname + "}}}}";
 
-        auto store_future = tensorstore::Open(spec);
+        auto store_future = tensorstore::Open({
+            {"driver", "zarr3"},
+            {"kvstore", {
+                {"driver", "file"},
+                {"path", fname}
+            }}
+        },
         auto store_result = store_future.result();
 
         if (!store_result.ok())
