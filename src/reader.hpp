@@ -33,6 +33,11 @@ struct global_chunk_line
     uint16_t *ptr;
 };
 
+enum ArchiveType {
+    SISF,
+    ZARR
+};
+
 std::chrono::duration cache_lock_timeout = std::chrono::milliseconds(10);
 
 std::timed_mutex global_chunk_cache_mutex;
@@ -366,15 +371,30 @@ public:
 
     std::vector<size_t> scales;
 
-    archive_reader(std::string name_in)
+    ArchiveType type;
+
+    archive_reader(std::string name_in, enum ArchiveType type_in)
     {
         fname = name_in;
-        load_metadata();
+        type = type_in;
+
+        switch(type) {
+            case SISF:
+                load_metadata_sisf();
+                break;
+            case ZARR:
+                load_metadata_zarr();
+                break;
+        }
     }
 
     ~archive_reader() {}
 
-    void load_metadata()
+    void load_metadata_zarr() {
+        // TODO
+    }
+
+    void load_metadata_sisf()
     {
         std::ifstream file(fname + "/metadata.bin", std::ios::in | std::ios::binary);
 
