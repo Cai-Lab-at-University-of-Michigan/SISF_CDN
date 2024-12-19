@@ -427,11 +427,7 @@ public:
 
     void load_metadata_zarr()
     {
-
         tensorstore::Context context = tensorstore::Context::Default();
-            auto store_future = tensorstore::Open({{"driver", "zarr3"},
-                                                   {"kvstore", {{"driver", "file"}, {"path", fname}}}},
-                                                   );
         auto store_future = tensorstore::Open({
             {"driver", "zarr3"},
             {"kvstore", {
@@ -827,6 +823,8 @@ public:
                         // tensorstore::Array<tensorstore::Shared<void>, -1, tensorstore::ArrayOriginKind::offset, tensorstore::ContainerKind::container>
                         auto array = array_result.value();
 
+                        uint16_t * array_ptr = array.data();
+
                         // std::cout << "s:" << array.num_elements() << std::endl;
                         // Access example: std::cout << "T: " << array[{xs, ys, zs, 0}] << std::endl;
 
@@ -848,7 +846,7 @@ public:
                                         // v = (int) array[{i, j, k, c}];
                                         // v = array({i,j,k,c});
                                         //v = static_cast<uint16_t>(array(i,j,k,c));
-                                        
+                                        v = array_ptr[0];
 
                                         out_buffer[ooffset] = v;
                                     }
