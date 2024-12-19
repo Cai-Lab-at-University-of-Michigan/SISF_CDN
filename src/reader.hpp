@@ -466,12 +466,13 @@ public:
         }
 
         if(sizex == 0 || sizey == 0 || sizez == 0 || channel_count == 0) {
-            // TODO ERROR
+            std::cerr << "Invalid rank in Zarr dataset [" << fname << "]. Found i=" << i << std::endl;
         }
 
         archive_version = 0;
         dtype = 1;
 
+        // TODO Load res from ts
         resx = 100;
         resy = 100;
         resz = 100;
