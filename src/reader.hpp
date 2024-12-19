@@ -404,7 +404,8 @@ public:
                 {"driver", "file"},
                 {"path", fname}
             }}
-        },
+        }); 
+        
         auto store_result = store_future.result();
 
         if (!store_result.ok())
