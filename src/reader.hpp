@@ -441,17 +441,40 @@ public:
 
         auto store = std::move(store_result.value());
 
+        auto domain = store.domain();
+        auto shape = domain.shape();
+
+        sizex = 0;
+        sizey = 0;
+        sizez = 0;
+        channel_count = 0;
+
+        size_t i = 0;
+        for (const auto& dim : shape) {
+            switch(i) {
+                case 0: // x
+                    sizex = dim;
+                case 1:
+                    sizey = dim;
+                case 2: 
+                    sizez = dim;
+                case 3:
+                    channel_count = dim;
+            }
+
+            i++;
+        }
+
+        if(sizex == 0 || sizey == 0 || sizez == 0 || channel_count == 0) {
+            // TODO ERROR
+        }
+
         archive_version = 0;
         dtype = 1;
-        channel_count = 1;
 
         resx = 100;
         resy = 100;
         resz = 100;
-
-        sizex = 100;
-        sizey = 100;
-        sizez = 100;
 
         mchunkx = sizex;
         mchunky = sizey;
@@ -461,7 +484,7 @@ public:
         mcounty = 1;
         mcountz = 1;
 
-        scales.push_back(1);
+        scales.push_back(1);        
     }
 
     void load_metadata_sisf()
