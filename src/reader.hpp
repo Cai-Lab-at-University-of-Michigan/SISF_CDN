@@ -806,12 +806,12 @@ public:
                 auto store = std::move(store_result.value());
 
                 auto domain = tensorstore::IndexTransformBuilder<>(4, 4)
-                                  .input_origin({xs, ys, zs, 0})                        // Start indices
+                                  .input_origin({(tensorstore::Index) xs, (tensorstore::Index) ys, (tensorstore::Index) zs, 0})                        // Start indices
                                   .input_shape({osizex, osizey, osizey, channel_count}) // Block size
                                   .Finalize()
                                   .value();
 
-                auto read_result = store->Read(domain, out_buffer).result();
+                auto read_result = store.Read(domain, out_buffer).result();
 
                 if (!read_result.ok())
                 {
