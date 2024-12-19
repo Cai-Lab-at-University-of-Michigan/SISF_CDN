@@ -456,11 +456,11 @@ public:
             switch(i) {
                 case 0: // x
                     sizex = dim;
-                case 1:
+                case 1: // y
                     sizey = dim;
-                case 2: 
+                case 2: // z
                     sizez = dim;
-                case 3:
+                case 3: // c
                     channel_count = dim;
             }
 
