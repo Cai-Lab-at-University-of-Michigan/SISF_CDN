@@ -852,8 +852,6 @@ public:
                                 }
                             }
                         }
-
-                        //std::memcpy(out_buffer, array.data(), buffer_size);
                 } else {
                     std::cerr << "Error reading from TensorStore: " << array_result.status() << std::endl;
                 }
