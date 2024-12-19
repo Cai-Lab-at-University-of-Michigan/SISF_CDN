@@ -427,13 +427,18 @@ public:
 
     void load_metadata_zarr()
     {
+
+        tensorstore::Context context = tensorstore::Context::Default();
+            auto store_future = tensorstore::Open({{"driver", "zarr3"},
+                                                   {"kvstore", {{"driver", "file"}, {"path", fname}}}},
+                                                   );
         auto store_future = tensorstore::Open({
             {"driver", "zarr3"},
             {"kvstore", {
                 {"driver", "file"},
                 {"path", fname}
             }}
-        }); 
+        }, context, tensorstore::OpenMode::open, tensorstore::ReadWriteMode::read); 
 
         auto store_result = store_future.result();
 
