@@ -806,6 +806,7 @@ public:
             {
                 auto store = std::move(store_result.value());
 
+                /*
                 auto domain = tensorstore::IndexTransformBuilder<>(4, 4)
                                   .input_origin({(tensorstore::Index) xs, (tensorstore::Index) ys, (tensorstore::Index) zs, 0})                        // Start indices
                                   .input_shape({osizex, osizey, osizey, channel_count}) // Block size
@@ -818,6 +819,11 @@ public:
                 {
                     std::cerr << "Failed to read block: " << read_result.status() << "\n";
                 }
+                */
+
+                auto array = Read(
+                                 store | AllDims().SizedInterval({(tensorstore::Index)xs, (tensorstore::Index)ys, (tensorstore::Index)zs, 0}, {osizex, osizey, osizey, channel_count}))
+                                 .value();
             }
         }
 
