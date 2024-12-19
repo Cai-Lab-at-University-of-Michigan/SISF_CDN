@@ -1653,12 +1653,16 @@ int main(int argc, char *argv[])
 		//uint16_t out_buffer[handler->channel_count][chunk_sizes[2]][chunk_sizes[1]][chunk_sizes[0]];
 		const size_t out_buffer_size = sizeof(uint16_t) * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2] * reader->channel_count;
 
-		uint16_t * out_buffer = reader->load_region(
-			scale,
-			x_begin, x_end,
-			y_begin, y_end,
-			z_begin, z_end
-		);
+		if(reader->type == SISF) {
+			uint16_t * out_buffer = reader->load_region(
+				scale,
+				x_begin, x_end,
+				y_begin, y_end,
+				z_begin, z_end
+			);
+		} else if(reader->type == ZARR) {
+			//TODO
+		}
 
 		for(const auto& pair : filters) {
 			filter_run(
