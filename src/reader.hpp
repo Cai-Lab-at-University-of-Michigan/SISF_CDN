@@ -657,7 +657,7 @@ public:
         const size_t buffer_size = osizex * osizey * osizez * sizeof(uint16_t) * channel_count;
 
         // Allocate buffer for output
-        uint16_t *out_buffer = (uint16_t *)malloc(buffer_size);
+        uint16_t *out_buffer = (uint16_t *)calloc(buffer_size, 1);
 
         if(type == SISF) {
             // Define map for storing already decompressed chunks
