@@ -657,7 +657,7 @@ public:
         // Allocate buffer for output
         uint16_t *out_buffer = (uint16_t *)malloc(buffer_size);
 
-        if(type == SISF) 
+        if(type == SISF) {
             // Define map for storing already decompressed chunks
             std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache;
 
