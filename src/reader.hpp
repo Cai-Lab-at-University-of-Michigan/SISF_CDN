@@ -831,7 +831,9 @@ public:
                                                                ((j - ys) * osizex) +            // Y
                                                                ((i - xs));                      // X
 
-                                        //out_buffer[ooffset] = ((uint16_t *) array.operator()(&indicies))[0];
+                                        uint16_t v = 0;
+
+                                        out_buffer[ooffset] = v;
                                     }
                                 }
                             }
