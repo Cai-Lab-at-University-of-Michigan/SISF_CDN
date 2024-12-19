@@ -831,7 +831,7 @@ public:
                                                                ((j - ys) * osizex) +            // Y
                                                                ((i - xs));                      // X
 
-                                        out_buffer[ooffset] = *((uint16_t*) array( (tensorstore::Index)i,  (tensorstore::Index)j,  (tensorstore::Index)k,  (tensorstore::Index)c));
+                                        out_buffer[ooffset] = *array.operator()(i, j, k, c);
                                     }
                                 }
                             }
