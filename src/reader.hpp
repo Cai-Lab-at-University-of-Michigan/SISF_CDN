@@ -815,10 +815,45 @@ public:
                 if(array_result.ok()) {
                         auto array = array_result.value();
 
-                        std::cout << "s:" << array.num_elements() << std::endl;
-                        std::cout << "T: " << array[{xs,ys,zs,0}] << std::endl;
+                        // std::cout << "s:" << array.num_elements() << std::endl;
+                        // Access example: std::cout << "T: " << array[{xs, ys, zs, 0}] << std::endl;
 
+                        for (size_t c = 0; c < channel_count; c++)
+                        {
+                            for (size_t i = xs; i < xe; i++)
+                            {
+                                const size_t xmin = mcx * (i / mcx);                             // lower bound of mchunk
+                                const size_t xmax = std::min((size_t)xmin + mcx, (size_t)sizex); // upper bound of mchunk
+                                const size_t xsize = xmax - xmin;                                // size of mchunk
+                                const size_t chunk_id_x = i / ((size_t)mcx);                     // mchunk x id
+                                const size_t x_in_chunk = i - xmin;                              // x displacement inside chunk
 
+                                for (size_t j = ys; j < ye; j++)
+                                {
+                                    const size_t ymin = mcy * (j / mcy);
+                                    const size_t ymax = std::min((size_t)ymin + mcy, (size_t)sizey);
+                                    const size_t ysize = ymax - ymin;
+                                    const size_t chunk_id_y = j / ((size_t)mcy);
+                                    const size_t y_in_chunk = j - ymin;
+
+                                    for (size_t k = zs; k < ze; k++)
+                                    {
+                                        const size_t zmin = mcz * (k / mcz);
+                                        const size_t zmax = std::min((size_t)zmin + mcz, (size_t)sizez);
+                                        const size_t zsize = zmax - zmin;
+                                        const size_t chunk_id_z = k / ((size_t)mcz);
+                                        const size_t z_in_chunk = k - zmin;
+
+                                        const size_t ooffset = (c * osizey * osizex * osizez) + // C
+                                                               ((k - zs) * osizey * osizex) +   // Z
+                                                               ((j - ys) * osizex) +            // Y
+                                                               ((i - xs));                      // X
+
+                                        out_buffer[ooffset] = array[{i, j, k, c}];
+                                    }
+                                }
+                            }
+                        }
 
                         //std::memcpy(out_buffer, array.data(), buffer_size);
                 } else {
