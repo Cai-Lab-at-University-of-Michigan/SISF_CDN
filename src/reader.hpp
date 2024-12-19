@@ -405,7 +405,7 @@ public:
 
     ArchiveType type;
 
-    auto ts_store;
+    tensorstore::TensorStore ts_store;
 
     archive_reader(std::string name_in, enum ArchiveType type_in)
     {
