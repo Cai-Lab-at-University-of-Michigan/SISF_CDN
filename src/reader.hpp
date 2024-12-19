@@ -460,6 +460,8 @@ public:
         mcountx = 1;
         mcounty = 1;
         mcountz = 1;
+
+        scales.push_back(1);
     }
 
     void load_metadata_sisf()
