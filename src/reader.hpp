@@ -809,7 +809,7 @@ public:
                 auto array_result = tensorstore::Read(
                                  store | tensorstore::AllDims().SizedInterval(
                                     {(tensorstore::Index)xs, (tensorstore::Index)ys, (tensorstore::Index)zs, 0},
-                                    {(tensorstore::Index)osizex, (tensorstore::Index)osizey, (tensorstore::Index)osizez, (tensorstore::Index)channel_count}
+                                    {(tensorstore::Index)osizex + 1, (tensorstore::Index)osizey + 1, (tensorstore::Index)osizez + 1, (tensorstore::Index)channel_count}
                                 )).result();
 
                 if(array_result.ok()) {
