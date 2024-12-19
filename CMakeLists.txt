@@ -30,7 +30,7 @@ target_link_libraries(nTracer_cdn "${ZSTD_LIB}")
 find_library(X264_LIB x264 PATH ./x264/)
 target_link_libraries(nTracer_cdn "${X264_LIB}")
 
-target_compile_options(nTracer_cdn PUBLIC -O3 -march=native -Wl,--no-as-needed -ldl)
+target_compile_options(nTracer_cdn PUBLIC -O3 -march=native -Wl,--no-as-needed -ldl -std=c++17)
 
 # Define a target that depends on TensorStore...
 target_link_libraries(
