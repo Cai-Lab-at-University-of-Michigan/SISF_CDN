@@ -19,6 +19,7 @@
 #include "vidlib.hpp"
 
 #include "../zstd/lib/zstd.h"
+#include <tensorstore/tensorstore.h>
 
 #define CHUNK_TIMER 0
 #define DEBUG_SLICING 0
@@ -393,7 +394,7 @@ public:
     void load_metadata_zarr()
     {
         auto store_future = tensorstore::Open({{"driver", "zarr"},
-                                               {"kvstore", {{"driver", "file"}, {"path", "my_data.zarr"}}}});
+                                               {"kvstore", {{"driver", "file"}, {"path", fname}}}});
         auto store_result = store_future.result();
 
         if (!store_result.ok())

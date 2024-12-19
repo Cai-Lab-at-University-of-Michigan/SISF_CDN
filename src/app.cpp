@@ -3,8 +3,6 @@
 #include "reader.hpp"
 #include "utils.hpp"
 
-#include <tensorstore/tensorstore.h>
-
 // #include "hdf5_reader.hpp"
 #include "sqlite_tools.hpp"
 
