@@ -512,8 +512,7 @@ public:
                 if(dim_units[i].has_value()) {
                     tensorstore::Unit u = dim_units[i].value();
 
-                    std::cout << labels[i] << std::endl;
-                    std::cout << u.to_string() << '\t' << u.base_unit << '\t' << u.multiplier << std::endl;
+                    std::cout << "Name: " << labels[i] << '\t' << u.to_string() << '\t' << u.base_unit << '\t' << u.multiplier << std::endl;
                 }
             }
         }
