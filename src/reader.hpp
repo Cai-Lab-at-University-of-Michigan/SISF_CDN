@@ -499,6 +499,23 @@ public:
         resy = 100;
         resz = 100;
 
+        auto dim_units_result = store.dimension_units();
+
+        if (!dim_units_result.ok())
+        {
+            std::cerr << "Error reading dimension_units from TensorStore: " << store_result.status() << std::endl;
+        } else {
+            auto dim_units = dim_units_result.value();
+
+            for(size_t i = 0; i < dim_units.size(); i++) {
+                if(dim_units[i].has_value()) {
+                    tensorstore::Unit u = dim_units[i].value();
+
+                    std::cout << u.to_string() << '\t' << u.base_unit << '\t' << u.multiplier << std::endl;
+                }
+            }
+        }
+
         mchunkx = sizex;
         mchunky = sizey;
         mchunkz = sizez;
