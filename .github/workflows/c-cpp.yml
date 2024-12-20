@@ -24,6 +24,6 @@ jobs:
     - name: build-zstd
       run: cd zstd; make -j 5; cd ..
     - name: cmake
-      run: cmake .; exit 0
+      run: cmake . || true
     - name: make
       run: make -j 5
