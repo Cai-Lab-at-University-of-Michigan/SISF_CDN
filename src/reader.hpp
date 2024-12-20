@@ -465,6 +465,7 @@ public:
 
         auto domain = store.domain();
         auto shape = domain.shape();
+        auto labels = domain.labels();
 
         sizex = 0;
         sizey = 0;
@@ -511,6 +512,7 @@ public:
                 if(dim_units[i].has_value()) {
                     tensorstore::Unit u = dim_units[i].value();
 
+                    std::cout << labels[i] << std::endl;
                     std::cout << u.to_string() << '\t' << u.base_unit << '\t' << u.multiplier << std::endl;
                 }
             }
