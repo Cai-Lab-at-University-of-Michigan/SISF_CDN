@@ -477,12 +477,16 @@ public:
             switch(i) {
                 case 0: // x
                     sizex = dim;
+                    break;
                 case 1: // y
                     sizey = dim;
+                    break;
                 case 2: // z
                     sizez = dim;
+                    break;
                 case 3: // c
                     channel_count = dim;
+                    break;
             }
 
             i++;
