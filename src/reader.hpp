@@ -516,7 +516,24 @@ public:
                 if(dim_units[i].has_value()) {
                     tensorstore::Unit u = dim_units[i].value();
 
-                    std::cout << "Name: " << labels[i] << '\t' << u.to_string() << '\t' << u.base_unit << '\t' << u.multiplier << std::endl;
+                    // TODO Verify that unit is nm and scale properly
+                    
+                    switch(i) { 
+                        case 0: // x
+                            resx = u.multiplier;
+                            break;
+                        case 1: // y
+                            resy = u.multiplier;
+                            break;
+                        case 2: // z
+                            resz = u.multiplier;
+                            break;
+                        case 3: // c
+                            // Color does not have a unit
+                            break;
+                    }
+
+                    //std::cout << "Name: " << labels[i] << '\t' << u.to_string() << '\t' << u.base_unit << '\t' << u.multiplier << std::endl;
                 }
             }
         }
