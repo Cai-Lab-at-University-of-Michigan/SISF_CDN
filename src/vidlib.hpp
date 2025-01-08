@@ -614,14 +614,16 @@ pixtype *decode_stack_264(size_t sizex, size_t sizey, size_t sizez, void *buffer
                     break;
                 }
 
-                for (size_t x = 0; x < sizex; x++)
-                {
-                    for (size_t y = 0; y < sizey; y++)
+                if(frame_cnt < sizez) { // Ignore z buffer
+                    for (size_t x = 0; x < sizex; x++)
                     {
-                        const size_t in_offset = (x * frame->linesize[0]) + y;
-                        const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
+                        for (size_t y = 0; y < sizey; y++)
+                        {
+                            const size_t in_offset = (x * frame->linesize[0]) + y;
+                            const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
 
-                        out[out_offset] = frame->data[0][in_offset];
+                            out[out_offset] = frame->data[0][in_offset];
+                        }
                     }
                 }
 
@@ -644,14 +646,16 @@ pixtype *decode_stack_264(size_t sizex, size_t sizey, size_t sizez, void *buffer
             break;
         }
 
-        for (size_t x = 0; x < sizex; x++)
-        {
-            for (size_t y = 0; y < sizey; y++)
+        if(frame_cnt < sizez) { // Ignore z buffer
+            for (size_t x = 0; x < sizex; x++)
             {
-                const size_t in_offset = (x * frame->linesize[0]) + y;
-                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
+                for (size_t y = 0; y < sizey; y++)
+                {
+                    const size_t in_offset = (x * frame->linesize[0]) + y;
+                    const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
 
-                out[out_offset] = frame->data[0][in_offset];
+                    out[out_offset] = frame->data[0][in_offset];
+                }
             }
         }
 
@@ -800,14 +804,16 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
                     break;
                 }
 
-                for (size_t x = 0; x < sizex; x++)
-                {
-                    for (size_t y = 0; y < sizey; y++)
+                if(frame_cnt < sizez) { // Ignore z buffer
+                    for (size_t x = 0; x < sizex; x++)
                     {
-                        const size_t in_offset = (x * frame->linesize[0]) + y;
-                        const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
+                        for (size_t y = 0; y < sizey; y++)
+                        {
+                            const size_t in_offset = (x * frame->linesize[0]) + y;
+                            const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
 
-                        out[out_offset] = frame->data[0][in_offset];
+                            out[out_offset] = frame->data[0][in_offset];
+                        }
                     }
                 }
 
@@ -830,14 +836,16 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
             break;
         }
 
-        for (size_t x = 0; x < sizex; x++)
-        {
-            for (size_t y = 0; y < sizey; y++)
+        if(frame_cnt < sizez) { // Ignore z buffer
+            for (size_t x = 0; x < sizex; x++)
             {
-                const size_t in_offset = (x * frame->linesize[0]) + y;
-                const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
+                for (size_t y = 0; y < sizey; y++)
+                {
+                    const size_t in_offset = (x * frame->linesize[0]) + y;
+                    const size_t out_offset = (x * sizey * sizez) + (y * sizez) + frame_cnt;
 
-                out[out_offset] = frame->data[0][in_offset];
+                    out[out_offset] = frame->data[0][in_offset];
+                }
             }
         }
 
