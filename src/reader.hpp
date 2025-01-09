@@ -275,7 +275,7 @@ public:
             // Copy from cache
             if (from_cache != 0)
             {
-                memcpy((void *)out, (void *)from_cache, max_chunk_size);
+                memcpy((void *)out, (void *)from_cache, out_buffer_size);
             }
 
             global_chunk_cache_mutex.unlock();
