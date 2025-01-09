@@ -348,7 +348,7 @@ public:
 
             if (global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
             {
-                global_chunk_line * cache_line = global_chunk_cache[global_chunk_cache_last];
+                global_chunk_line * cache_line = global_chunk_cache + global_chunk_cache_last;
 
                 if (cache_line->ptr != 0) {
                     free(cache_line->ptr);
