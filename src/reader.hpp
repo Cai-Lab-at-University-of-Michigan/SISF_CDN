@@ -243,7 +243,7 @@ public:
     std::mutex chunk_cache_mutex;
     std::deque<std::tuple<size_t, uint16_t *>> chunk_cache;
 
-    uint16_t *load_chunk(size_t id)
+    uint16_t *load_chunk(size_t id, size_t sizex, size_t sizey, size_t sizez)
     {
         const size_t out_buffer_size = max_chunk_size;
         uint16_t *out = (uint16_t *)calloc(out_buffer_size, 1);
@@ -389,7 +389,7 @@ public:
 
         const size_t chunk_id = find_index(i, j, k);
 
-        uint16_t *chunk = load_chunk(chunk_id);
+        uint16_t *chunk = load_chunk(chunk_id, xsize, ysize, zsize);
 
         const uint16_t out = chunk[coffset];
 
@@ -809,7 +809,7 @@ public:
                                 chunk = chunk_cache[*chunk_identifier];
                                 if (chunk == 0)
                                 {
-                                    chunk = chunk_reader->load_chunk(sub_chunk_id);
+                                    chunk = chunk_reader->load_chunk(sub_chunk_id, xsize, ysize, zsize);
                                     chunk_cache[*chunk_identifier] = chunk;
                                 }
 
