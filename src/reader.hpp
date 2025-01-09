@@ -348,12 +348,15 @@ public:
 
             if (global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
             {
-                if (global_chunk_cache[global_chunk_cache_last].ptr != 0)
-                    free(global_chunk_cache[global_chunk_cache_last].ptr);
+                global_chunk_line * cache_line = global_chunk_cache[global_chunk_cache_last];
 
-                global_chunk_cache[global_chunk_cache_last].chunk = (size_t)id;
-                global_chunk_cache[global_chunk_cache_last].mchunk = (size_t)this_mchunk_id;
-                global_chunk_cache[global_chunk_cache_last].ptr = (uint16_t *)read_decomp_buffer;
+                if (cache_line->ptr != 0) {
+                    free(cache_line->ptr);
+                }
+
+                cache_line.chunk = (size_t)id;
+                cache_line.mchunk = (size_t)this_mchunk_id;
+                cache_line.ptr = (uint16_t *)read_decomp_buffer;
 
                 global_chunk_cache_last++;
                 if (global_chunk_cache_last == global_cache_size)
