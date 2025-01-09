@@ -246,7 +246,7 @@ public:
     uint16_t *load_chunk(size_t id)
     {
         const size_t out_buffer_size = max_chunk_size;
-        uint16_t *out = (uint16_t *)calloc(max_chunk_size, 1);
+        uint16_t *out = (uint16_t *)calloc(out_buffer_size, 1);
         metadata_entry *sel = load_meta_entry(id);
 
         if (sel->size == 0)
@@ -318,8 +318,8 @@ public:
             {
             case 1:
                 // Decompress with ZSTD
-                read_decomp_buffer = (char *)calloc(max_chunk_size, 1);
-                decomp_size = ZSTD_decompress(read_decomp_buffer, max_chunk_size, read_buffer, sel->size);
+                read_decomp_buffer = (char *)calloc(out_buffer_size, 1);
+                decomp_size = ZSTD_decompress(read_decomp_buffer, out_buffer_size, read_buffer, sel->size);
                 break;
 
             case 2:
@@ -341,7 +341,7 @@ public:
             free(read_buffer);
 
             // Copy result
-            memcpy((void *)out, (void *)read_decomp_buffer, max_chunk_size);
+            memcpy((void *)out, (void *)read_decomp_buffer, out_buffer_size);
 
             if (global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
             {
