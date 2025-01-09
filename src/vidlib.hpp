@@ -549,7 +549,7 @@ pixtype *decode_stack_264(size_t sizex, size_t sizey, size_t sizez, void *buffer
     }
 
     // Print some information about the media
-    av_dump_format(formatContext, 0, nullptr, 0);
+    // av_dump_format(formatContext, 0, nullptr, 0);
 
     // Find video stream
     int video_stream_idx = -1;
