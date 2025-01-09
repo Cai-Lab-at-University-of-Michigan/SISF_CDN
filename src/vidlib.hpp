@@ -693,9 +693,10 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
     }
 
     // Create custom I/O context
+    const size_t av_context_buffer_size = 4096;
     AVIOContext *ioContext = avio_alloc_context(
-        static_cast<unsigned char *>(av_malloc(4096)), // Internal buffer
-        4096,                                          // Buffer size
+        static_cast<unsigned char *>(av_malloc(av_context_buffer_size)), // Internal buffer
+        av_context_buffer_size,                                          // Buffer size
         0,                                             // Write flag (0 for read-only)
         &memBuffer,                                    // Opaque pointer
         memorybuffer_read_packet,                      // Read callback
