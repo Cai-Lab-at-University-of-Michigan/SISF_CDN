@@ -307,7 +307,7 @@ public:
             }
 
             // Decompress
-            size_t decomp_size;
+            size_t decomp_size, pix_cnt;
             char *read_decomp_buffer;
             pixtype *read_decomp_buffer_pt;
 
@@ -325,7 +325,7 @@ public:
             case 2:
                 // Decompress with vidlib
                 read_decomp_buffer_pt = decode_stack_264(chunkx, chunky, chunkz, read_buffer, sel->size);
-                size_t pix_cnt = chunkx * chunky * chunkz;
+                pix_cnt = chunkx * chunky * chunkz;
                 decomp_size = pix_cnt * sizeof(uint16_t);
                 read_decomp_buffer = (char *)pixtype_to_uint16(read_decomp_buffer_pt, pix_cnt);
                 free(read_decomp_buffer_pt);
@@ -334,7 +334,7 @@ public:
             case 3:
                 // Decompress with vidlib 2
                 read_decomp_buffer_pt = decode_stack_AV1(chunkx, chunky, chunkz, read_buffer, sel->size);
-                size_t pix_cnt = chunkx * chunky * chunkz;
+                pix_cnt = chunkx * chunky * chunkz;
                 decomp_size = pix_cnt * sizeof(uint16_t);
                 read_decomp_buffer = (char *)pixtype_to_uint16(read_decomp_buffer_pt, pix_cnt);
                 free(read_decomp_buffer_pt);
