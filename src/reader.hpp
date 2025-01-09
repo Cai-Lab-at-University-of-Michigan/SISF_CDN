@@ -354,9 +354,9 @@ public:
                     free(cache_line->ptr);
                 }
 
-                cache_line.chunk = (size_t)id;
-                cache_line.mchunk = (size_t)this_mchunk_id;
-                cache_line.ptr = (uint16_t *)read_decomp_buffer;
+                cache_line->chunk = (size_t)id;
+                cache_line->mchunk = (size_t)this_mchunk_id;
+                cache_line->ptr = (uint16_t *)read_decomp_buffer;
 
                 global_chunk_cache_last++;
                 if (global_chunk_cache_last == global_cache_size)
