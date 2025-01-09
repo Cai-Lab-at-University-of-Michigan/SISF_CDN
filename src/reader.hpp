@@ -324,17 +324,15 @@ public:
 
             case 2:
                 // Decompress with vidlib
-                read_decomp_buffer_pt = decode_stack_264(sizex, sizey, sizez, read_buffer, sel->size);
-                read_decomp_buffer = (char *)pixtype_to_uint16(read_decomp_buffer_pt, sizex * sizey * sizez);
-                decomp_size = sizex * sizey * sizez * sizeof(uint16_t);
+                read_decomp_buffer_pt = decode_stack_264(chunkx, chunky, chunkz, read_buffer, sel->size);
+                read_decomp_buffer = (char *)pixtype_to_uint16(read_decomp_buffer_pt, chunkx * chunky * chunkz);
                 free(read_decomp_buffer_pt);
                 break;
 
             case 3:
                 // Decompress with vidlib 2
-                read_decomp_buffer_pt = decode_stack_AV1(sizex, sizey, sizez, read_buffer, sel->size);
-                read_decomp_buffer = (char *)pixtype_to_uint16(read_decomp_buffer_pt, sizex * sizey * sizez);
-                decomp_size = sizex * sizey * sizez * sizeof(uint16_t);
+                read_decomp_buffer_pt = decode_stack_AV1(chunkx, chunky, chunkz, read_buffer, sel->size);
+                read_decomp_buffer = (char *)pixtype_to_uint16(read_decomp_buffer_pt, chunkx * chunky * chunkz);
                 free(read_decomp_buffer_pt);
                 break;
             }
@@ -342,7 +340,7 @@ public:
             free(read_buffer);
 
             // Copy result
-            memcpy((void *)out, (void *)read_decomp_buffer, decomp_size);
+            memcpy((void *)out, (void *)read_decomp_buffer, out_buffer_size);
 
             if (global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
             {
