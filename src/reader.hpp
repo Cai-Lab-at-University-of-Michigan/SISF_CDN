@@ -812,14 +812,6 @@ public:
                                 }
                                 chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
-                                // Check if the chunk is in the tmp cache
-                                chunk = chunk_cache[*chunk_identifier];
-                                if (chunk == 0)
-                                {
-                                    chunk = chunk_reader->load_chunk(sub_chunk_id, xsize, ysize, zsize);
-                                    chunk_cache[*chunk_identifier] = chunk;
-                                }
-
                                 // Find the start/stop coordinates of this chunk
                                 cxmin = ((size_t)chunk_reader->chunkx) * (x_in_chunk_offset / ((size_t)chunk_reader->chunkx)); // Minimum value of the chunk
                                 cxmax = std::min((size_t)cxmin + chunk_reader->chunkx, (size_t)chunk_reader->sizex);           // Maximum value of the chunk
@@ -832,6 +824,14 @@ public:
                                 czmin = ((size_t)chunk_reader->chunkz) * (z_in_chunk_offset / ((size_t)chunk_reader->chunkz));
                                 czmax = std::min((size_t)czmin + chunk_reader->chunkz, (size_t)chunk_reader->sizez);
                                 czsize = czmax - czmin;
+
+                                // Check if the chunk is in the tmp cache
+                                chunk = chunk_cache[*chunk_identifier];
+                                if (chunk == 0)
+                                {
+                                    chunk = chunk_reader->load_chunk(sub_chunk_id, cxsize, cysize, czsize);
+                                    chunk_cache[*chunk_identifier] = chunk;
+                                }
 
                                 // Store this ID as the most recent chunk
                                 last_sub = sub_chunk_id;
