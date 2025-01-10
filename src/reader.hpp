@@ -245,7 +245,7 @@ public:
 
     uint16_t *load_chunk(size_t id, size_t sizex, size_t sizey, size_t sizez)
     {
-        const size_t out_buffer_size = max_chunk_size;
+        const size_t out_buffer_size = std::max(max_chunk_size, sizex*sizey*sizez*sizeof(uint16_t));
         uint16_t *out = (uint16_t *)calloc(out_buffer_size, 1);
         metadata_entry *sel = load_meta_entry(id);
 
