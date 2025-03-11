@@ -7,6 +7,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <cstdint>
+#include <vector>
 
 std::string read_env_variable(std::string name)
 {
@@ -130,7 +131,7 @@ float gaussian(int x, int y, int z, float sigma)
 
 // Function to compute the histogram of a given image region
 vector<unsigned int> computeHistogram(const uint16_t *region, int regionSize, int bins) {
-    vector<unsigned int> out;
+    std::vector<unsigned int> out;
 
     out.assign(bins, 0);
 
