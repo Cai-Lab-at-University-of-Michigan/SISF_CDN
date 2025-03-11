@@ -130,7 +130,7 @@ float gaussian(int x, int y, int z, float sigma)
 }
 
 // Function to compute the histogram of a given image region
-vector<unsigned int> computeHistogram(const uint16_t *region, int regionSize, int bins) {
+std::vector<unsigned int> computeHistogram(const uint16_t *region, int regionSize, int bins) {
     std::vector<unsigned int> out;
 
     out.assign(bins, 0);
