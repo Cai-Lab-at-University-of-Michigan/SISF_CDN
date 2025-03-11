@@ -500,6 +500,7 @@ int main(int argc, char *argv[])
 		auto archive_search = archive_inventory.find(data_id);
 
 		if(archive_search == archive_inventory.end()) {
+			res.code = crow::status::NOT_FOUND;
 			res.end("File not found.");
 			return;
 		}
@@ -577,6 +578,7 @@ int main(int argc, char *argv[])
 
 		auto archive_search = archive_inventory.find(data_id);
 		if(archive_search == archive_inventory.end()) {
+			res.code = crow::status::NOT_FOUND;
 			res.end("File not found.");
 			return;
 		}
