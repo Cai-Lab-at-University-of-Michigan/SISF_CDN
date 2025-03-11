@@ -136,7 +136,7 @@ std::vector<unsigned int> computeHistogram(const uint16_t *region, int regionSiz
 
     out.assign(bins, 0);
 
-    int binSize = numeric_limits<uint64_t>::max() / bins;
+    int binSize = std::numeric_limits<uint64_t>::max() / bins;
 
     for (int i = 0; i < regionSize; i++)
     {
