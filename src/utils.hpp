@@ -6,6 +6,7 @@
 #include <limits>
 #include <chrono>
 #include <cstdlib>
+#include <cstdint>
 
 std::string read_env_variable(std::string name)
 {
@@ -125,6 +126,23 @@ std::vector<double> denoiseSignal(const std::vector<double> &signal, double nois
 float gaussian(int x, int y, int z, float sigma)
 {
     return exp(-(x * x + y * y + z * z) / (2 * sigma * sigma)) / (sqrt(2 * M_PI) * sigma);
+}
+
+// Function to compute the histogram of a given image region
+vector<unsigned int> computeHistogram(const uint16_t *region, int regionSize, int bins) {
+    vector<unsigned int> out;
+
+    out.assign(bins, 0);
+
+    int binSize = numeric_limits<uint64_t>::max() / bins;
+
+    for (int i = 0; i < regionSize; i++) {
+        int binIndex = region[i] / binSize;
+        if (binIndex >= bins) binIndex = bins - 1;
+        out[binIndex]++;
+    }
+
+    return out;
 }
 
 // Define a structure to represent a cell in the grid
