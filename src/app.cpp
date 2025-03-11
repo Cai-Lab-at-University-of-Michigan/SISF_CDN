@@ -267,6 +267,10 @@ void filter_run(uint16_t *data, size_t data_size, std::tuple<size_t, size_t, siz
 
 		free(data_tmp);
 	}
+
+	if (filter_name == "CLAHE")
+	{
+	}
 }
 
 int main(int argc, char *argv[])
