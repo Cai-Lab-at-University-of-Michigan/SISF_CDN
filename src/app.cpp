@@ -549,6 +549,26 @@ int main(int argc, char *argv[])
 		res.write(response.dump());
     	res.end(); });
 
+	//	ENDPOINT: /data/<string>/info
+	CROW_ROUTE(app, "/<string>/provenance")
+	([](crow::response &res, std::string data_id_in)
+	 {
+		//std::string, std::vector<std::pair<std::string, std::string>>
+		auto [data_id, filters] = parse_filter_list(data_id_in);
+
+		auto archive_search = archive_inventory.find(data_id);
+
+		if(archive_search == archive_inventory.end()) {
+			res.end("File not found.");
+			return;
+		}
+
+		archive_reader * reader = archive_search->second;
+
+		res.write("");
+    	
+		res.end(); });
+
 	CROW_ROUTE(app, "/<string>/tracing/<string>/<string>")
 	([](const crow::request &req, crow::response &res, std::string data_id_in, std::string pt_in_s1, std::string pt_in_s2)
 	 {
