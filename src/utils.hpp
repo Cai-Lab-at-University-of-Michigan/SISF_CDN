@@ -129,26 +129,6 @@ float gaussian(int x, int y, int z, float sigma)
     return exp(-(x * x + y * y + z * z) / (2 * sigma * sigma)) / (sqrt(2 * M_PI) * sigma);
 }
 
-// Function to compute the histogram of a given image region
-std::vector<unsigned int> computeHistogram(const uint16_t *region, int regionSize, int bins)
-{
-    std::vector<unsigned int> out;
-
-    out.assign(bins, 0);
-
-    int binSize = std::numeric_limits<uint64_t>::max() / bins;
-
-    for (int i = 0; i < regionSize; i++)
-    {
-        int binIndex = region[i] / binSize;
-        if (binIndex >= bins)
-            binIndex = bins - 1;
-        out[binIndex]++;
-    }
-
-    return out;
-}
-
 // Define a structure to represent a cell in the grid
 struct astar_cell
 {
