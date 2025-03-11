@@ -549,7 +549,7 @@ int main(int argc, char *argv[])
 		res.write(response.dump());
     	res.end(); });
 
-	//	ENDPOINT: /data/<string>/info
+	//	ENDPOINT: /data/<string>/provenance
 	CROW_ROUTE(app, "/<string>/provenance")
 	([](crow::response &res, std::string data_id_in)
 	 {
