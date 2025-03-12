@@ -1537,9 +1537,6 @@ int main(int argc, char *argv[])
 				x_begin_project, x_end_project,
 				y_begin_project, y_end_project,
 				z_begin_project, z_end_project
-			//	x_begin, x_end,
-			//	y_begin, y_end,
-			//	z_begin, z_end
 			);
 
 			if(project_axis == 'z')
