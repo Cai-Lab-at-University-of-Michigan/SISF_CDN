@@ -1492,7 +1492,13 @@ int main(int argc, char *argv[])
 
 		uint16_t * out_buffer;
 
+		project_frames /= scale;
+		//project_frames = std::max(project_frames, 1);
+
 		if(project_frames > 1) {
+			project_frames /= scale;
+			project_frames = std::max(project_frames, 1);
+
 			out_buffer = (uint16_t *) calloc(out_buffer_size, 1);
 
 			switch(project_axis) {
