@@ -1494,6 +1494,40 @@ int main(int argc, char *argv[])
 
 		if(project_frames != -1) {
 			out_buffer = (uint16_t *) calloc(out_buffer_size, 1);
+
+			switch(project_axis) {
+				case 'x':
+				case 'y':
+				case 'z':
+					break;
+				default:
+					project_axis = 'x';
+			}
+
+			size_t x_begin_project = x_begin;
+			size_t y_begin_project = y_begin;
+			size_t z_begin_project = z_begin;
+
+			size_t x_end_project = x_end;
+			size_t y_end_project = y_end;
+			size_t z_end_project = z_end;
+
+			if(project_axis == 'x') {
+				
+			} else if(project_axis == 'y') {
+
+			} else { // if(project_axis == 'z') {
+
+			}
+
+			uint16_t * tmp_buffer = reader->load_region(
+				scale,
+				x_begin_project, x_end_project,
+				y_begin_project, y_end_project,
+				z_begin_project, z_end_project
+			);
+
+			free(tmp_buffer);
 		} else {
 			// Load unprojected data
 			out_buffer = reader->load_region(
