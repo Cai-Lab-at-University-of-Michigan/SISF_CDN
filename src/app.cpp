@@ -1512,19 +1512,25 @@ int main(int argc, char *argv[])
 			size_t y_end_project = y_end;
 			size_t z_end_project = z_end;
 
+			std::tuple<size_t, size_t, size_t> dataset_size = reader->get_size(scale);
+
+			const size_t sizex = std::get<0>(dataset_size);
+			const size_t sizey = std::get<1>(dataset_size);
+			const size_t sizez = std::get<2>(dataset_size);
+
 			switch (project_axis)
 			{
 			case 'x':
 				x_end_project += project_frames;
-				x_end_project = std::min(reader->sizex, x_end_project);
+				x_end_project = std::min(sizex, x_end_project);
 				break;
 			case 'y':
 				y_end_project += project_frames;
-				y_end_project = std::min(reader->sizey, y_end_project);
+				y_end_project = std::min(sizey, y_end_project);
 				break;
 			case 'z':
 				z_end_project += project_frames;
-				z_end_project = std::min(reader->sizez, z_end_project);
+				z_end_project = std::min(sizez, z_end_project);
 				break;
 			}
 
