@@ -1557,12 +1557,19 @@ int main(int argc, char *argv[])
 									const size_t new_j = j;
 									const size_t new_k = k;
 
-									const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
-														(new_k * chunk_sizes[0] * chunk_sizes[1]) +			// Z
-														(new_j * chunk_sizes[0]) +					// Y
-														(new_i);								// X
+									const size_t ioffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
+															(new_k * chunk_sizes[0] * chunk_sizes[1]) +			// Z
+															(new_j * chunk_sizes[0]) +							// Y
+															(new_i);											// X
 
-									out_buffer[ooffset] = std::max(out_buffer[ooffset], (uint16_t) i);
+									const uint16_t v = tmp_buffer[ioffset];
+
+									const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
+															(k * chunk_sizes[0] * chunk_sizes[1]) +			// Z
+															(j * chunk_sizes[0]) +							// Y
+															(i);											// X
+
+									out_buffer[ooffset] = std::max(out_buffer[ooffset], v);
 								}
 							}
 						}
