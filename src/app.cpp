@@ -1542,7 +1542,7 @@ int main(int argc, char *argv[])
 				z_begin, z_end
 			);
 
-			if(project_axis == 'x')
+			if(project_axis == 'z')
 			{
 				for (size_t c = 0; c < reader->channel_count; c++)
 				{
@@ -1552,10 +1552,11 @@ int main(int argc, char *argv[])
 						{
 							for (size_t k = 0; k < chunk_sizes[2]; k++)
 							{
-								for(size_t p = 0; p < project_frames; p++) {
-									const size_t new_i = std::min(chunk_sizes[0] - 1, i + p);
+								for(size_t p = 0; p < project_frames; p++)
+								{
+									const size_t new_i = i;
 									const size_t new_j = j;
-									const size_t new_k = k;
+									const size_t new_k = std::min(chunk_sizes[2] - 1, k + p);
 
 									const size_t ioffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
 															(new_k * chunk_sizes[0] * chunk_sizes[1]) +			// Z
