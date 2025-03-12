@@ -317,7 +317,7 @@ void clahe_1d(uint16_t *image, size_t data_size, uint32_t clipLimit)
     for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
     {
         // Get the original pixel value and compute its corresponding histogram bin.
-        const uint16_t pixel = image[i];
+        const uint16_t v = image[i];
 
         int bin = v / bin_step;
 
