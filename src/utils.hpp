@@ -640,7 +640,7 @@ void filter_run(uint16_t *data, size_t data_size, std::tuple<size_t, size_t, siz
         free(data_tmp);
     }
 
-    if (filter_name == "CLAHE")
+    if (filter_name == "clahe")
     {
         size_t sizex = std::get<0>(data_shape);
         size_t sizey = std::get<1>(data_shape);
