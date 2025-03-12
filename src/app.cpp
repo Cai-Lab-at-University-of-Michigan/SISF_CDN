@@ -1501,7 +1501,7 @@ int main(int argc, char *argv[])
 				case 'z':
 					break;
 				default:
-					project_axis = 'x';
+					project_axis = 'z';
 			}
 
 			size_t x_begin_project = x_begin;
@@ -1515,12 +1515,12 @@ int main(int argc, char *argv[])
 			if (project_axis == 'x')
 			{
 				x_end_project += project_frames;
-				x_end_project = std::min(reader->sizex - 1, x_end_project);
+				x_end_project = std::min(reader->sizex, x_end_project);
 			}
 			else if (project_axis == 'y')
 			{
 				y_end_project += project_frames;
-				y_end_project = std::min(reader->sizey - 1, y_end_project);
+				y_end_project = std::min(reader->sizey, y_end_project);
 			}
 			else
 			{ // if(project_axis == 'z') {
