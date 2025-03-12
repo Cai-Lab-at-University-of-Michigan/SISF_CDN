@@ -1515,17 +1515,17 @@ int main(int argc, char *argv[])
 			if (project_axis == 'x')
 			{
 				x_end_project += project_frames;
-				x_end_project = std::min(reader->sizex, x_end_project);
+				x_end_project = std::min(reader->sizex - 1, x_end_project);
 			}
 			else if (project_axis == 'y')
 			{
 				y_end_project += project_frames;
-				y_end_project = std::min(reader->sizey, y_end_project);
+				y_end_project = std::min(reader->sizey - 1, y_end_project);
 			}
 			else
 			{ // if(project_axis == 'z') {
 				z_end_project += project_frames;
-				z_end_project = std::min(reader->sizez, z_end_project);
+				z_end_project = std::min(reader->sizez - 1, z_end_project);
 			}
 
 			const size_t x_project_size = x_end_project - x_begin_project;
@@ -1542,20 +1542,29 @@ int main(int argc, char *argv[])
 				z_begin, z_end
 			);
 
-			for (size_t c = 0; c < reader->channel_count; c++)
+			if(project_axis == 'x')
 			{
-				for (size_t i = 0; i < chunk_sizes[0]; i++)
+				for (size_t c = 0; c < reader->channel_count; c++)
 				{
-					for (size_t j = 0; j < chunk_sizes[1]; j++)
+					for (size_t i = 0; i < chunk_sizes[0]; i++)
 					{
-						for (size_t k = 0; k < chunk_sizes[2]; k++)
+						for (size_t j = 0; j < chunk_sizes[1]; j++)
 						{
-							const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
-												   (k * chunk_sizes[0] * chunk_sizes[1]) +			// Z
-												   (j * chunk_sizes[0]) +					// Y
-												   (i);								// X
+							for (size_t k = 0; k < chunk_sizes[2]; k++)
+							{
+								for(size_t p = 0; p < project_frames; p++) {
+									const size_t new_i = std::min(chunk_sizes[0] - 1, i + p);
+									const size_t new_j = j;
+									const size_t new_k = k;
 
-							//out_buffer[ooffset] = i;
+									const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
+														(new_k * chunk_sizes[0] * chunk_sizes[1]) +			// Z
+														(new_j * chunk_sizes[0]) +					// Y
+														(new_i);								// X
+
+									out_buffer[ooffset] = std::max(out_buffer[ooffset], (uint16_t) i);
+								}
+							}
 						}
 					}
 				}
