@@ -1492,7 +1492,7 @@ int main(int argc, char *argv[])
 
 		uint16_t * out_buffer;
 
-		if(project_frames > 0) {
+		if(project_frames > 1) {
 			out_buffer = (uint16_t *) calloc(out_buffer_size, 1);
 
 			switch(project_axis) {
