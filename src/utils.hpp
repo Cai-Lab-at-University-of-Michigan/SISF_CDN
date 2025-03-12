@@ -261,6 +261,67 @@ void clahe(uint16_t *image, int width, int height, int tileWidth, int tileHeight
     }
 }
 
+// CLAHE function for 16-bit images stored in a 1D array.
+// image: pointer to the image pixels (modified in place)
+// width, height: dimensions of the image
+// tileWidth, tileHeight: size of the contextual regions (tiles)
+// clipLimit: maximum allowed count in a histogram bin before clipping
+void clahe_1d(uint16_t *image, size_t data_size, uint32_t clipLimit)
+{
+    const int bins = 256; // number of histogram bins
+    std::vector<uint32_t> hist(bins, 0);
+
+    for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+    {
+        const int p = image[i];
+        int bin = (p * bins) / (int)std::numeric_limits<uint16_t>::max();
+        hist[bin] += 1;
+    }
+
+    // Clip the histogram: any bin count above clipLimit is reduced
+    // and the excess is collected.
+    int excess = 0;
+    for (size_t i = 0; i < bins; i++)
+    {
+        if (hist[i] > clipLimit)
+        {
+            excess += hist[i] - clipLimit;
+            hist[i] = clipLimit;
+        }
+    }
+
+    // Redistribute the excess evenly among all bins.
+    int redist = excess / bins;
+    for (size_t i = 0; i < bins; i++)
+    {
+        hist[i] += redist;
+    }
+
+    // Compute the cumulative distribution function (cdf).
+    // that maps the cdf to the full intensity range [0, 65535].
+    std::vector<double> cdf(bins, 0.0);
+
+    double scale = ((double)std::numeric_limits<uint16_t>::max()) / (data_size / sizeof(uint16_t));
+    double sum = 0;
+    for (size_t i = 0; i < bins; i++)
+    {
+        sum += hist[i];
+        cdf[b] = sum * scale;
+    }
+
+    for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+    {
+        // Get the original pixel value and compute its corresponding histogram bin.
+        uint16_t pixel = image[i];
+        int bin = (pixel * bins) / std::numeric_limits<uint16_t>::max();
+
+        bin = std::min(bin, bins - 1);
+        bin = std::max(0, bins);
+
+        image[i] = cdf[bin];
+    }
+}
+
 // Define a structure to represent a cell in the grid
 struct astar_cell
 {
@@ -655,6 +716,8 @@ void filter_run(uint16_t *data, size_t data_size, std::tuple<size_t, size_t, siz
 
         float param = std::stof(filter_param);
 
-        clahe(data, sizex, sizey, 32, 32, param);        
+        clahe_1d(data, data_size, param);
+
+        // clahe(data, sizex, sizey, 32, 32, param);
     }
 }
