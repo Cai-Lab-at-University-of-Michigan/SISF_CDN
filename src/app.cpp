@@ -1539,36 +1539,46 @@ int main(int argc, char *argv[])
 				z_begin_project, z_end_project
 			);
 
-			if(project_axis == 'z')
+			for (size_t c = 0; c < reader->channel_count; c++)
 			{
-				for (size_t c = 0; c < reader->channel_count; c++)
+				for (size_t i = 0; i < chunk_sizes[0]; i++)
 				{
-					for (size_t i = 0; i < chunk_sizes[0]; i++)
+					for (size_t j = 0; j < chunk_sizes[1]; j++)
 					{
-						for (size_t j = 0; j < chunk_sizes[1]; j++)
+						for (size_t k = 0; k < chunk_sizes[2]; k++)
 						{
-							for (size_t k = 0; k < chunk_sizes[2]; k++)
+							for (size_t p = 0; p < project_frames; p++)
 							{
-								for(size_t p = 0; p < project_frames; p++)
+								size_t new_i = i;
+								size_t new_j = j;
+								size_t new_k = k;
+
+								switch (project_axis)
 								{
-									const size_t new_i = i;
-									const size_t new_j = j;
-									const size_t new_k = std::min(z_project_size - 1, k + p);
-
-									const size_t ioffset = (c * x_project_size * y_project_size * z_project_size) + // C
-															(new_k * x_project_size * y_project_size) +			// Z
-															(new_j * x_project_size) +							// Y
-															(new_i);											// X
-
-									const uint16_t v = tmp_buffer[ioffset];
-
-									const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
-															(k * chunk_sizes[0] * chunk_sizes[1]) +			// Z
-															(j * chunk_sizes[0]) +							// Y
-															(i);											// X
-
-									out_buffer[ooffset] = std::max(out_buffer[ooffset], v);
+								case 'x':
+									new_i = std::min(x_project_size - 1, new_i + p);
+									break;
+								case 'y':
+									new_j = std::min(y_project_size - 1, new_j + p);
+									break;
+								case 'z':
+									new_k = std::min(z_project_size - 1, new_k + p);
+									break;
 								}
+
+								const size_t ioffset = (c * x_project_size * y_project_size * z_project_size) + // C
+													   (new_k * x_project_size * y_project_size) +				// Z
+													   (new_j * x_project_size) +								// Y
+													   (new_i);													// X
+
+								const uint16_t v = tmp_buffer[ioffset];
+
+								const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
+													   (k * chunk_sizes[0] * chunk_sizes[1]) +					// Z
+													   (j * chunk_sizes[0]) +									// Y
+													   (i);														// X
+
+								out_buffer[ooffset] = std::max(out_buffer[ooffset], v);
 							}
 						}
 					}
