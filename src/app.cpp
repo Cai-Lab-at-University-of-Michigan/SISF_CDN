@@ -1532,12 +1532,15 @@ int main(int argc, char *argv[])
 			const size_t y_project_size = y_end_project - y_begin_project;
 			const size_t z_project_size = z_end_project - z_begin_project;
 
-			//uint16_t * tmp_buffer = reader->load_region(
-			//	scale,
+			uint16_t * tmp_buffer = reader->load_region(
+				scale,
 			//	x_begin_project, x_end_project,
 			//	y_begin_project, y_end_project,
 			//	z_begin_project, z_end_project
-			//);
+				x_begin, x_end,
+				y_begin, y_end,
+				z_begin, z_end
+			);
 
 			for (size_t c = 0; c < reader->channel_count; c++)
 			{
@@ -1558,7 +1561,7 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			//free(tmp_buffer);
+			free(tmp_buffer);
 		} else {
 			// Load unprojected data
 			out_buffer = reader->load_region(
