@@ -60,7 +60,7 @@ std::pair<std::string, std::vector<std::pair<std::string, std::string>>> parse_f
 
             if (filter_parsed.size() == 2)
             {
-                filters_out.push_back({filter_parsed[0], filter_parsed[1]});
+                filters_out.push_back({std::tolower(filter_parsed[0]), filter_parsed[1]});
             }
             else
             {
