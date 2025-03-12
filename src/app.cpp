@@ -1534,12 +1534,12 @@ int main(int argc, char *argv[])
 
 			uint16_t * tmp_buffer = reader->load_region(
 				scale,
-			//	x_begin_project, x_end_project,
-			//	y_begin_project, y_end_project,
-			//	z_begin_project, z_end_project
-				x_begin, x_end,
-				y_begin, y_end,
-				z_begin, z_end
+				x_begin_project, x_end_project,
+				y_begin_project, y_end_project,
+				z_begin_project, z_end_project
+			//	x_begin, x_end,
+			//	y_begin, y_end,
+			//	z_begin, z_end
 			);
 
 			if(project_axis == 'z')
@@ -1556,11 +1556,11 @@ int main(int argc, char *argv[])
 								{
 									const size_t new_i = i;
 									const size_t new_j = j;
-									const size_t new_k = std::min(chunk_sizes[2] - 1, k + p);
+									const size_t new_k = std::min(z_project_size - 1, k + p);
 
-									const size_t ioffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
-															(new_k * chunk_sizes[0] * chunk_sizes[1]) +			// Z
-															(new_j * chunk_sizes[0]) +							// Y
+									const size_t ioffset = (c * x_project_size * y_project_size * z_project_size) + // C
+															(new_k * x_project_size * y_project_size) +			// Z
+															(new_j * x_project_size) +							// Y
 															(new_i);											// X
 
 									const uint16_t v = tmp_buffer[ioffset];
