@@ -655,6 +655,6 @@ void filter_run(uint16_t *data, size_t data_size, std::tuple<size_t, size_t, siz
 
         float param = std::stof(filter_param);
 
-        clahe(data, sizex, sizey, 256, 256, param);
+        clahe(data, sizex, sizey, 32, 32, param);        
     }
 }
