@@ -1475,7 +1475,7 @@ int main(int argc, char *argv[])
 		const size_t out_buffer_size = sizeof(uint16_t) * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2] * reader->channel_count;
 
 		int64_t project_frames = -1; // Number of frames to max project
-		char project_axis = 'x'; // Axis to max project along
+		char project_axis = 'z'; // Axis to max project along
 
 		// Check for project parameters in filters list
 		for(const auto& pair : filters) {
