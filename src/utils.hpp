@@ -135,19 +135,22 @@ float gaussian(int x, int y, int z, float sigma)
 // width, height: dimensions of the image
 // tileWidth, tileHeight: size of the contextual regions (tiles)
 // clipLimit: maximum allowed count in a histogram bin before clipping
-void clahe(uint16_t* image, int width, int height, int tileWidth, int tileHeight, uint16_t clipLimit) {
+void clahe(uint16_t *image, int width, int height, int tileWidth, int tileHeight, uint16_t clipLimit)
+{
     const int bins = 256; // number of histogram bins
     // Determine number of tiles along x and y directions
     int nTilesX = (width + tileWidth - 1) / tileWidth;
     int nTilesY = (height + tileHeight - 1) / tileHeight;
-    
+
     // For each tile we store a mapping table (of length 'bins') from old pixel values to new ones.
     // Using a vector of vectors to store the mapping for each tile.
     std::vector<std::vector<double>> tileMapping(nTilesX * nTilesY, std::vector<double>(bins, 0.0));
-    
+
     // --- Step 1: Compute histogram and mapping for each tile ---
-    for (int ty = 0; ty < nTilesY; ty++) {
-        for (int tx = 0; tx < nTilesX; tx++) {
+    for (int ty = 0; ty < nTilesY; ty++)
+    {
+        for (int tx = 0; tx < nTilesX; tx++)
+        {
             // Allocate histogram for the tile
             std::vector<int> hist(bins, 0);
             // Determine tile boundaries (taking care at the image borders)
@@ -155,12 +158,14 @@ void clahe(uint16_t* image, int width, int height, int tileWidth, int tileHeight
             int startY = ty * tileHeight;
             int endX = std::min(startX + tileWidth, width);
             int endY = std::min(startY + tileHeight, height);
-            
+
             // Build histogram for this tile.
             // Here the pixel value is mapped to a bin using a simple scaling:
             // bin index = pixel_value * bins / 65536.
-            for (int y = startY; y < endY; y++) {
-                for (int x = startX; x < endX; x++) {
+            for (int y = startY; y < endY; y++)
+            {
+                for (int x = startX; x < endX; x++)
+                {
                     uint16_t pixel = image[y * width + x];
                     int bin = (pixel * bins) / 65536;
                     if (bin >= bins)
@@ -168,22 +173,25 @@ void clahe(uint16_t* image, int width, int height, int tileWidth, int tileHeight
                     hist[bin]++;
                 }
             }
-            
+
             // Clip the histogram: any bin count above clipLimit is reduced
             // and the excess is collected.
             int excess = 0;
-            for (int b = 0; b < bins; b++) {
-                if (hist[b] > clipLimit) {
+            for (int b = 0; b < bins; b++)
+            {
+                if (hist[b] > clipLimit)
+                {
                     excess += hist[b] - clipLimit;
                     hist[b] = clipLimit;
                 }
             }
             // Redistribute the excess evenly among all bins.
             int redist = excess / bins;
-            for (int b = 0; b < bins; b++) {
+            for (int b = 0; b < bins; b++)
+            {
                 hist[b] += redist;
             }
-            
+
             // Compute the cumulative distribution function (cdf).
             // Using the original tile pixel count (area) to compute a scale factor
             // that maps the cdf to the full intensity range [0, 65535].
@@ -191,51 +199,56 @@ void clahe(uint16_t* image, int width, int height, int tileWidth, int tileHeight
             double scale = 65535.0 / tilePixelCount;
             int sum = 0;
             int tileIndex = ty * nTilesX + tx;
-            for (int b = 0; b < bins; b++) {
+            for (int b = 0; b < bins; b++)
+            {
                 sum += hist[b];
                 tileMapping[tileIndex][b] = sum * scale;
             }
         }
     }
-    
+
     // --- Step 2: Remap the pixels using bilinear interpolation of the four tile mappings ---
-    for (int y = 0; y < height; y++) {
+    for (int y = 0; y < height; y++)
+    {
         // Determine vertical tile index and relative position within the tile.
         int ty = y / tileHeight;
         float y_ratio = float(y - ty * tileHeight) / tileHeight;
-        if (ty >= nTilesY - 1) {
+        if (ty >= nTilesY - 1)
+        {
             ty = nTilesY - 1;
             y_ratio = 0.0f;
         }
         int ty1 = (ty < nTilesY - 1) ? ty + 1 : ty;
-        
-        for (int x = 0; x < width; x++) {
+
+        for (int x = 0; x < width; x++)
+        {
             int tx = x / tileWidth;
             float x_ratio = float(x - tx * tileWidth) / tileWidth;
-            if (tx >= nTilesX - 1) {
+            if (tx >= nTilesX - 1)
+            {
                 tx = nTilesX - 1;
                 x_ratio = 0.0f;
             }
             int tx1 = (tx < nTilesX - 1) ? tx + 1 : tx;
-            
+
             // Get the original pixel value and compute its corresponding histogram bin.
             uint16_t pixel = image[y * width + x];
             int bin = (pixel * bins) / 65536;
             if (bin >= bins)
                 bin = bins - 1;
-            
+
             // Retrieve the mapping values from the four surrounding tiles.
             double map00 = tileMapping[ty * nTilesX + tx][bin];
             double map10 = tileMapping[ty * nTilesX + tx1][bin];
             double map01 = tileMapping[ty1 * nTilesX + tx][bin];
             double map11 = tileMapping[ty1 * nTilesX + tx1][bin];
-            
+
             // Bilinear interpolation of the mapped values.
             double newVal = (1 - x_ratio) * (1 - y_ratio) * map00 +
-                            x_ratio       * (1 - y_ratio) * map10 +
-                            (1 - x_ratio) * y_ratio       * map01 +
-                            x_ratio       * y_ratio       * map11;
-                            
+                            x_ratio * (1 - y_ratio) * map10 +
+                            (1 - x_ratio) * y_ratio * map01 +
+                            x_ratio * y_ratio * map11;
+
             image[y * width + x] = static_cast<uint16_t>(newVal);
         }
     }
@@ -446,3 +459,195 @@ const std::vector<std::tuple<int, int, int, double>>
         {1, -1, 0, 1.4142135623730951},
         {1, 0, 0, 1.0},
         {1, 1, 0, 1.4142135623730951}};
+
+void filter_run(uint16_t *data, size_t data_size, std::tuple<size_t, size_t, size_t> data_shape, size_t channel_count, std::string filter_name, std::string filter_param)
+{
+    if (filter_name == "offset")
+    {
+        float off = std::stof(filter_param);
+        for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+        {
+            float v = data[i];
+            v += off;
+
+            v = std::max((float)std::numeric_limits<uint16_t>::min(), v);
+            v = std::min((float)std::numeric_limits<uint16_t>::max(), v);
+
+            data[i] = v;
+        }
+    }
+
+    if (filter_name == "gamma")
+    {
+        float gamma = std::stof(filter_param);
+        for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+        {
+            float v = data[i];
+            v = pow(v, gamma);
+
+            v = std::max((float)std::numeric_limits<uint16_t>::min(), v);
+            v = std::min((float)std::numeric_limits<uint16_t>::max(), v);
+
+            data[i] = v;
+        }
+    }
+
+    if (filter_name == "gammascaled")
+    {
+        float gamma = std::stof(filter_param);
+        for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+        {
+            float v = data[i];
+
+            v /= std::numeric_limits<uint16_t>::max();
+            v = log(v);
+            v *= gamma;
+            v = exp(v);
+            v *= std::numeric_limits<uint16_t>::max();
+
+            v = std::max((float)std::numeric_limits<uint16_t>::min(), v);
+            v = std::min((float)std::numeric_limits<uint16_t>::max(), v);
+
+            data[i] = v;
+        }
+    }
+
+    if (filter_name == "scale")
+    {
+        float scale = std::stof(filter_param);
+        for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+        {
+            float v = data[i];
+            v *= scale;
+
+            v = std::max((float)std::numeric_limits<uint16_t>::min(), v);
+            v = std::min((float)std::numeric_limits<uint16_t>::max(), v);
+
+            data[i] = v;
+        }
+    }
+
+    if (filter_name == "weiner")
+    {
+        float nv = std::stof(filter_param);
+
+        double a = 1.0 / (1.0 + nv);
+        double b = nv / (1.0 + nv);
+
+        for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+        {
+            float v = data[i];
+
+            v *= a;
+            if (i > 0)
+            {
+                v += b * data[i - 1];
+            }
+
+            v = std::max((float)std::numeric_limits<uint16_t>::min(), v);
+            v = std::min((float)std::numeric_limits<uint16_t>::max(), v);
+
+            data[i] = v;
+        }
+    }
+
+    if (filter_name == "gaussian")
+    {
+        float sig = std::stof(filter_param);
+
+        float *data_tmp = (float *)calloc(data_size / sizeof(uint16_t), sizeof(float));
+
+        for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+        {
+            float v = data[i];
+            data_tmp[i] = v;
+        }
+
+        size_t osizei = std::get<0>(data_shape);
+        size_t osizej = std::get<1>(data_shape);
+        size_t osizek = std::get<2>(data_shape);
+
+        for (size_t c = 0; c < channel_count; c++)
+        {
+            for (size_t i = 0; i < osizei; i++)
+            {
+                for (size_t j = 0; j < osizej; j++)
+                {
+                    for (size_t k = 0; k < osizek; k++)
+                    {
+                        const int window_size = 3;
+
+                        const int istart = ((int)i) - window_size;
+                        const int iend = ((int)i) + window_size;
+                        const int jstart = ((int)j) - window_size;
+                        const int jend = ((int)j) + window_size;
+                        const int kstart = ((int)k) - window_size;
+                        const int kend = ((int)k) + window_size;
+
+                        double sum = 1e-9;
+                        double n = 1e-9;
+
+                        for (int di = istart; di <= iend; di++)
+                        {
+                            for (int dj = jstart; dj <= jend; dj++)
+                            {
+                                for (int dk = kstart; dk <= kend; dk++)
+                                {
+                                    if (di < 0 || dj < 0 || dk < 0 || di >= osizei || dj >= osizej || dk >= osizek)
+                                    {
+                                        continue;
+                                    }
+
+                                    const size_t ioffset = (c * osizei * osizej * osizek) + // C
+                                                           (dk * osizei * osizej) +         // Z
+                                                           (dj * osizei) +                  // Y
+                                                           (di);                            // X
+
+                                    float dist = powf32(di - i, 2) + powf32(dj - j, 2) + powf32(dk - k, 2); // d^2
+                                    float coeff = exp(-0.5 * dist / powf32(sig, 2));                        // / (sig * sqrtf32(M_2_PI));
+
+                                    float toadd = data[ioffset];
+                                    toadd *= coeff;
+
+                                    sum += toadd;
+                                    n += coeff;
+                                }
+                            }
+                        }
+
+                        sum /= n;
+                        const size_t ooffset = (c * osizei * osizej * osizek) + // C
+                                               (k * osizei * osizej) +          // Z
+                                               (j * osizei) +                   // Y
+                                               (i);                             // X
+
+                        data_tmp[ooffset] = sum;
+                    }
+                }
+            }
+        }
+
+        for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+        {
+            float v = data_tmp[i];
+
+            v = std::max((float)std::numeric_limits<uint16_t>::min(), v);
+            v = std::min((float)std::numeric_limits<uint16_t>::max(), v);
+
+            data[i] = v;
+        }
+
+        free(data_tmp);
+    }
+
+    if (filter_name == "CLAHE")
+    {
+        size_t sizex = std::get<0>(data_shape);
+        size_t sizey = std::get<1>(data_shape);
+        size_t sizez = std::get<2>(data_shape);
+
+        float param = std::stof(filter_param);
+
+        clahe(data, sizex, sizey, 256, 256, param);
+    }
+}
