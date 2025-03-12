@@ -1552,7 +1552,7 @@ int main(int argc, char *argv[])
 												   (j * chunk_sizes[0]) +					// Y
 												   (i);								// X
 
-							out_buffer[ooffset] = 0;
+							out_buffer[ooffset] = i;
 						}
 					}
 				}
