@@ -269,14 +269,19 @@ void clahe(uint16_t *image, int width, int height, int tileWidth, int tileHeight
 void clahe_1d(uint16_t *image, size_t data_size, uint32_t clipLimit)
 {
     const int bins = 256; // number of histogram bins
+    const double bin_step = std::numeric_limits<uint16_t>::max() / bins;
+    const size_t pixel_cnt = data_size / sizeof(uint16_t);
+
     std::vector<double> hist(bins, 0.0);
 
-    for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
+    for (size_t i = 0; i < pixel_cnt; i++)
     {
-        const uint16_t p = image[i];
+        const uint16_t v = image[i];
 
-        int bin = p; //  / (int)std::numeric_limits<uint16_t>::max();
-        bin /= bins;
+        int bin = v / bin_step;
+
+        bin = std::min(bin, bins - 1);
+        bin = std::max(0, bin);
         
         hist[bin] += 1.0;
     }
@@ -337,7 +342,7 @@ void clahe_1d(uint16_t *image, size_t data_size, uint32_t clipLimit)
         bin /= bins;
 
         bin = std::min(bin, bins - 1);
-        bin = std::max(0, bins);
+        bin = std::max(0, bin);
 
         image[i] = hist[bin] * std::numeric_limits<uint16_t>::max();
     }
