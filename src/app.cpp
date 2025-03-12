@@ -1474,6 +1474,22 @@ int main(int argc, char *argv[])
 		//uint16_t out_buffer[handler->channel_count][chunk_sizes[2]][chunk_sizes[1]][chunk_sizes[0]];
 		const size_t out_buffer_size = sizeof(uint16_t) * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2] * reader->channel_count;
 
+		int project_frames = -1;
+		char project_axis = 'x';
+		for(const auto& pair : filters) {
+			if(pair.first == "project") {
+				project_frames = std::stoi(pair.second);
+			}
+
+			if(pair.first == "project_axis") {
+				if(pair.second.size() > 0) {
+					project_axis = pair.second.at(0);
+				}
+			}
+		}
+
+		std::cout << project_axis << '\t' << project_frames << std::endl;
+
 		uint16_t * out_buffer = reader->load_region(
 			scale,
 			x_begin, x_end,
