@@ -1474,8 +1474,10 @@ int main(int argc, char *argv[])
 		//uint16_t out_buffer[handler->channel_count][chunk_sizes[2]][chunk_sizes[1]][chunk_sizes[0]];
 		const size_t out_buffer_size = sizeof(uint16_t) * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2] * reader->channel_count;
 
-		int project_frames = -1;
-		char project_axis = 'x';
+		int64_t project_frames = -1; // Number of frames to max project
+		char project_axis = 'x'; // Axis to max project along
+
+		// Check for project parameters in filters list
 		for(const auto& pair : filters) {
 			if(pair.first == "project") {
 				project_frames = std::stoi(pair.second);
@@ -1488,14 +1490,19 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		std::cout << project_axis << '\t' << project_frames << std::endl;
+		uint16_t * out_buffer;
 
-		uint16_t * out_buffer = reader->load_region(
-			scale,
-			x_begin, x_end,
-			y_begin, y_end,
-			z_begin, z_end
-		);
+		if(project_frames != -1) {
+			out_buffer = (uint16_t *) calloc(out_buffer_size, 1);
+		} else {
+			// Load unprojected data
+			out_buffer = reader->load_region(
+				scale,
+				x_begin, x_end,
+				y_begin, y_end,
+				z_begin, z_end
+			);
+		}
 
 		for(const auto& pair : filters) {
 			filter_run(
