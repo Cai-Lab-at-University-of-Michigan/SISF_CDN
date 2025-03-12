@@ -263,8 +263,6 @@ void clahe(uint16_t *image, int width, int height, int tileWidth, int tileHeight
 
 // CLAHE function for 16-bit images stored in a 1D array.
 // image: pointer to the image pixels (modified in place)
-// width, height: dimensions of the image
-// tileWidth, tileHeight: size of the contextual regions (tiles)
 // clipLimit: maximum allowed count in a histogram bin before clipping
 void clahe_1d(uint16_t *image, size_t data_size, uint32_t clipLimit)
 {
