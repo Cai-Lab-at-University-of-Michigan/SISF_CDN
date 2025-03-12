@@ -1512,13 +1512,25 @@ int main(int argc, char *argv[])
 			size_t y_end_project = y_end;
 			size_t z_end_project = z_end;
 
-			if(project_axis == 'x') {
-				
-			} else if(project_axis == 'y') {
-
-			} else { // if(project_axis == 'z') {
-
+			if (project_axis == 'x')
+			{
+				x_end_project += project_frames;
+				x_end_project = std::min(reader->xsize, x_end_project);
 			}
+			else if (project_axis == 'y')
+			{
+				y_end_project += project_frames;
+				y_end_project = std::min(reader->ysize, y_end_project);
+			}
+			else
+			{ // if(project_axis == 'z') {
+				z_end_project += project_frames;
+				z_end_project = std::min(reader->sizez, z_end_project);
+			}
+
+			const size_t x_project_size = x_end_project - x_begin_project;
+			const size_t y_project_size = y_end_project - y_begin_project;
+			const size_t z_project_size = z_end_project - z_begin_project;
 
 			uint16_t * tmp_buffer = reader->load_region(
 				scale,
@@ -1526,6 +1538,25 @@ int main(int argc, char *argv[])
 				y_begin_project, y_end_project,
 				z_begin_project, z_end_project
 			);
+
+			for (size_t c = 0; c < reader->channel_count; c++)
+			{
+				for (size_t i = 0; i < chunk_sizes[0]; i++)
+				{
+					for (size_t j = 0; j < chunk_sizes[1]; j++)
+					{
+						for (size_t k = 0; k < chunk_sizes[2]; k++)
+						{
+							const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
+												   (k * chunk_sizes[0] * chunk_sizes[1]) +			// Z
+												   (j * chunk_sizes[0]) +					// Y
+												   (i);								// X
+
+							out_buffer[ooffset] = 0;
+						}
+					}
+				}
+			}
 
 			free(tmp_buffer);
 		} else {
