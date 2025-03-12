@@ -270,6 +270,13 @@ void filter_run(uint16_t *data, size_t data_size, std::tuple<size_t, size_t, siz
 
 	if (filter_name == "CLAHE")
 	{
+		size_t sizex = std::get<0>(data_shape);
+		size_t sizey = std::get<1>(data_shape);
+		size_t sizez = std::get<2>(data_shape);
+
+		float param = std::stof(filter_param);
+
+		clahe(data, osizei, osizej, 256, 256, param);
 	}
 }
 
