@@ -286,46 +286,30 @@ void clahe_1d(uint16_t *image, size_t data_size, uint32_t clipLimit)
         hist[bin] += 1.0;
     }
 
-    /*
-        // Clip the histogram: any bin count above clipLimit is reduced
-        // and the excess is collected.
-        int excess = 0;
-        for (size_t i = 0; i < bins; i++)
+    // Clip the histogram: any bin count above clipLimit is reduced
+    // and the excess is collected.
+    uint64_t excess = 0;
+    for (size_t i = 0; i < bins; i++)
+    {
+        if (hist[i] > clipLimit)
         {
-            if (hist[i] > clipLimit)
-            {
-                excess += hist[i] - clipLimit;
-                hist[i] = clipLimit;
-            }
+            excess += hist[i] - clipLimit;
+            hist[i] = clipLimit;
         }
-
-        // Redistribute the excess evenly among all bins.
-        int redist = excess / bins;
-        for (size_t i = 0; i < bins; i++)
-        {
-            hist[i] += redist;
-        }
-    */
-
-    // Compute the cumulative distribution function (cdf).
-    // that maps the cdf to the full intensity range [0, 65535].
-    //std::vector<double> cdf(bins, 0.0);
-
-    //double scale = ((double)std::numeric_limits<uint16_t>::max()) / (data_size / sizeof(uint16_t));
-    //double sum = 0;
-    //for (size_t i = 0; i < bins; i++)
-    //{
-    //    sum += hist[i];
-    //    cdf[i] = sum * scale;
-    //}
-
-    // 0 .. 1
-    for (size_t i = 0; i < bins; i++) {
-        hist[i] /= (data_size / sizeof(uint16_t));
     }
 
+    // Redistribute the excess evenly among all bins.
+    int redist = excess / bins;
+    for (size_t i = 0; i < bins; i++)
+    {
+        hist[i] += redist;
+    }
+
+    // 0 .. 1
     double sum = 0.0;
     for(size_t i = 0; i < bins; i++) {
+        hist[i] /= pixel_cnt;
+
         sum += hist[i];
         hist[i] = sum;
     }
@@ -333,13 +317,9 @@ void clahe_1d(uint16_t *image, size_t data_size, uint32_t clipLimit)
     for (size_t i = 0; i < data_size / sizeof(uint16_t); i++)
     {
         // Get the original pixel value and compute its corresponding histogram bin.
-
         const uint16_t pixel = image[i];
 
-        //int bin = (pixel * bins) / std::numeric_limits<uint16_t>::max();
-
-        int bin = pixel; //  / (int)std::numeric_limits<uint16_t>::max();
-        bin /= bins;
+        int bin = v / bin_step;
 
         bin = std::min(bin, bins - 1);
         bin = std::max(0, bin);
