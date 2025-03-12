@@ -1525,7 +1525,7 @@ int main(int argc, char *argv[])
 			else
 			{ // if(project_axis == 'z') {
 				z_end_project += project_frames;
-				z_end_project = std::min(reader->sizez - 1, z_end_project);
+				z_end_project = std::min(reader->sizez, z_end_project);
 			}
 
 			const size_t x_project_size = x_end_project - x_begin_project;
