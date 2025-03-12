@@ -1515,12 +1515,12 @@ int main(int argc, char *argv[])
 			if (project_axis == 'x')
 			{
 				x_end_project += project_frames;
-				x_end_project = std::min(reader->xsize, x_end_project);
+				x_end_project = std::min(reader->sizex, x_end_project);
 			}
 			else if (project_axis == 'y')
 			{
 				y_end_project += project_frames;
-				y_end_project = std::min(reader->ysize, y_end_project);
+				y_end_project = std::min(reader->sizey, y_end_project);
 			}
 			else
 			{ // if(project_axis == 'z') {
