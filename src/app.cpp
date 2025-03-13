@@ -1483,40 +1483,36 @@ int main(int argc, char *argv[])
 
 		int64_t project_frames = -1; // Number of frames to max project
 		char project_axis = 0;		 // Axis to max project along
-		projectfunction project_mode = max_project;
+		projectfunction project_mode = max_project; // What projection function to use
 
 		// Check for project parameters in filters list
 		for (const auto &pair : filters)
 		{
+			if (pair.second.empty())
+			{
+				continue;
+			}
 			if (pair.first == "project")
 			{
 				project_frames = std::stoi(pair.second);
 			}
-
-			if (pair.first == "project_axis")
+			else if (pair.first == "project_axis")
 			{
-				if (pair.second.size() > 0)
-				{
-					project_axis = pair.second.at(0);
-				}
+				project_axis = pair.second.at(0);
 			}
-
-			if (pair.first == "project_function")
+			else if (pair.first == "project_function")
 			{
-				if (pair.second.size() > 0)
+				if (pair.second == "max")
 				{
-					if (pair.second == "max")
-					{
-						project_mode = max_project;
-					}
-					else if (pair.second == "min")
-					{
-						project_mode = min_project;
-					}
-					else if (pair.second == "avg")
-					{
-						project_mode = avg_project;
-					}
+					project_mode = max_project;
+				}
+				else if (pair.second == "min")
+				{
+					project_mode = min_project;
+				}
+				else if (pair.second == "avg")
+				{
+					project_mode = avg_project;
 				}
 			}
 		}
