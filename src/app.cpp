@@ -1474,18 +1474,49 @@ int main(int argc, char *argv[])
 		//uint16_t out_buffer[handler->channel_count][chunk_sizes[2]][chunk_sizes[1]][chunk_sizes[0]];
 		const size_t out_buffer_size = sizeof(uint16_t) * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2] * reader->channel_count;
 
+		enum projectfunction
+		{
+			max_project,
+			min_project,
+			avg_project
+		};
+
 		int64_t project_frames = -1; // Number of frames to max project
-		char project_axis = 0; // Axis to max project along
+		char project_axis = 0;		 // Axis to max project along
+		projectfunction project_mode = max_project;
 
 		// Check for project parameters in filters list
-		for(const auto& pair : filters) {
-			if(pair.first == "project") {
+		for (const auto &pair : filters)
+		{
+			if (pair.first == "project")
+			{
 				project_frames = std::stoi(pair.second);
 			}
 
-			if(pair.first == "project_axis") {
-				if(pair.second.size() > 0) {
+			if (pair.first == "project_axis")
+			{
+				if (pair.second.size() > 0)
+				{
 					project_axis = pair.second.at(0);
+				}
+			}
+
+			if (pair.first == "project_function")
+			{
+				if (pair.second.size() > 0)
+				{
+					if (pair.second == "max")
+					{
+						project_mode = max_project;
+					}
+					else if (pair.second == "min")
+					{
+						project_mode = min_project;
+					}
+					else if (pair.second == "avg")
+					{
+						project_mode = avg_project;
+					}
 				}
 			}
 		}
