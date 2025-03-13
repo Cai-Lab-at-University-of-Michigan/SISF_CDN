@@ -1492,7 +1492,7 @@ int main(int argc, char *argv[])
 
 		uint16_t * out_buffer;
 
-		project_frames /= scale;
+		//project_frames /= scale;
 		//project_frames = std::max(project_frames, 1);
 
 		if(project_frames > 1) {
