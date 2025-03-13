@@ -1475,7 +1475,7 @@ int main(int argc, char *argv[])
 		const size_t out_buffer_size = sizeof(uint16_t) * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2] * reader->channel_count;
 
 		int64_t project_frames = -1; // Number of frames to max project
-		char project_axis = 'z'; // Axis to max project along
+		char project_axis = 0; // Axis to max project along
 
 		// Check for project parameters in filters list
 		for(const auto& pair : filters) {
@@ -1494,6 +1494,16 @@ int main(int argc, char *argv[])
 
 		// Scale frame count by downsampling
 		if(project_frames > 1) {
+			if(project_axis == 0) {
+				if(chunk_sizes[0] == 1) {
+					project_axis = 'x';
+				} else if (chunk_sizes[1] == 1) {
+					project_axis = 'y';
+				} else { //if (chunk_sizes[2] == 1) {
+					project_axis = 'z';
+				}
+			}
+
 			project_frames /= scale;
 			if(project_frames < 1) {
 				project_frames = 1;
