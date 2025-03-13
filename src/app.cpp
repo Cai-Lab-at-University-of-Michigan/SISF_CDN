@@ -1494,7 +1494,9 @@ int main(int argc, char *argv[])
 
 		if(project_frames > 1) {
 			project_frames /= scale;
-			project_frames = std::max(project_frames, 1);
+			if(project_frames < 1) {
+				project_frames = 1;
+			}
 		}
 
 		if(project_frames > 1) {
