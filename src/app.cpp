@@ -1492,6 +1492,7 @@ int main(int argc, char *argv[])
 
 		uint16_t * out_buffer;
 
+		// Scale frame count by downsampling
 		if(project_frames > 1) {
 			project_frames /= scale;
 			if(project_frames < 1) {
