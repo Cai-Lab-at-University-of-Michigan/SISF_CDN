@@ -1594,11 +1594,11 @@ int main(int argc, char *argv[])
 			double sum;
 			for (size_t c = 0; c < reader->channel_count; c++)
 			{
-				for (size_t i = 0; i < chunk_sizes[0]; i++)
+				for (size_t k = 0; k < chunk_sizes[2]; k++)
 				{
 					for (size_t j = 0; j < chunk_sizes[1]; j++)
 					{
-						for (size_t k = 0; k < chunk_sizes[2]; k++)
+						for (size_t i = 0; i < chunk_sizes[0]; i++)
 						{
 							switch (project_mode)
 							{
