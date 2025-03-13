@@ -1594,6 +1594,8 @@ int main(int argc, char *argv[])
 				z_begin_project, z_end_project
 			);
 
+			uint16_t vout;
+			double sum;
 			for (size_t c = 0; c < reader->channel_count; c++)
 			{
 				for (size_t i = 0; i < chunk_sizes[0]; i++)
@@ -1602,6 +1604,20 @@ int main(int argc, char *argv[])
 					{
 						for (size_t k = 0; k < chunk_sizes[2]; k++)
 						{
+							switch (project_mode)
+							{
+							case max_project:
+								vout = std::numeric_limits<uint16_t>::min();
+								break;
+							case min_project:
+								vout = std::numeric_limits<uint16_t>::max();
+								break;
+							case avg_project:
+								vout = 0;
+								sum = 0.0;
+								break;
+							}
+
 							for (size_t p = 0; p < project_frames; p++)
 							{
 								size_t new_i = i;
@@ -1626,15 +1642,35 @@ int main(int argc, char *argv[])
 													   (new_j * x_project_size) +								// Y
 													   (new_i);													// X
 
-								const uint16_t v = tmp_buffer[ioffset];
+								const uint16_t vin = tmp_buffer[ioffset];
 
-								const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
-													   (k * chunk_sizes[0] * chunk_sizes[1]) +					// Z
-													   (j * chunk_sizes[0]) +									// Y
-													   (i);														// X
-
-								out_buffer[ooffset] = std::max(out_buffer[ooffset], v);
+								switch (project_mode)
+								{
+								case max_project:
+									vout = std::max(vin, vout);
+									break;
+								case min_project:
+									vout = std::min(vin, vout);
+									break;
+								case avg_project:
+									vout++;
+									sum += vin;
+									break;
+								}
 							}
+
+							if (project_mode == avg_project)
+							{
+								sum /= vout;
+								vout = sum;
+							}
+
+							const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
+												   (k * chunk_sizes[0] * chunk_sizes[1]) +					// Z
+												   (j * chunk_sizes[0]) +									// Y
+												   (i);														// X
+
+							out_buffer[ooffset] = vout;
 						}
 					}
 				}
