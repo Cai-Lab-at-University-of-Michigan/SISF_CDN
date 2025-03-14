@@ -1448,7 +1448,7 @@ int main(int argc, char *argv[])
 		auto archive_search = archive_inventory.find(data_id);
 		if(archive_search == archive_inventory.end()) {
 			res.code = crow::status::NOT_FOUND;
-			res.end("404 Not Found");
+			res.end("404 Not Found\n");
 			return;
 		}
 
@@ -1456,13 +1456,18 @@ int main(int argc, char *argv[])
 
 		if(!reader->verify_protection(filters)) {
 			res.code = crow::status::FORBIDDEN;
-			res.end("403 Forbidden");
+			res.end("403 Forbidden\n");
 			return;
 		}
 
 		unsigned int x_begin, x_end, y_begin, y_end, z_begin, z_end;
 		// <xBegin>-<xEnd>_<yBegin>-<yEnd>_<zBegin>-<zEnd>
-		sscanf(tile_key.c_str(), "%u-%u_%u-%u_%u-%u", &x_begin, &x_end, &y_begin, &y_end, &z_begin, &z_end);
+		if (sscanf(tile_key.c_str(), "%u-%u_%u-%u_%u-%u", &x_begin, &x_end, &y_begin, &y_end, &z_begin, &z_end) != 6)
+		{
+			res.code = crow::status::BAD_REQUEST;
+			res.end("400 Bad Request -- Invalid range string\n");
+			return;
+		}
 
 		size_t chunk_sizes[3] = {x_end - x_begin, y_end - y_begin, z_end - z_begin};
 		size_t scale = stoi(resolution_id);
@@ -1484,7 +1489,7 @@ int main(int argc, char *argv[])
 			if (out_of_range)
 			{
 				res.code = crow::status::BAD_REQUEST;
-				res.end("400 Bad Request -- Invalid data range");
+				res.end("400 Bad Request -- Invalid data range\n");
 				return;
 			}
 		}
