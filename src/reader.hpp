@@ -514,7 +514,9 @@ public:
         if (fnames.size() > 0)
         {
             this->is_protected = true;
-        } else {
+        }
+        else
+        {
             this->is_protected = false;
         }
     }
@@ -658,7 +660,7 @@ public:
             resy = jsonData["yres"];
             resz = jsonData["zres"];
 
-            //std::cout << "Read JSON from file: " << jsonData.dump(4) << std::endl;
+            // std::cout << "Read JSON from file: " << jsonData.dump(4) << std::endl;
         }
         else
         {
