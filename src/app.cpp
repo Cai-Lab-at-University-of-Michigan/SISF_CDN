@@ -112,7 +112,7 @@ void load_inventory()
 			try
 			{
 				archive_inventory[dset_name] = new archive_reader(froot, SISF, true);
-				std::cout << "[SISF] ";
+				std::cout << "[SISF-JSON] ";
 				archive_inventory[dset_name]->print_info();
 			}
 			catch (...)
