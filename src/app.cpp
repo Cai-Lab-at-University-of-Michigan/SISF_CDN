@@ -1485,6 +1485,7 @@ int main(int argc, char *argv[])
 			{
 				res.code = crow::status::BAD_REQUEST;
 				res.end("400 Bad Request -- Invalid data range");
+				return;
 			}
 		}
 
