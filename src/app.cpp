@@ -61,10 +61,16 @@ void load_inventory()
 			loc = froot.find_last_of('/');
 			std::string dset_name = froot.substr(loc + 1);
 
-			archive_inventory[dset_name] = new archive_reader(froot, ZARR, false);
-
-			std::cout << "[ZARR] ";
-			archive_inventory[dset_name]->print_info();
+			try
+			{
+				archive_inventory[dset_name] = new archive_reader(froot, ZARR, false);
+				std::cout << "[ZARR] ";
+				archive_inventory[dset_name]->print_info();
+			}
+			catch (...)
+			{
+				std::cout << "[FAIL] " << dset_name << std::endl;
+			}
 		}
 	}
 
@@ -79,10 +85,16 @@ void load_inventory()
 			loc = froot.find_last_of('/');
 			std::string dset_name = froot.substr(loc + 1);
 
-			archive_inventory[dset_name] = new archive_reader(froot, SISF, false);
-
-			std::cout << "[SISF] ";
-			archive_inventory[dset_name]->print_info();
+			try
+			{
+				archive_inventory[dset_name] = new archive_reader(froot, SISF, false);
+				std::cout << "[SISF] ";
+				archive_inventory[dset_name]->print_info();
+			}
+			catch (...)
+			{
+				std::cout << "[FAIL] " << dset_name << std::endl;
+			}
 		}
 	}
 
@@ -97,88 +109,93 @@ void load_inventory()
 			loc = froot.find_last_of('/');
 			std::string dset_name = froot.substr(loc + 1);
 
-			archive_inventory[dset_name] = new archive_reader(froot, SISF, true);
-
-			std::cout << "[SISF] ";
-			archive_inventory[dset_name]->print_info();
-		}
-	}
-
-	std::cout << "|====================================================|" << std::endl;
-}
-
-archive_reader *search_inventory(std::string key)
-{
-	auto archive_search = archive_inventory.find(key);
-
-	if (archive_search == archive_inventory.end())
-	{
-		return nullptr;
-	}
-
-	return archive_search->second;
-}
-
-int main(int argc, char *argv[])
-{
-	{
-		if (argc > 1)
-		{
-			std::istringstream iss(argv[1]);
-			iss >> port;
-
-			if (argc > 2)
+			try
 			{
-				DATA_PATH = std::string(argv[2]);
+				archive_inventory[dset_name] = new archive_reader(froot, SISF, true);
+				std::cout << "[SISF] ";
+				archive_inventory[dset_name]->print_info();
+			}
+			catch (...)
+			{
+				std::cout << "[FAIL] " << dset_name << std::endl;
 			}
 		}
+
+		std::cout << "|====================================================|" << std::endl;
 	}
 
-	std::string read_only = read_env_variable("READ_ONLY");
-	if (read_only.size() > 0)
+	archive_reader *search_inventory(std::string key)
 	{
-		READ_ONLY_MODE = true;
-		std::cout << "Using read only mode." << std::endl;
-	}
+		auto archive_search = archive_inventory.find(key);
 
-	std::string thread_count = read_env_variable("THREAD_COUNT");
-	if (thread_count.size() > 0)
-	{
-		std::istringstream tc(thread_count);
-		tc >> THREAD_COUNT;
-	}
-
-	load_inventory();
-
-	// Create App with CORS enabled
-	crow::App<crow::CORSHandler, CounterMiddleware> app;
-
-	// Disable CORS directly
-	auto &cors = app.get_middleware<crow::CORSHandler>();
-	cors.global().origin("*");
-
-	// Default route to check server status
-	CROW_ROUTE(app, "/")
-	([]()
-	 { return "Server is up!"; });
-
-	CROW_ROUTE(app, "/debug_headers")
-	(
-		[](const crow::request &req)
+		if (archive_search == archive_inventory.end())
 		{
-			std::stringstream out;
+			return nullptr;
+		}
 
-			for (const auto &[key, value] : req.headers)
+		return archive_search->second;
+	}
+
+	int main(int argc, char *argv[])
+	{
+		{
+			if (argc > 1)
 			{
-				out << key << ": " << value << std::endl;
+				std::istringstream iss(argv[1]);
+				iss >> port;
+
+				if (argc > 2)
+				{
+					DATA_PATH = std::string(argv[2]);
+				}
 			}
+		}
 
-			return out.str();
-		});
+		std::string read_only = read_env_variable("READ_ONLY");
+		if (read_only.size() > 0)
+		{
+			READ_ONLY_MODE = true;
+			std::cout << "Using read only mode." << std::endl;
+		}
 
-	CROW_ROUTE(app, "/performance")
-	([]()
-	 {
+		std::string thread_count = read_env_variable("THREAD_COUNT");
+		if (thread_count.size() > 0)
+		{
+			std::istringstream tc(thread_count);
+			tc >> THREAD_COUNT;
+		}
+
+		load_inventory();
+
+		// Create App with CORS enabled
+		crow::App<crow::CORSHandler, CounterMiddleware> app;
+
+		// Disable CORS directly
+		auto &cors = app.get_middleware<crow::CORSHandler>();
+		cors.global().origin("*");
+
+		// Default route to check server status
+		CROW_ROUTE(app, "/")
+		([]()
+		 { return "Server is up!"; });
+
+		CROW_ROUTE(app, "/debug_headers")
+		(
+			[](const crow::request &req)
+			{
+				std::stringstream out;
+
+				for (const auto &[key, value] : req.headers)
+				{
+					out << key << ": " << value << std::endl;
+				}
+
+				return out.str();
+			});
+
+		CROW_ROUTE(app, "/performance")
+		([]()
+		 {
 		std::stringstream out;
 
 		out << "<html>\n";
@@ -226,9 +243,9 @@ int main(int argc, char *argv[])
 
 		return out.str(); });
 
-	CROW_ROUTE(app, "/access")
-	([]()
-	 {
+		CROW_ROUTE(app, "/access")
+		([]()
+		 {
 		std::stringstream out;
 
 		out << "<html>\n";
@@ -257,9 +274,9 @@ int main(int argc, char *argv[])
 
 		return out.str(); });
 
-	CROW_ROUTE(app, "/inventory")
-	([](const crow::request &req)
-	 {
+		CROW_ROUTE(app, "/inventory")
+		([](const crow::request &req)
+		 {
 		std::string server_root = SERVER_ROOT;
 
 		if (auto search = req.headers.find("X-URL-Base"); search != req.headers.end()) {
@@ -340,10 +357,10 @@ int main(int argc, char *argv[])
 
 		return out.str(); });
 
-	//	ENDPOINT: /data/<string>/info
-	CROW_ROUTE(app, "/<string>/info")
-	([](crow::response &res, std::string data_id_in)
-	 {
+		//	ENDPOINT: /data/<string>/info
+		CROW_ROUTE(app, "/<string>/info")
+		([](crow::response &res, std::string data_id_in)
+		 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 		archive_reader * reader = search_inventory(data_id);
@@ -397,15 +414,15 @@ int main(int argc, char *argv[])
 		res.write(response.dump());
     	res.end(); });
 
-	CROW_ROUTE(app, "/<string>/provenance")
-	([](crow::response &res, std::string data_id_in)
-	 {
+		CROW_ROUTE(app, "/<string>/provenance")
+		([](crow::response &res, std::string data_id_in)
+		 {
 		res.code = crow::status::NOT_FOUND;
 		res.end(); });
 
-	CROW_ROUTE(app, "/<string>/tracing/<string>/<string>")
-	([](const crow::request &req, crow::response &res, std::string data_id_in, std::string pt_in_s1, std::string pt_in_s2)
-	 {
+		CROW_ROUTE(app, "/<string>/tracing/<string>/<string>")
+		([](const crow::request &req, crow::response &res, std::string data_id_in, std::string pt_in_s1, std::string pt_in_s2)
+		 {
 		auto soma_param = req.url_params.get("is_soma");
 		bool is_soma = soma_param != nullptr && strcmp(soma_param, "true") == 0;
 		std::cout << "is_soma=" << is_soma << std::endl;
@@ -654,10 +671,10 @@ int main(int argc, char *argv[])
 
 		res.end(out.str()); });
 
-	// @app.route("/meanshift/<data_id>/<point>/")
-	CROW_ROUTE(app, "/<string>/meanshift/<string>")
-	([](crow::response &res, std::string data_id_in, std::string pt_in_s)
-	 {
+		// @app.route("/meanshift/<data_id>/<point>/")
+		CROW_ROUTE(app, "/<string>/meanshift/<string>")
+		([](crow::response &res, std::string data_id_in, std::string pt_in_s)
+		 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 		archive_reader * reader = search_inventory(data_id);
@@ -770,9 +787,9 @@ int main(int argc, char *argv[])
 
 		res.end(); });
 
-	CROW_ROUTE(app, "/<string>/skeleton/info")
-	([](crow::response &res, std::string data_id_in)
-	 {
+		CROW_ROUTE(app, "/<string>/skeleton/info")
+		([](crow::response &res, std::string data_id_in)
+		 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 		archive_reader * reader = search_inventory(data_id);
@@ -791,9 +808,9 @@ int main(int argc, char *argv[])
 		res.write(response.dump());
 		res.end(); });
 
-	CROW_ROUTE(app, "/<string>/skeleton/segment_properties/info")
-	([](crow::response &res, std::string data_id_in)
-	 {	
+		CROW_ROUTE(app, "/<string>/skeleton/segment_properties/info")
+		([](crow::response &res, std::string data_id_in)
+		 {	
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 
@@ -836,8 +853,8 @@ int main(int argc, char *argv[])
     	res.write(response.dump());
     	res.end(); });
 
-	CROW_ROUTE(app, "/echo").methods("POST"_method)([](const crow::request &req)
-													{
+		CROW_ROUTE(app, "/echo").methods("POST"_method)([](const crow::request &req)
+														{
 		crow::multipart::message msg(req);
 		
 		for(int i = 0; i < msg.parts.size(); i++) {
@@ -855,9 +872,9 @@ int main(int argc, char *argv[])
 
 		return crow::response(req.body); });
 
-	CROW_ROUTE(app, "/<string>/skeleton_api/delete/<int>")
-	([](std::string data_id_in, int neuron_id)
-	 {
+		CROW_ROUTE(app, "/<string>/skeleton_api/delete/<int>")
+		([](std::string data_id_in, int neuron_id)
+		 {
 		if(READ_ONLY_MODE) {
 			return crow::response(crow::status::BAD_REQUEST);
 		}
@@ -889,8 +906,8 @@ int main(int argc, char *argv[])
 
 		return crow::response( response.dump() ); });
 
-	CROW_ROUTE(app, "/<string>/skeleton_api/replace/<int>").methods("POST"_method)([](const crow::request &req, std::string data_id_in, int neuron_id)
-																				   {
+		CROW_ROUTE(app, "/<string>/skeleton_api/replace/<int>").methods("POST"_method)([](const crow::request &req, std::string data_id_in, int neuron_id)
+																					   {
 		if(READ_ONLY_MODE) {
 			return crow::response(crow::status::BAD_REQUEST);
 		}
@@ -1003,9 +1020,9 @@ int main(int argc, char *argv[])
 
 		return crow::response( response.dump() ); });
 
-	CROW_ROUTE(app, "/<string>/skeleton_api/ls")
-	([](std::string data_id)
-	 {
+		CROW_ROUTE(app, "/<string>/skeleton_api/ls")
+		([](std::string data_id)
+		 {
 		data_id = str_first(data_id, '+');
 
 		std::vector<std::string> trace_file = glob_tool(DATA_PATH + data_id + "/traces.sql");
@@ -1029,8 +1046,8 @@ int main(int argc, char *argv[])
 		
 		return crow::response( response.dump() ); });
 
-	CROW_ROUTE(app, "/<string>/skeleton_api/upload").methods("POST"_method)([](const crow::request &req, std::string data_id_in)
-																			{
+		CROW_ROUTE(app, "/<string>/skeleton_api/upload").methods("POST"_method)([](const crow::request &req, std::string data_id_in)
+																				{
 		if(READ_ONLY_MODE) {
 			return crow::response(crow::status::BAD_REQUEST);
 		}
@@ -1150,9 +1167,9 @@ int main(int argc, char *argv[])
 
 		return crow::response( response.dump() ); });
 
-	CROW_ROUTE(app, "/<string>/skeleton_api/get/<int>")
-	([](crow::response &res, std::string data_id_in, int skeleton_id)
-	 {
+		CROW_ROUTE(app, "/<string>/skeleton_api/get/<int>")
+		([](crow::response &res, std::string data_id_in, int skeleton_id)
+		 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 
@@ -1176,9 +1193,9 @@ int main(int argc, char *argv[])
 		res.write( out.str() );
 		res.end(); });
 
-	CROW_ROUTE(app, "/<string>/skeleton/<int>")
-	([](crow::response &res, std::string data_id_in, int skeleton_id)
-	 {
+		CROW_ROUTE(app, "/<string>/skeleton/<int>")
+		([](crow::response &res, std::string data_id_in, int skeleton_id)
+		 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 
@@ -1250,10 +1267,10 @@ int main(int argc, char *argv[])
     	
     	res.end(); });
 
-	//	ENDPOINT: /<string>/raw_access/<c>,<i>,<j>,<k>/info
-	CROW_ROUTE(app, "/<string>/raw_access/<string>/info")
-	([](crow::response &res, std::string data_id_in, std::string chunk_key)
-	 {
+		//	ENDPOINT: /<string>/raw_access/<c>,<i>,<j>,<k>/info
+		CROW_ROUTE(app, "/<string>/raw_access/<string>/info")
+		([](crow::response &res, std::string data_id_in, std::string chunk_key)
+		 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 		archive_reader * reader = search_inventory(data_id);
@@ -1334,10 +1351,10 @@ int main(int argc, char *argv[])
 		res.write(response.dump());
     	res.end(); });
 
-	// ENDPOINT: /<data_id>/raw_access/<c>,<i>,<j>,<k>/<resolution>/<key>-<key>-<key>
-	CROW_ROUTE(app, "/<string>/raw_access/<string>/<string>/<string>")
-	([](crow::response &res, std::string data_id_in, std::string chunk_key, std::string resolution_id, std::string tile_key)
-	 {
+		// ENDPOINT: /<data_id>/raw_access/<c>,<i>,<j>,<k>/<resolution>/<key>-<key>-<key>
+		CROW_ROUTE(app, "/<string>/raw_access/<string>/<string>/<string>")
+		([](crow::response &res, std::string data_id_in, std::string chunk_key, std::string resolution_id, std::string tile_key)
+		 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 		archive_reader * reader = search_inventory(data_id);
@@ -1469,11 +1486,11 @@ int main(int argc, char *argv[])
 
 		res.end(); });
 
-	// @app.route("/data/<data_id>/<resolution>/<key>-<key>-<key>")
-	// This has to be last in the route list because it acts as a wildcard
-	CROW_ROUTE(app, "/<string>/<string>/<string>")
-	([](crow::response &res, std::string data_id_in, std::string resolution_id, std::string tile_key)
-	 {
+		// @app.route("/data/<data_id>/<resolution>/<key>-<key>-<key>")
+		// This has to be last in the route list because it acts as a wildcard
+		CROW_ROUTE(app, "/<string>/<string>/<string>")
+		([](crow::response &res, std::string data_id_in, std::string resolution_id, std::string tile_key)
+		 {
 		auto begin = now();
 		
 		//std::string, std::vector<std::pair<std::string, std::string>>
@@ -1782,17 +1799,17 @@ int main(int argc, char *argv[])
 		
 		log_time(data_id, "READ", scale, x_end-x_begin, y_end-y_begin, z_end-z_begin, begin); });
 
-	{ // App start logic
-		std::cout << "Using port: " << port << std::endl;
-		std::cout << "Thread count: " << THREAD_COUNT << std::endl;
+		{ // App start logic
+			std::cout << "Using port: " << port << std::endl;
+			std::cout << "Thread count: " << THREAD_COUNT << std::endl;
 
-		app.port(port)
-			//.use_compression(crow::compression::algorithm::DEFLATE)
-			//.use_compression(crow::compression::algorithm::GZIP)
-			.concurrency(THREAD_COUNT)
-			//.multithreaded()
-			.loglevel(crow::LogLevel::Warning)
-			.timeout(5)
-			.run();
+			app.port(port)
+				//.use_compression(crow::compression::algorithm::DEFLATE)
+				//.use_compression(crow::compression::algorithm::GZIP)
+				.concurrency(THREAD_COUNT)
+				//.multithreaded()
+				.loglevel(crow::LogLevel::Warning)
+				.timeout(5)
+				.run();
+		}
 	}
-}
