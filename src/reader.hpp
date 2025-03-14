@@ -644,6 +644,18 @@ public:
             dtype = 1;
             channel_count = jsonData["channel_count"];
 
+            mchunkx = jsonData["xchunk"];
+            mchunky = jsonData["ychunk"];
+            mchunkz = jsonData["zchunk"];
+
+            sizex = jsonData["xsize"];
+            sizey = jsonData["ysize"];
+            sizez = jsonData["zsize"];
+
+            resx = jsonData["xres"];
+            resx = jsonData["yres"];
+            resx = jsonData["zres"];
+
             std::cout << "Read JSON from file: " << jsonData.dump(4) << std::endl;
         }
         else
