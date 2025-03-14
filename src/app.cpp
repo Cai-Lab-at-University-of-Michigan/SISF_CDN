@@ -37,7 +37,7 @@ bool READ_ONLY_MODE = false;
 
 std::string DATA_PATH = "./data/";
 std::string SERVER_ROOT = "https://server/";
-const std::string VERSION_STRING = "V0-6-0";
+const std::string VERSION_STRING = "V0-6-3";
 
 using json = nlohmann::json;
 
@@ -179,6 +179,10 @@ int main(int argc, char *argv[])
 	CROW_ROUTE(app, "/")
 	([]()
 	 { return "Server is up!"; });
+
+	CROW_ROUTE(app, "/version")
+	([]()
+	 { return VERSION_STRING; });
 
 	CROW_ROUTE(app, "/debug_headers")
 	(
