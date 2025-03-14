@@ -653,8 +653,8 @@ public:
             sizez = jsonData["zsize"];
 
             resx = jsonData["xres"];
-            resx = jsonData["yres"];
-            resx = jsonData["zres"];
+            resy = jsonData["yres"];
+            resz = jsonData["zres"];
 
             std::cout << "Read JSON from file: " << jsonData.dump(4) << std::endl;
         }
