@@ -631,7 +631,7 @@ public:
     {
         if (metadata_json)
         {
-            std::ifstream inputFile(fname + "metadata.json");
+            std::ifstream inputFile(fname + "/metadata.json");
             if (!inputFile)
             {
                 ; // TODO error handling
