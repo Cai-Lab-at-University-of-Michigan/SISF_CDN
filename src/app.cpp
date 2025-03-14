@@ -45,27 +45,10 @@ typedef std::tuple<float, float, float, float, int> swc_line;
 typedef std::tuple<int, float, float, float, float, int> swc_line_input;
 
 std::unordered_map<std::string, archive_reader *> archive_inventory;
+
 void load_inventory()
 {
 	std::cout << "|================AVAILABLE DATASETS==================|" << std::endl;
-
-	{
-		std::vector<std::string> fnames = glob_tool(std::string(DATA_PATH + "*/metadata.bin"));
-		for (std::vector<std::string>::iterator i = fnames.begin(); i != fnames.end(); i++)
-		{
-			size_t loc = i->find_last_of("/");
-
-			std::string froot = std::string(i->c_str(), i->c_str() + loc);
-
-			loc = froot.find_last_of('/');
-			std::string dset_name = froot.substr(loc + 1);
-
-			archive_inventory[dset_name] = new archive_reader(froot, SISF);
-
-			std::cout << "[SISF] ";
-			archive_inventory[dset_name]->print_info();
-		}
-	}
 
 	{
 		std::vector<std::string> fnames = glob_tool(std::string(DATA_PATH + "*/zarr.json"));
@@ -81,6 +64,42 @@ void load_inventory()
 			archive_inventory[dset_name] = new archive_reader(froot, ZARR);
 
 			std::cout << "[ZARR] ";
+			archive_inventory[dset_name]->print_info();
+		}
+	}
+
+	{
+		std::vector<std::string> fnames = glob_tool(std::string(DATA_PATH + "*/metadata.bin"));
+		for (std::vector<std::string>::iterator i = fnames.begin(); i != fnames.end(); i++)
+		{
+			size_t loc = i->find_last_of("/");
+
+			std::string froot = std::string(i->c_str(), i->c_str() + loc);
+
+			loc = froot.find_last_of('/');
+			std::string dset_name = froot.substr(loc + 1);
+
+			archive_inventory[dset_name] = new archive_reader(froot, SISF, false);
+
+			std::cout << "[SISF] ";
+			archive_inventory[dset_name]->print_info();
+		}
+	}
+
+	{
+		std::vector<std::string> fnames = glob_tool(std::string(DATA_PATH + "*/metadata.json"));
+		for (std::vector<std::string>::iterator i = fnames.begin(); i != fnames.end(); i++)
+		{
+			size_t loc = i->find_last_of("/");
+
+			std::string froot = std::string(i->c_str(), i->c_str() + loc);
+
+			loc = froot.find_last_of('/');
+			std::string dset_name = froot.substr(loc + 1);
+
+			archive_inventory[dset_name] = new archive_reader(froot, SISF, true);
+
+			std::cout << "[SISF] ";
 			archive_inventory[dset_name]->print_info();
 		}
 	}

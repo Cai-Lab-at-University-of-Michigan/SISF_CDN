@@ -16,6 +16,8 @@
 #include <map>
 #include <chrono>
 
+#include <nlohmann/json.hpp>
+
 #include "vidlib.hpp"
 
 #include "../zstd/lib/zstd.h"
@@ -73,6 +75,8 @@ enum ArchiveType
     SISF,
     ZARR
 };
+
+using json = nlohmann::json;
 
 std::chrono::duration cache_lock_timeout = std::chrono::milliseconds(10);
 
@@ -427,7 +431,9 @@ public:
 class archive_reader
 {
 public:
-    bool is_protected = false;
+    bool is_protected;
+    bool metdata_json;
+
     std::string fname; // "./example_dset"
     uint16_t channel_count;
     uint16_t archive_version; // 1 == current
@@ -441,7 +447,7 @@ public:
 
     ArchiveType type;
 
-    archive_reader(std::string name_in, enum ArchiveType type_in)
+    archive_reader(std::string name_in, enum ArchiveType type_in, bool use_json_metdata)
     {
         fname = name_in;
         type = type_in;
@@ -464,30 +470,37 @@ public:
     // Return true if the contents of filters allows access to this dataset
     bool verify_protection(std::vector<std::pair<std::string, std::string>> filters)
     {
-        if(!this->is_protected) {
+        if (!this->is_protected)
+        {
             return true;
         }
 
         std::string token_in = "";
-        for(auto i : filters) {
-            if(i.first == "token") {
+        for (auto i : filters)
+        {
+            if (i.first == "token")
+            {
                 token_in = i.second;
             }
         }
 
-        if(token_in.size() == 0) {
+        if (token_in.size() == 0)
+        {
             return false;
         }
 
         std::ifstream access_file(fname + "/.sisf_access");
 
         std::string line;
-        while(std::getline(access_file, line)) {
-            if(line.size() == 0) {
+        while (std::getline(access_file, line))
+        {
+            if (line.size() == 0)
+            {
                 continue;
             }
 
-            if(line == token_in) return true;
+            if (line == token_in)
+                return true;
         }
 
         return false;
@@ -497,7 +510,8 @@ public:
     {
         std::vector<std::string> fnames = glob_tool(std::string(fname + "/.sisf_access"));
 
-        if(fnames.size() > 0) {
+        if (fnames.size() > 0)
+        {
             this->is_protected = true;
         }
     }
@@ -614,26 +628,43 @@ public:
 
     void load_metadata_sisf()
     {
-        std::ifstream file(fname + "/metadata.bin", std::ios::in | std::ios::binary);
-
-        if (file.fail())
+        if (metadata_json)
         {
-            ;
+            std::ifstream inputFile("data.json");
+            if (!inputFile)
+            {
+                std::cerr << "Error opening file!" << std::endl;
+                return 1;
+            }
+
+            json jsonData;
+            inputFile >> jsonData; // Read JSON data from file
+
+            std::cout << "Read JSON from file: " << jsonData.dump(4) << std::endl;
         }
+        else
+        {
+            std::ifstream file(fname + "/metadata.bin", std::ios::in | std::ios::binary);
 
-        file.read((char *)&archive_version, sizeof(uint16_t));
-        file.read((char *)&dtype, sizeof(uint16_t));
-        file.read((char *)&channel_count, sizeof(uint16_t));
+            if (file.fail())
+            {
+                ;
+            }
 
-        file.read((char *)&mchunkx, sizeof(uint16_t));
-        file.read((char *)&mchunky, sizeof(uint16_t));
-        file.read((char *)&mchunkz, sizeof(uint16_t));
-        file.read((char *)&resx, sizeof(uint64_t));
-        file.read((char *)&resy, sizeof(uint64_t));
-        file.read((char *)&resz, sizeof(uint64_t));
-        file.read((char *)&sizex, sizeof(uint64_t));
-        file.read((char *)&sizey, sizeof(uint64_t));
-        file.read((char *)&sizez, sizeof(uint64_t));
+            file.read((char *)&archive_version, sizeof(uint16_t));
+            file.read((char *)&dtype, sizeof(uint16_t));
+            file.read((char *)&channel_count, sizeof(uint16_t));
+
+            file.read((char *)&mchunkx, sizeof(uint16_t));
+            file.read((char *)&mchunky, sizeof(uint16_t));
+            file.read((char *)&mchunkz, sizeof(uint16_t));
+            file.read((char *)&resx, sizeof(uint64_t));
+            file.read((char *)&resy, sizeof(uint64_t));
+            file.read((char *)&resz, sizeof(uint64_t));
+            file.read((char *)&sizex, sizeof(uint64_t));
+            file.read((char *)&sizey, sizeof(uint64_t));
+            file.read((char *)&sizez, sizeof(uint64_t));
+        }
 
         mcountx = (sizex + mchunkx - 1) / mchunkx;
         mcounty = (sizey + mchunky - 1) / mchunky;
@@ -723,7 +754,8 @@ public:
         return std::make_tuple((size_t)resx_out, (size_t)resy_out, (size_t)resz_out);
     }
 
-    bool contains_scale(size_t scale) {
+    bool contains_scale(size_t scale)
+    {
         return std::find(scales.begin(), scales.end(), scale) != scales.end();
     }
 
