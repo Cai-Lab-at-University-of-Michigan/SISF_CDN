@@ -640,6 +640,10 @@ public:
             json jsonData;
             inputFile >> jsonData; // Read JSON data from file
 
+            archive_version = 2;
+            dtype = 1;
+            channel_count = inputFile["channel_count"];
+
             std::cout << "Read JSON from file: " << jsonData.dump(4) << std::endl;
         }
         else
