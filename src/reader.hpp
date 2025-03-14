@@ -514,6 +514,8 @@ public:
         if (fnames.size() > 0)
         {
             this->is_protected = true;
+        } else {
+            this->is_protected = false;
         }
     }
 
