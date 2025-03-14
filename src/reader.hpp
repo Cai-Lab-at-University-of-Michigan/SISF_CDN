@@ -447,7 +447,7 @@ public:
 
     ArchiveType type;
 
-    archive_reader(std::string name_in, enum ArchiveType type_in, bool use_json_metdata)
+    archive_reader(std::string name_in, enum ArchiveType type_in, bool use_json_metdata = false)
     {
         fname = name_in;
         type = type_in;
