@@ -61,7 +61,7 @@ void load_inventory()
 			loc = froot.find_last_of('/');
 			std::string dset_name = froot.substr(loc + 1);
 
-			archive_inventory[dset_name] = new archive_reader(froot, ZARR);
+			archive_inventory[dset_name] = new archive_reader(froot, ZARR, false);
 
 			std::cout << "[ZARR] ";
 			archive_inventory[dset_name]->print_info();
