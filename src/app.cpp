@@ -505,8 +505,6 @@ int main(int argc, char *argv[])
 				break;
 			}
 
-
-
 			for(auto step : (is_soma ? neighbor_steps_no_z : neighbor_steps)) {
 				const int dx = std::get<0>(step);
 				const int dy = std::get<1>(step);
@@ -1469,8 +1467,29 @@ int main(int argc, char *argv[])
 			return;
 		}
 
+		size_t scale;
+		try
+		{
+			scale = std::stoi(resolution_id);
+		}
+		catch (const std::invalid_argument &e)
+		{
+			scale = 0;
+		}
+		catch (const std::out_of_range &e)
+		{
+			scale = 0;
+		}
+
+		if (scale == 0)
+		{
+			res.code = crow::status::BAD_REQUEST;
+			res.end("400 Bad Request -- Invalid scale string\n");
+			return;
+		}
+
+		//size_t scale = stoi(resolution_id);
 		size_t chunk_sizes[3] = {x_end - x_begin, y_end - y_begin, z_end - z_begin};
-		size_t scale = stoi(resolution_id);
 		std::tuple<size_t, size_t, size_t> image_size = reader->get_size(scale);
 
 		{
