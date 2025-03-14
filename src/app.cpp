@@ -1448,7 +1448,7 @@ int main(int argc, char *argv[])
 		auto archive_search = archive_inventory.find(data_id);
 		if(archive_search == archive_inventory.end()) {
 			res.code = crow::status::NOT_FOUND;
-			res.end();
+			res.end("404 Not Found");
 			return;
 		}
 
@@ -1456,7 +1456,7 @@ int main(int argc, char *argv[])
 
 		if(!reader->verify_protection(filters)) {
 			res.code = crow::status::FORBIDDEN;
-			res.end();
+			res.end("403 Forbidden");
 			return;
 		}
 
@@ -1484,7 +1484,7 @@ int main(int argc, char *argv[])
 			if (out_of_range)
 			{
 				res.code = crow::status::BAD_REQUEST;
-				res.end();
+				res.end("400 Bad Request -- Invalid data range");
 			}
 		}
 
