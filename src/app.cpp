@@ -752,7 +752,7 @@ int main(int argc, char *argv[])
 		res.end(); });
 
 	CROW_ROUTE(app, "/<string>/skeleton/info")
-	([](crow::response &res, std::string data_id)
+	([](crow::response &res, std::string data_id_in)
 	 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
@@ -1246,14 +1246,16 @@ int main(int argc, char *argv[])
 		}
 
 		unsigned int channel, chunk_i, chunk_j, chunk_k;
-		sscanf(chunk_key.c_str(), "%u,%u,%u,%u", &channel, &chunk_i, &chunk_j, &chunk_k);
-
-		archive_reader * reader = archive_search->second;
+		if(sscanf(chunk_key.c_str(), "%u,%u,%u,%u", &channel, &chunk_i, &chunk_j, &chunk_k) != 4) {
+			res.code = crow::status::BAD_REQUEST;
+			res.end("Bad Request -- invalid chunk identifier");
+			return;
+		};
 
 		if (channel >= reader->channel_count || chunk_i >= reader->mcountx || chunk_j >= reader->mcounty || chunk_k >= reader->mcountz)
 		{
-			res.code = 400;
-			res.end();
+			res.code = crow::status::BAD_REQUEST;
+			res.end("Bad Request -- chunk out of range");
 			return;
 		}
 
@@ -1333,14 +1335,18 @@ int main(int argc, char *argv[])
 
 		size_t chunk_sizes[3] = {x_end - x_begin, y_end - y_begin, z_end - z_begin};
 		size_t scale = stoi(resolution_id);
-		
+
 		unsigned int channel, chunk_i, chunk_j, chunk_k;
-		sscanf(chunk_key.c_str(), "%u,%u,%u,%u", &channel, &chunk_i, &chunk_j, &chunk_k);
+		if(sscanf(chunk_key.c_str(), "%u,%u,%u,%u", &channel, &chunk_i, &chunk_j, &chunk_k) != 4) {
+			res.code = crow::status::BAD_REQUEST;
+			res.end("Bad Request -- invalid chunk identifier");
+			return;
+		};
 
 		if (channel >= reader->channel_count || chunk_i >= reader->mcountx || chunk_j >= reader->mcounty || chunk_k >= reader->mcountz)
 		{
-			res.code = 400;
-			res.end();
+			res.code = crow::status::BAD_REQUEST;
+			res.end("Bad Request -- chunk out of range");
 			return;
 		}
 
