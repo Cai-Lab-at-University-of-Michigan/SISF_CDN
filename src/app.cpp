@@ -88,6 +88,18 @@ void load_inventory()
 	std::cout << "|====================================================|" << std::endl;
 }
 
+archive_reader *search_inventory(std::string key)
+{
+	auto archive_search = archive_inventory.find(key);
+
+	if (archive_search == archive_inventory.end())
+	{
+		return nullptr;
+	}
+
+	return archive_search->second;
+}
+
 int main(int argc, char *argv[])
 {
 	{
@@ -315,16 +327,13 @@ int main(int argc, char *argv[])
 	 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
+		archive_reader * reader = search_inventory(data_id);
 
-		auto archive_search = archive_inventory.find(data_id);
-
-		if(archive_search == archive_inventory.end()) {
+		if(reader == nullptr) {
 			res.code = crow::status::NOT_FOUND;
-			res.end("File not found.");
+			res.end("404 Not Found\n");
 			return;
 		}
-
-		archive_reader * reader = archive_search->second;
 
 		std::vector<json> scales;
 		for(size_t scale : reader->scales) {
@@ -369,7 +378,6 @@ int main(int argc, char *argv[])
 		res.write(response.dump());
     	res.end(); });
 
-	//	ENDPOINT: /data/<string>/provenance
 	CROW_ROUTE(app, "/<string>/provenance")
 	([](crow::response &res, std::string data_id_in)
 	 {
@@ -382,6 +390,7 @@ int main(int argc, char *argv[])
 		auto soma_param = req.url_params.get("is_soma");
 		bool is_soma = soma_param != nullptr && strcmp(soma_param, "true") == 0;
 		std::cout << "is_soma=" << is_soma << std::endl;
+
 		int pt1[3], pt2[3];
 		if(sscanf(pt_in_s1.c_str(), "%d,%d,%d", &pt1[0], &pt1[1], &pt1[2]) != 3) {
 			res.end("Invalid point descriptor " + pt_in_s1);
@@ -392,16 +401,16 @@ int main(int argc, char *argv[])
 			return;
 		}
 
-		//std::string, std::vector<std::pair<std::string, std::string>>
+		// std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
+		archive_reader *reader = search_inventory(data_id);
 
-		auto archive_search = archive_inventory.find(data_id);
-		if(archive_search == archive_inventory.end()) {
+		if (reader == nullptr)
+		{
 			res.code = crow::status::NOT_FOUND;
-			res.end("File not found.");
+			res.end("404 Not Found\n");
 			return;
 		}
-		archive_reader * reader = archive_search->second;
 
 		if(pt1[0] < 0 || pt1[1] < 0 || pt1[2] < 0 || pt1[0] >= reader->sizex || pt1[1] >= reader->sizey || pt1[2] >= reader->sizez) {
 			res.code = crow::status::BAD_REQUEST;
@@ -632,13 +641,13 @@ int main(int argc, char *argv[])
 	 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
-			
-		auto archive_search = archive_inventory.find(data_id);
-		if(archive_search == archive_inventory.end()) {
-			res.end("File not found.");
+		archive_reader * reader = search_inventory(data_id);
+
+		if(reader == nullptr) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
 			return;
 		}
-		archive_reader * reader = archive_search->second;
 
 		float pt_in_f[3];
 		sscanf(pt_in_s.c_str(), "%f,%f,%f", &pt_in_f[0], &pt_in_f[1], &pt_in_f[2]);
@@ -745,10 +754,13 @@ int main(int argc, char *argv[])
 	CROW_ROUTE(app, "/<string>/skeleton/info")
 	([](crow::response &res, std::string data_id)
 	 {
-		data_id = str_first(data_id, '+');
-		auto archive_search = archive_inventory.find(data_id);
-		if(archive_search == archive_inventory.end()) {
-			res.end();
+		//std::string, std::vector<std::pair<std::string, std::string>>
+		auto [data_id, filters] = parse_filter_list(data_id_in);
+		archive_reader * reader = search_inventory(data_id);
+
+		if(reader == nullptr) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
 			return;
 		}
 
@@ -1225,11 +1237,11 @@ int main(int argc, char *argv[])
 	 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
+		archive_reader * reader = search_inventory(data_id);
 
-		auto archive_search = archive_inventory.find(data_id);
-
-		if(archive_search == archive_inventory.end()) {
-			res.end("File not found.");
+		if(reader == nullptr) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
 			return;
 		}
 
@@ -1307,14 +1319,13 @@ int main(int argc, char *argv[])
 	 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
+		archive_reader * reader = search_inventory(data_id);
 
-		auto archive_search = archive_inventory.find(data_id);
-		if(archive_search == archive_inventory.end()) {
-			res.end();
+		if(reader == nullptr) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
 			return;
 		}
-
-		archive_reader * reader = archive_search->second;
 
 		unsigned int x_begin, x_end, y_begin, y_end, z_begin, z_end;
 		// <xBegin>-<xEnd>_<yBegin>-<yEnd>_<zBegin>-<zEnd>
@@ -1442,15 +1453,13 @@ int main(int argc, char *argv[])
 		
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
+		archive_reader * reader = search_inventory(data_id);
 
-		auto archive_search = archive_inventory.find(data_id);
-		if(archive_search == archive_inventory.end()) {
+		if(reader == nullptr) {
 			res.code = crow::status::NOT_FOUND;
 			res.end("404 Not Found\n");
 			return;
 		}
-
-		archive_reader * reader = archive_search->second;
 
 		if(!reader->verify_protection(filters)) {
 			res.code = crow::status::FORBIDDEN;
