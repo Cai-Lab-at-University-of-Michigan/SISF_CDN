@@ -451,7 +451,7 @@ public:
     {
         fname = name_in;
         type = type_in;
-        use_json_metdata = metadata_json;
+        metadata_json = use_json_metdata;
 
         switch (type)
         {
