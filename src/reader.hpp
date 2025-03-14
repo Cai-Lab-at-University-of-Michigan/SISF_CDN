@@ -634,8 +634,7 @@ public:
             std::ifstream inputFile("data.json");
             if (!inputFile)
             {
-                std::cerr << "Error opening file!" << std::endl;
-                return 1;
+                ; // TODO error handling
             }
 
             json jsonData;
