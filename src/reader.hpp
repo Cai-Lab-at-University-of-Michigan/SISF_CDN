@@ -432,7 +432,7 @@ class archive_reader
 {
 public:
     bool is_protected;
-    bool metdata_json;
+    bool metadata_json;
 
     std::string fname; // "./example_dset"
     uint16_t channel_count;
@@ -451,6 +451,7 @@ public:
     {
         fname = name_in;
         type = type_in;
+        use_json_metdata = metadata_json;
 
         switch (type)
         {
