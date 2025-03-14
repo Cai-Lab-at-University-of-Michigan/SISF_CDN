@@ -724,6 +724,10 @@ public:
         return std::make_tuple((size_t)resx_out, (size_t)resy_out, (size_t)resz_out);
     }
 
+    bool contains_scale(size_t scale) {
+        return std::find(scales.begin(), scales.end(), scale) != scales.end();
+    }
+
     std::tuple<size_t, size_t, size_t> inline find_index(size_t x, size_t y, size_t z)
     {
         size_t ix = x / mchunkx;

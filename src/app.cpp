@@ -1464,7 +1464,28 @@ int main(int argc, char *argv[])
 		sscanf(tile_key.c_str(), "%u-%u_%u-%u_%u-%u", &x_begin, &x_end, &y_begin, &y_end, &z_begin, &z_end);
 
 		size_t chunk_sizes[3] = {x_end - x_begin, y_end - y_begin, z_end - z_begin};
+		std::tuple<size_t, size_t, size_t> image_size = reader->get_size(scale);
 		size_t scale = stoi(resolution_id);
+
+		{
+			bool out_of_range = false;
+			if (!reader->contains_scale(scale))
+			{
+				out_of_range = true;
+			}
+			else
+			{
+				out_of_range |= x_end > std::get<0>(image_size);
+				out_of_range |= y_end > std::get<1>(image_size);
+				out_of_range |= z_end > std::get<2>(image_size);
+			}
+
+			if (out_of_range)
+			{
+				res.code = crow::status::BAD_REQUEST;
+				res.end();
+			}
+		}
 
 		// Create the output buffer
 		// The subvolume data for the chunk is stored directly in little-endian binary format in [x, y, z, channel]
@@ -1517,9 +1538,6 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		uint16_t * out_buffer;
-
-		// Scale frame count by downsampling
 		if(project_frames > 1) {
 			if(project_axis == 0) {
 				if(chunk_sizes[0] == 1) {
@@ -1531,11 +1549,14 @@ int main(int argc, char *argv[])
 				}
 			}
 
+			// Scale frame count by downsampling
 			project_frames /= scale;
 			if(project_frames < 1) {
 				project_frames = 1;
 			}
 		}
+
+		uint16_t * out_buffer;
 
 		if(project_frames > 1) {
 			out_buffer = (uint16_t *) calloc(out_buffer_size, 1);
