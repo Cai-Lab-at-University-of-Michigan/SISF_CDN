@@ -1465,8 +1465,8 @@ int main(int argc, char *argv[])
 		sscanf(tile_key.c_str(), "%u-%u_%u-%u_%u-%u", &x_begin, &x_end, &y_begin, &y_end, &z_begin, &z_end);
 
 		size_t chunk_sizes[3] = {x_end - x_begin, y_end - y_begin, z_end - z_begin};
-		std::tuple<size_t, size_t, size_t> image_size = reader->get_size(scale);
 		size_t scale = stoi(resolution_id);
+		std::tuple<size_t, size_t, size_t> image_size = reader->get_size(scale);
 
 		{
 			bool out_of_range = false;
