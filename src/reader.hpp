@@ -438,7 +438,7 @@ public:
     descriptor_layer()
     {
     }
-}
+};
 
 class archive_reader
 {
