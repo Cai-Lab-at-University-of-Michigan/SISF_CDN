@@ -1158,5 +1158,11 @@ public:
             std::cout << n << ',';
 
         std::cout << "]" << std::endl;
+
+        if(type == DESCRIPTOR) {
+            for(size_t i = 0; i < descriptor_layer; i++) {
+                std::cout << "\t[layer " << i << "] " << descriptor_layer[i]->layer_name;
+            }
+        }
     }
 };
