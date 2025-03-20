@@ -757,7 +757,7 @@ public:
 
         channel_count = 0;
         if(layers.is_array()) {
-            for (const auto& element : j) {
+            for (const auto& element : layers) {
                 // Each element is of type json, so you can convert it to the desired type
                 //int value = element.get<int>();
 
