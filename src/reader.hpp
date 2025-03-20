@@ -456,7 +456,7 @@ public:
     uint64_t mcountx, mcounty, mcountz;
 
     std::vector<size_t> scales;
-    std::vector<void *> descriptor_layers;
+    std::vector<descriptor_layer *> descriptor_layers;
 
     ArchiveType type;
 
