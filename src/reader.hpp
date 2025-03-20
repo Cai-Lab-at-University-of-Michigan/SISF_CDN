@@ -1251,6 +1251,13 @@ public:
         }
         else if (type == DESCRIPTOR)
         {
+            for(descriptor_layer * : descriptor_layers) {
+                // Check if this layer overlaps with output region
+
+                // Access + copy into output buffer
+
+                // etc..
+            }
         }
 
         if (CHUNK_TIMER)
@@ -1265,21 +1272,6 @@ public:
 
     void print_info()
     {
-        /*
-        std::cout << "-----------------------------------" << std::endl;
-        std::cout << "File: " << fname << std::endl;
-        std::cout << "dtype = " << dtype << "; version = " << archive_version << ";" << std::endl;
-        std::cout << "Chunks: " << mchunkx << ", " << mchunky << ", " << mchunkz << std::endl;
-        std::cout << "Size: " << sizex << ", " << sizey << ", " << sizez << std::endl;
-        std::cout << "Tile Counts: " << mcountx << ", " << mcounty << ", " << mcountz << std::endl;
-        std::cout << "Scales: ";
-        for (size_t n : scales)
-            std::cout << n << ' ';
-        std::cout << "Channels = " << channel_count << std::endl;
-        std::cout << std::endl;
-        std::cout << "-----------------------------------" << std::endl;
-        */
-
         std::cout << '[' << fname << "] " << " dtype=" << dtype << " channels=" << channel_count << " chunks=(" << mchunkx << ','
                   << mchunky << ',' << mchunkz << ") size=(" << sizex << ',' << sizey << ',' << sizez << ") "
                   << "tile_counts=(" << mcountx << ',' << mcounty << ',' << mcountz << ") "
