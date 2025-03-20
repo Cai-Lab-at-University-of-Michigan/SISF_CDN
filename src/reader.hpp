@@ -795,11 +795,6 @@ public:
 
                     for (const auto &a : source_size)
                     {
-                        if (i >= 3)
-                        {
-                            break;
-                        }
-
                         int s = a.get<int>();
 
                         switch (i)
@@ -813,6 +808,8 @@ public:
                         case 2:
                             layer->sizez = s;
                             break;
+                        default:
+                            break;
                         }
 
                         i++;
@@ -820,14 +817,50 @@ public:
 
                     if (i != 3)
                     {
-                        throw std::runtime_error("invalid source_size variable");
+                        throw std::runtime_error("invalid source_size size");
                     }
                 }
                 else
                 {
+                    throw std::runtime_error("source_size should be an array");
                 }
 
                 json out_size = element["target_offset"];
+                if (out_size.is_array())
+                {
+                    size_t i = 0;
+
+                    for (const auto &a : out_size)
+                    {
+                        int s = a.get<int>();
+
+                        switch (i)
+                        {
+                        case 0:
+                            layer->sizex = s;
+                            break;
+                        case 1:
+                            layer->sizey = s;
+                            break;
+                        case 2:
+                            layer->sizez = s;
+                            break;
+                        default:
+                            break;
+                        }
+
+                        i++;
+                    }
+
+                    if (i != 3)
+                    {
+                        throw std::runtime_error("invalid out_size size");
+                    }
+                }
+                else
+                {
+                    throw std::runtime_error("out_size should be an array");
+                }
 
                 /*
                 for(size_t i = 0; i < 3; i++) {
