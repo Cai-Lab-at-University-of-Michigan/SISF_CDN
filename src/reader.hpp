@@ -1160,8 +1160,8 @@ public:
         std::cout << "]" << std::endl;
 
         if(type == DESCRIPTOR) {
-            for(size_t i = 0; i < descriptor_layer; i++) {
-                std::cout << "\t[layer " << i << "] " << descriptor_layer[i]->layer_name;
+            for(size_t i = 0; i < descriptor_layers.size(); i++) {
+                std::cout << "\t[layer " << i << "] " << descriptor_layers[i]->layer_name;
             }
         }
     }
