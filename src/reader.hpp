@@ -474,8 +474,8 @@ public:
     std::vector<descriptor_layer *> descriptor_layers;
     std::map<uint16_t, uint16_t> descriptor_channel_map;
     int64_t descriptor_x_origin;
-    int64_t descriptor_x_origin;
-    int64_t descriptor_x_origin;
+    int64_t descriptor_y_origin;
+    int64_t descriptor_z_origin;
 
     ArchiveType type;
 
