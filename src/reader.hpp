@@ -470,8 +470,12 @@ public:
     uint64_t mcountx, mcounty, mcountz;
 
     std::vector<size_t> scales;
+
     std::vector<descriptor_layer *> descriptor_layers;
     std::map<uint16_t, uint16_t> descriptor_channel_map;
+    int64_t descriptor_x_origin;
+    int64_t descriptor_x_origin;
+    int64_t descriptor_x_origin;
 
     ArchiveType type;
 
@@ -908,6 +912,10 @@ public:
         sizex = maxx - minx;
         sizey = maxy - miny;
         sizez = maxz - minz;
+
+        descriptor_x_origin = minx;
+        descriptor_y_origin = miny;
+        descriptor_z_origin = minz;
 
         channel_count = found_channels.size();
     }
