@@ -441,9 +441,9 @@ public:
     size_t sizey = 0;
     size_t sizez = 0;
 
-    size_t ooffsetx = 0;
-    size_t ooffsety = 0;
-    size_t ooffsetz = 0;
+    int64_t ooffsetx = 0;
+    int64_t ooffsety = 0;
+    int64_t ooffsetz = 0;
 
     bool invertx = false;
     bool inverty = false;
@@ -877,17 +877,38 @@ public:
             throw std::runtime_error("layer is not an array");
         }
 
+        int64_t minx = 0; // std::numeric_limits<int64_t>::max();
+        int64_t maxx = std::numeric_limits<int64_t>::min();
+
+        int64_t miny = 0; // std::numeric_limits<int64_t>::max();
+        int64_t maxy = std::numeric_limits<int64_t>::min();
+
+        int64_t minz = 0; // std::numeric_limits<int64_t>::max();
+        int64_t maxz = std::numeric_limits<int64_t>::min();
+
         std::set<uint16_t> found_channels;
-        for(descriptor_layer * l : descriptor_layers) {
+        for (descriptor_layer *l : descriptor_layers)
+        {
             uint16_t tc = l->target_channel;
-
             found_channels.insert(tc);
-
-            if(descriptor_channel_map.count(tc) == 0) {
+            if (descriptor_channel_map.count(tc) == 0)
+            {
                 descriptor_channel_map[tc] = found_channels.size() - 1;
             }
+
+            minx = std::min(minx, l->ooffsetx);
+            miny = std::min(miny, l->ooffsety);
+            minz = std::min(minz, l->ooffsetz);
+
+            maxy = std::max(maxx, std::static_cast<int64_t>(l->sizex) + l->offsetx);
+            maxy = std::max(maxy, std::static_cast<int64_t>(l->sizey) + l->offsety);
+            maxy = std::max(maxz, std::static_cast<int64_t>(l->sizez) + l->offsetz);
         }
-        
+
+        sizex = maxx - minx;
+        sizey = maxy - miny;
+        sizez = maxz - minz;
+
         channel_count = found_channels.size();
     }
 
