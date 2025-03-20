@@ -1294,8 +1294,8 @@ public:
         {
             for (size_t i = 0; i < descriptor_layers.size(); i++)
             {
-                std::cout << "\t[layer " << i << "] from=\"" << descriptor_layers[i]->source_name << "\""
-                          << " ch=" << descriptor_layers[i]->source_channel
+                std::cout << "\t[layer " << i << "] from=\"" << descriptor_layers[i]->source_name << "\":" << descriptor_layers[i]->source_channel
+                          << " ch=" << descriptor_layers[i]->target_channel
                           << " size=(" << descriptor_layers[i]->sizex << ", " << descriptor_layers[i]->sizey << ", " << descriptor_layers[i]->sizez << ")"
                           << " ooffset=(" << descriptor_layers[i]->ooffsetx << ", " << descriptor_layers[i]->ooffsety << ", " << descriptor_layers[i]->ooffsetz << ")"
                           << std::endl;
