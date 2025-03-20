@@ -63,7 +63,7 @@ void load_inventory()
 
 			try
 			{
-				archive_inventory[dset_name] = new archive_reader(froot, ZARR, false);
+				archive_inventory[dset_name] = new archive_reader(froot, ZARR);
 				std::cout << "[ZARR] ";
 				archive_inventory[dset_name]->print_info();
 			}
@@ -87,7 +87,7 @@ void load_inventory()
 
 			try
 			{
-				archive_inventory[dset_name] = new archive_reader(froot, SISF, false);
+				archive_inventory[dset_name] = new archive_reader(froot, SISF);
 				std::cout << "[SISF] ";
 				archive_inventory[dset_name]->print_info();
 			}
@@ -111,7 +111,7 @@ void load_inventory()
 
 			try
 			{
-				archive_inventory[dset_name] = new archive_reader(froot, SISF, true);
+				archive_inventory[dset_name] = new archive_reader(froot, SISF_JSON);
 				std::cout << "[SISF-JSON] ";
 				archive_inventory[dset_name]->print_info();
 			}

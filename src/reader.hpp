@@ -72,6 +72,7 @@ struct global_chunk_line
 
 enum ArchiveType
 {
+    SISF_JSON,
     SISF,
     ZARR
 };
@@ -447,11 +448,19 @@ public:
 
     ArchiveType type;
 
-    archive_reader(std::string name_in, enum ArchiveType type_in, bool use_json_metdata = false)
+    archive_reader(std::string name_in, enum ArchiveType type_in)
     {
         fname = name_in;
+
         type = type_in;
-        metadata_json = use_json_metdata;
+
+        metadata_json = false;
+        if (type == SISF_JSON)
+        {
+            // SISF_JSON is parsed the same other than metadata, set flag and type
+            metadata_json = true;
+            type = SISF;
+        }
 
         switch (type)
         {
