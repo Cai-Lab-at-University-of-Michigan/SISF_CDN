@@ -434,7 +434,8 @@ class descriptor_layer
 {
 public:
     std::string source_name;
-    size_t source_channel = 0;
+    uint16_t source_channel = 0;
+    uint16_t target_channel = 0;
 
     size_t sizex = 0;
     size_t sizey = 0;
@@ -470,6 +471,7 @@ public:
 
     std::vector<size_t> scales;
     std::vector<descriptor_layer *> descriptor_layers;
+    std::map<uint16_t, uint16_t> descriptor_channel_map;
 
     ArchiveType type;
 
@@ -791,6 +793,7 @@ public:
 
                 layer->source_name = element["source"];
                 layer->source_channel = element["source_channel"];
+                layer->target_channel = element["target_channel"];
 
                 json source_size = element["source_size"];
                 if (source_size.is_array())
@@ -874,11 +877,18 @@ public:
             throw std::runtime_error("layer is not an array");
         }
 
+        std::set<uint16_t> found_channels;
         for(descriptor_layer * l : descriptor_layers) {
-            
-        }
+            uint16_t tc = l->target_channel;
 
-        channel_count = descriptor_layers.size();
+            found_channels.insert(tc);
+
+            if(descriptor_channel_map.count(tc) == 0) {
+                descriptor_channel_map[tc] = found_channels.size() - 1;
+            }
+        }
+        
+        channel_count = found_channels.size();
     }
 
     std::tuple<size_t, size_t, size_t> get_size(size_t scale)
