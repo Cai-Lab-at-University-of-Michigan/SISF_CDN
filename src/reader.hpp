@@ -444,9 +444,15 @@ public:
     size_t ooffsety = 0;
     size_t ooffsetz = 0;
 
+    bool invertx = false;
+    bool inverty = false;
+    bool invertz = false;
+
     descriptor_layer()
     {
     }
+
+    
 };
 
 class archive_reader
@@ -861,16 +867,6 @@ public:
                 {
                     throw std::runtime_error("out_size should be an array");
                 }
-
-                /*
-                for(size_t i = 0; i < 3; i++) {
-                    layer->source_size[i] = source_size[i].get<int>();
-                }
-
-                for(size_t i = 0; i < 3; i++) {
-                    layer->out_size[i] = out_size[i].get<int>();
-                }
-                */
 
                 descriptor_layers.push_back(layer);
             }
