@@ -1524,7 +1524,7 @@ int main(int argc, char *argv[])
 
 		res.end(); 
 	
-		log_time(data_id, "READ_RAW", scale, x_end-x_begin, y_end-y_begin, z_end-z_begin, begin); });});
+		log_time(data_id, "READ_RAW", scale, x_end-x_begin, y_end-y_begin, z_end-z_begin, begin); });
 
 	// @app.route("/data/<data_id>/<resolution>/<key>-<key>-<key>")
 	// This has to be last in the route list because it acts as a wildcard
