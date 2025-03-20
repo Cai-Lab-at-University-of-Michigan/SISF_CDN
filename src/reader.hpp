@@ -434,9 +434,19 @@ class descriptor_layer
 {
 public:
     std::string layer_name;
+    size_t source_channel;
+    size_t source_size[3];
+    size_t out_size[3];
 
     descriptor_layer()
     {
+        for(size_t i = 0; i < 3; i++) {
+            source_size[i] = 0;
+        }
+
+        for(size_t i = 0; i < 3; i++) {
+            out_size[i] = 0;
+        }
     }
 };
 
@@ -777,6 +787,17 @@ public:
                 descriptor_layer *layer = new descriptor_layer();
 
                 layer->layer_name = element["source"];
+                layer->source_channel = element["source_channel"];
+                
+                json source_size = element["source_size"];
+                for(size_t i = 0; i < 3; i++) {
+                    layer->source_size[i] = source_size[i].get<int>();
+                }
+
+                json out_size = element["target_size"];
+                for(size_t i = 0; i < 3; i++) {
+                    layer->out_size[i] = out_size[i].get<int>();
+                }
 
                 descriptor_layers.push_back(layer);
             }
