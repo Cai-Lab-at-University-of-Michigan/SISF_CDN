@@ -1187,8 +1187,8 @@ public:
             {
                 std::cout << "\t[layer " << i << "] " << descriptor_layers[i]->source_name
                           << " ch=" << descriptor_layers[i]->source_channel
-                          << " size=(" << descriptor_layers[i]->sizex << ", " descriptor_layers[i]->sizey << ", " descriptor_layers[i]->sizez << ")"
-                          << " osize=(" << descriptor_layers[i]->outsizex << ", " descriptor_layers[i]->outsizey << ", " descriptor_layers[i]->outsizez << ")"
+                          << " size=(" << descriptor_layers[i]->sizex << ", " << descriptor_layers[i]->sizey << ", " descriptor_layers[i]->sizez << ")"
+                          << " osize=(" << descriptor_layers[i]->outsizex << ", " << descriptor_layers[i]->outsizey << ", " descriptor_layers[i]->outsizez << ")"
                           << std::endl;
             }
         }
