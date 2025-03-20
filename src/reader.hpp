@@ -776,7 +776,7 @@ public:
             {
                 descriptor_layer *layer = new descriptor_layer();
 
-                layer.layer_name = element["source"];
+                layer->layer_name = element["source"];
 
                 descriptor_layers.push_back(layer);
             }
