@@ -74,7 +74,8 @@ enum ArchiveType
 {
     SISF_JSON,
     SISF,
-    ZARR
+    ZARR,
+    DESCRIPTOR
 };
 
 using json = nlohmann::json;
@@ -470,6 +471,9 @@ public:
         case ZARR:
             load_metadata_zarr();
             break;
+        case DESCRIPTOR:
+            load_metadata_descriptor();
+            break;
         }
 
         load_protection();
@@ -722,6 +726,20 @@ public:
         }
 
         std::sort(scales.begin(), scales.end());
+    }
+
+    void load_metadata_descriptor()
+    {
+        std::ifstream inputFile(fname + "/descriptor.json");
+        if (!inputFile)
+        {
+            ; // TODO error handling
+        }
+
+        json jsonData;
+        inputFile >> jsonData; // Read JSON data from file
+
+        scales.push_back(1);
     }
 
     std::tuple<size_t, size_t, size_t> get_size(size_t scale)
@@ -1052,6 +1070,10 @@ public:
                     std::cerr << "Error reading from TensorStore: " << array_result.status() << std::endl;
                 }
             }
+        }
+        else if (type == DESCRIPTOR)
+        {
+
         }
 
         if (CHUNK_TIMER)

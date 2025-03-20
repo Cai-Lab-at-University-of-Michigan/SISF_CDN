@@ -122,6 +122,37 @@ void load_inventory()
 		}
 	}
 
+	{
+		std::vector<std::string> fnames = glob_tool(std::string(DATA_PATH + "*/descriptor.json"));
+		for (std::vector<std::string>::iterator i = fnames.begin(); i != fnames.end(); i++)
+		{
+			size_t loc = i->find_last_of("/");
+
+			std::string froot = std::string(i->c_str(), i->c_str() + loc);
+
+			loc = froot.find_last_of('/');
+			std::string dset_name = froot.substr(loc + 1);
+
+			// We do not allow duplicate dataset names
+			if (archive_inventory.count(dset_name) != 0)
+			{
+				std::cout << "[FAIL] Duplicate: " << dset_name << std::endl;
+				continue;
+			}
+
+			try
+			{
+				archive_inventory[dset_name] = new archive_reader(froot, DESCRIPTOR);
+				std::cout << "[DESCRIPTOR] ";
+				archive_inventory[dset_name]->print_info();
+			}
+			catch (...)
+			{
+				std::cout << "[FAIL] " << dset_name << std::endl;
+			}
+		}
+	}
+
 	std::cout << "|====================================================|" << std::endl;
 }
 
