@@ -792,7 +792,7 @@ public:
             {
                 descriptor_layer *layer = new descriptor_layer();
 
-                layer->layer_name = element["source"];
+                layer->source_name = element["source"];
                 layer->source_channel = element["source_channel"];
                 
                 /*
