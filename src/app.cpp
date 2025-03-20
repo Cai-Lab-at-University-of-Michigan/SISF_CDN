@@ -1391,6 +1391,8 @@ int main(int argc, char *argv[])
 	CROW_ROUTE(app, "/<string>/raw_access/<string>/<string>/<string>")
 	([](crow::response &res, std::string data_id_in, std::string chunk_key, std::string resolution_id, std::string tile_key)
 	 {
+		auto begin = now();
+
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 		archive_reader * reader = search_inventory(data_id);
@@ -1520,7 +1522,9 @@ int main(int argc, char *argv[])
 		res.body = std::string((char *) out_buffer, out_buffer_size);
 		free(out_buffer);
 
-		res.end(); });
+		res.end(); 
+	
+		log_time(data_id, "READ_RAW", scale, x_end-x_begin, y_end-y_begin, z_end-z_begin, begin); });});
 
 	// @app.route("/data/<data_id>/<resolution>/<key>-<key>-<key>")
 	// This has to be last in the route list because it acts as a wildcard
