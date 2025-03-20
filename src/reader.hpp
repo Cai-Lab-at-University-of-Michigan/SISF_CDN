@@ -433,10 +433,16 @@ public:
 class descriptor_layer
 {
 public:
-    std::string layer_name;
+    std::string source_name;
     size_t source_channel;
-    size_t source_size[3];
-    size_t out_size[3];
+
+    size_t sizex;
+    size_t sizey;
+    size_t sizez;
+
+    size_t outsizex;
+    size_t outsizey;
+    size_t outsizez;
 
     descriptor_layer()
     {
@@ -1184,7 +1190,11 @@ public:
 
         if(type == DESCRIPTOR) {
             for(size_t i = 0; i < descriptor_layers.size(); i++) {
-                std::cout << "\t[layer " << i << "] " << descriptor_layers[i]->layer_name << std::endl;
+                std::cout << "\t[layer " << i << "] " << descriptor_layers[i]->source_name 
+                    << " ch=" << descriptor_layers[i]->source_channel
+                    << " size=(" << descriptor_layers[i]->sizex << ", " descriptor_layers[i]->sizey << ", " descriptor_layers[i]->sizez << ")"
+                    << " osize=(" << descriptor_layers[i]->outsizex << ", " descriptor_layers[i]->outsizey << ", " descriptor_layers[i]->outsizez << ")"
+                    <<   std::endl;
             }
         }
     }
