@@ -446,6 +446,7 @@ public:
     uint64_t mcountx, mcounty, mcountz;
 
     std::vector<size_t> scales;
+    std::vector<void *> descriptor_layers;
 
     ArchiveType type;
 
@@ -740,6 +741,33 @@ public:
         inputFile >> jsonData; // Read JSON data from file
 
         scales.push_back(1);
+
+        mcountx = 0;
+        mcounty = 0;
+        mcountz = 0;
+
+        archive_version = 2;
+        dtype = 1;
+
+        resx = jsonData["xres"];
+        resy = jsonData["yres"];
+        resz = jsonData["zres"];
+
+        json layers = jsonData["layers"];
+
+        channel_count = 0;
+        if(layers.is_array()) {
+            for (const auto& element : j) {
+                // Each element is of type json, so you can convert it to the desired type
+                //int value = element.get<int>();
+
+                descriptor_layers.push_back(nullptr);
+            }
+        } else {
+            throw std::runtime_error("layer is not an array");
+        }
+
+        channel_count = descriptor_layers.size();
     }
 
     std::tuple<size_t, size_t, size_t> get_size(size_t scale)
