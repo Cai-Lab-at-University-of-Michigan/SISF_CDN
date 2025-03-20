@@ -788,17 +788,19 @@ public:
                 layer->source_name = element["source"];
                 layer->source_channel = element["source_channel"];
 
-                /*
                 json source_size = element["source_size"];
+
+                json out_size = element["target_offset"];
+
+                /*                
                 for(size_t i = 0; i < 3; i++) {
                     layer->source_size[i] = source_size[i].get<int>();
                 }
 
-                json out_size = element["target_size"];
                 for(size_t i = 0; i < 3; i++) {
                     layer->out_size[i] = out_size[i].get<int>();
                 }
-                    */
+                */
 
                 descriptor_layers.push_back(layer);
             }
