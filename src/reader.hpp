@@ -746,6 +746,10 @@ public:
         mcounty = 0;
         mcountz = 0;
 
+        mchunkx = 0;
+        mchunky = 0;
+        mchunkz = 0;
+
         archive_version = 2;
         dtype = 1;
 
