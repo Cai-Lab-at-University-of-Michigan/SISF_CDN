@@ -440,9 +440,9 @@ public:
     size_t sizey = 0;
     size_t sizez = 0;
 
-    size_t outsizex = 0;
-    size_t outsizey = 0;
-    size_t outsizez = 0;
+    size_t ooffsetx = 0;
+    size_t ooffsety = 0;
+    size_t ooffsetz = 0;
 
     descriptor_layer()
     {
@@ -837,13 +837,13 @@ public:
                         switch (i)
                         {
                         case 0:
-                            layer->sizex = s;
+                            layer->ooffsetx = s;
                             break;
                         case 1:
-                            layer->sizey = s;
+                            layer->ooffsety = s;
                             break;
                         case 2:
-                            layer->sizez = s;
+                            layer->ooffsetz = s;
                             break;
                         default:
                             break;
@@ -1260,7 +1260,7 @@ public:
                 std::cout << "\t[layer " << i << "] from=\"" << descriptor_layers[i]->source_name << "\""
                           << " ch=" << descriptor_layers[i]->source_channel
                           << " size=(" << descriptor_layers[i]->sizex << ", " << descriptor_layers[i]->sizey << ", " << descriptor_layers[i]->sizez << ")"
-                          << " osize=(" << descriptor_layers[i]->outsizex << ", " << descriptor_layers[i]->outsizey << ", " << descriptor_layers[i]->outsizez << ")"
+                          << " ooffset=(" << descriptor_layers[i]->ooffsetx << ", " << descriptor_layers[i]->ooffsety << ", " << descriptor_layers[i]->ooffsetz << ")"
                           << std::endl;
             }
         }
