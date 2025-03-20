@@ -874,6 +874,10 @@ public:
             throw std::runtime_error("layer is not an array");
         }
 
+        for(descriptor_layer * l : descriptor_layers) {
+            
+        }
+
         channel_count = descriptor_layers.size();
     }
 
