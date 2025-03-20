@@ -430,6 +430,16 @@ public:
     }
 };
 
+class descriptor_layer
+{
+public:
+    std::string layer_name;
+
+    descriptor_layer()
+    {
+    }
+}
+
 class archive_reader
 {
 public:
@@ -760,14 +770,19 @@ public:
         json layers = jsonData["layers"];
 
         channel_count = 0;
-        if(layers.is_array()) {
-            for (const auto& element : layers) {
-                // Each element is of type json, so you can convert it to the desired type
-                //int value = element.get<int>();
+        if (layers.is_array())
+        {
+            for (const auto &element : layers)
+            {
+                descriptor_layer *layer = new descriptor_layer();
 
-                descriptor_layers.push_back(nullptr);
+                layer.layer_name = element["source"];
+
+                descriptor_layers.push_back(layer);
             }
-        } else {
+        }
+        else
+        {
             throw std::runtime_error("layer is not an array");
         }
 
@@ -1105,7 +1120,6 @@ public:
         }
         else if (type == DESCRIPTOR)
         {
-
         }
 
         if (CHUNK_TIMER)
