@@ -789,10 +789,47 @@ public:
                 layer->source_channel = element["source_channel"];
 
                 json source_size = element["source_size"];
+                if (source_size.is_array())
+                {
+                    size_t i = 0;
+
+                    for (const auto &a : source_size)
+                    {
+                        if (i >= 3)
+                        {
+                            break;
+                        }
+
+                        int s = a.get<int>();
+
+                        switch (i)
+                        {
+                        case 0:
+                            layer->sizex = s;
+                            break;
+                        case 1:
+                            layer->sizey = s;
+                            break;
+                        case 2:
+                            layer->sizez = s;
+                            break;
+                        }
+
+                        i++;
+                    }
+
+                    if (i != 3)
+                    {
+                        throw std::runtime_error("invalid source_size variable");
+                    }
+                }
+                else
+                {
+                }
 
                 json out_size = element["target_offset"];
 
-                /*                
+                /*
                 for(size_t i = 0; i < 3; i++) {
                     layer->source_size[i] = source_size[i].get<int>();
                 }
