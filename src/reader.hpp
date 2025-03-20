@@ -900,9 +900,9 @@ public:
             miny = std::min(miny, l->ooffsety);
             minz = std::min(minz, l->ooffsetz);
 
-            maxy = std::max(maxx, std::static_cast<int64_t>(l->sizex) + l->offsetx);
-            maxy = std::max(maxy, std::static_cast<int64_t>(l->sizey) + l->offsety);
-            maxy = std::max(maxz, std::static_cast<int64_t>(l->sizez) + l->offsetz);
+            maxy = std::max(maxx, static_cast<int64_t>(l->sizex) + l->offsetx);
+            maxy = std::max(maxy, static_cast<int64_t>(l->sizey) + l->offsety);
+            maxy = std::max(maxz, static_cast<int64_t>(l->sizez) + l->offsetz);
         }
 
         sizex = maxx - minx;
