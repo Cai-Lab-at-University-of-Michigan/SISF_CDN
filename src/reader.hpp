@@ -1309,6 +1309,10 @@ public:
                 const int64_t z_overlap_start_shifted = z_overlap_start + l->ioffsetz;
                 const int64_t z_overlap_end_shifted = z_overlap_end + l->ioffsetz;
 
+                const int64_t region_x_size = x_overlap_end_shifted - x_overlap_start_shifted;
+                const int64_t region_y_size = y_overlap_end_shifted - y_overlap_start_shifted;
+                const int64_t region_z_size = z_overlap_end_shifted - z_overlap_start_shifted;
+
                 uint16_t *region = reader->second->load_region(
                     scale,
                     x_overlap_start_shifted, x_overlap_end_shifted,
@@ -1324,19 +1328,22 @@ public:
                     {
                         for (size_t k = z_overlap_start; k < z_overlap_end; k++)
                         {
-                            /*
-                            // Calculate the coordinates of the input and output inside their respective buffers
-                            const size_t roffset = ((x_in_chunk_offset - cxmin) * cysize * czsize) + // X
-                                                   ((y_in_chunk_offset - cymin) * czsize) +          // Y
-                                                   (z_in_chunk_offset - czmin);                      // Z
+                            const int64_t i_s = i + l->ioffsetx;
+                            const int64_t j_s = j + l->ioffsety;
+                            const int64_t k_s = k + l->ioffsetz;
 
-                            const size_t ooffset = (c * osizey * osizex * osizez) + // C
+                            // Calculate the coordinates of the input and output inside their respective buffers
+                            const size_t roffset = (cin * region_x_size * region_y_size * region_z_size) +
+                                                   ((k_s - z_overlap_start_shifted) * region_y_size * region_x_size) + 
+                                                   ((j_s - y_overlap_start_shifted) * region_x_size) + 
+                                                   ((i_s - x_overlap_start_shifted));
+
+                            const size_t ooffset = (cout * osizey * osizex * osizez) + // C
                                                    ((k - zs) * osizey * osizex) +   // Z
                                                    ((j - ys) * osizex) +            // Y
                                                    ((i - xs));                      // X
 
                             out_buffer[ooffset] = region[roffset];
-                            */
                         }
                     }
                 }
