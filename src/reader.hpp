@@ -1283,7 +1283,7 @@ public:
 
                 if (!overlaps)
                 {
-                    std::cout << "no overlap" << std::endl;
+                    std::cout << "no overlap " << x_overlap_start << " " << x_overlap_end << std::endl;
                     // This layer is not included in the current access
                     continue;
                 }
