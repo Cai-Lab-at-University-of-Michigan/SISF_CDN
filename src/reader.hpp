@@ -1263,9 +1263,9 @@ public:
                 // Find the beginning and end of this layer's output, measured relative to the origin (i.e. should never be less than zero)
                 const int64_t layer_start_x = l->ooffsetx - descriptor_x_origin;
                 const int64_t layer_end_x = layer_start_x + l->sizex;
-                const int64_t layer_start_y = l->offsety - descriptor_y_origin;
+                const int64_t layer_start_y = l->ooffsety - descriptor_y_origin;
                 const int64_t layer_end_y = layer_start_y + l->sizey;
-                const int64_t layer_start_z = l->offsetz - descriptor_y_origin;
+                const int64_t layer_start_z = l->ooffsetz - descriptor_y_origin;
                 const int64_t layer_end_z = layer_start_z + l->sizez;
 
                 // Calculate the overlap start-stops, in output space
@@ -1292,7 +1292,7 @@ public:
                     continue;
                 }
 
-                auto reader = parent_archive_inventory.find(l->source_name);
+                auto reader = parent_archive_inventory->find(l->source_name);
 
                 if (reader == parent_archive_inventory->end())
                 {
