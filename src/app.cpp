@@ -142,7 +142,7 @@ void load_inventory()
 
 			try
 			{
-				archive_inventory[dset_name] = new archive_reader(froot, DESCRIPTOR);
+				archive_inventory[dset_name] = new archive_reader(froot, DESCRIPTOR, &archive_inventory);
 				std::cout << "[DESCRIPTOR] ";
 				archive_inventory[dset_name]->print_info();
 			}
