@@ -1291,6 +1291,7 @@ public:
 
                 if (reader == parent_archive_inventory->end())
                 {
+                    // Source not in inventory
                     continue;
                 }
 
