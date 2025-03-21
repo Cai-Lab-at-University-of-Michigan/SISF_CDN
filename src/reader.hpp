@@ -1318,11 +1318,11 @@ public:
                 const int64_t cin = l->source_channel;
                 const int64_t cout = l->target_channel;
 
-                for (size_t i = xs; i < xe; i++)
+                for (size_t i = x_overlap_start; i < x_overlap_end; i++)
                 {
-                    for (size_t j = ys; j < ye; j++)
+                    for (size_t j = y_overlap_start; j < y_overlap_end; j++)
                     {
-                        for (size_t k = zs; k < ze; k++)
+                        for (size_t k = z_overlap_start; k < z_overlap_end; k++)
                         {
                             /*
                             // Calculate the coordinates of the input and output inside their respective buffers
