@@ -1283,6 +1283,7 @@ public:
 
                 if (!overlaps)
                 {
+                    std::cout << "no overlap" << std::endl;
                     // This layer is not included in the current access
                     continue;
                 }
@@ -1296,6 +1297,7 @@ public:
 
                 if (reader == parent_archive_inventory->end())
                 {
+                    std::cout << "not found" << std::endl;
                     continue;
                 }
 
