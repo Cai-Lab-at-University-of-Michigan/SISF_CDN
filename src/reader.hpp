@@ -441,6 +441,11 @@ public:
     size_t sizey = 0;
     size_t sizez = 0;
 
+    // TODO, not currently used
+    int64_t ioffsetx = 0;
+    int64_t ioffsety = 0;
+    int64_t ioffsetz = 0;
+
     int64_t ooffsetx = 0;
     int64_t ooffsety = 0;
     int64_t ooffsetz = 0;
@@ -479,11 +484,13 @@ public:
 
     ArchiveType type;
 
-    archive_reader(std::string name_in, enum ArchiveType type_in)
+    std::unordered_map<std::string, archive_reader *> *parent_archive_inventory;
+
+    archive_reader(std::string name_in, enum ArchiveType type_in, std::unordered_map<std::string, archive_reader *> *par_in = nullptr)
     {
         fname = name_in;
-
         type = type_in;
+        parent_archive_inventory = par_in;
 
         metadata_json = false;
         if (type == SISF_JSON)
@@ -1251,12 +1258,90 @@ public:
         }
         else if (type == DESCRIPTOR)
         {
-            for(descriptor_layer * : descriptor_layers) {
-                // Check if this layer overlaps with output region
+            for (descriptor_layer *l : descriptor_layers)
+            {
+                // Find the beginning and end of this layer's output, measured relative to the origin (i.e. should never be less than zero)
+                const int64_t layer_start_x = l->ooffsetx - descriptor_x_origin;
+                const int64_t layer_end_x = layer_start_x + l->sizex;
+                const int64_t layer_start_y = l->offsety - descriptor_y_origin;
+                const int64_t layer_end_y = layer_start_y + l->sizey;
+                const int64_t layer_start_z = l->offsetz - descriptor_y_origin;
+                const int64_t layer_end_z = layer_start_z + l->sizez;
 
-                // Access + copy into output buffer
+                // Calculate the overlap start-stops, in output space
+                const int64_t x_overlap_start = std::max(layer_start_x, static_cast<int64_t>(xs));
+                const int64_t x_overlap_end = std::min(layer_end_x, static_cast<int64_t>(xe));
+                const int64_t y_overlap_start = std::max(layer_start_y, static_cast<int64_t>(ys));
+                const int64_t y_overlap_end = std::min(layer_end_y, static_cast<int64_t>(ye));
+                const int64_t z_overlap_start = std::max(layer_start_z, static_cast<int64_t>(zs));
+                const int64_t z_overlap_end = std::min(layer_end_z, static_cast<int64_t>(ze));
 
-                // etc..
+                // True if there is an overlap between the requested region and the layer region
+                const bool overlaps = x_overlap_start <= x_overlap_end &&
+                                      y_overlap_start <= y_overlap_end &&
+                                      z_overlap_start <= z_overlap_end;
+
+                if (!overlaps)
+                {
+                    // This layer is not included in the current access
+                    continue;
+                }
+
+                if (parent_archive_inventory == nullptr)
+                {
+                    continue;
+                }
+
+                auto reader = parent_archive_inventory.find(l->source_name);
+
+                if (reader == parent_archive_inventory->end())
+                {
+                    continue;
+                }
+
+                const size_t scale = 1; // TODO, not currently implemented
+
+                // Calculate the overlap start-stop, in input space
+                const int64_t x_overlap_start_shifted = x_overlap_start + l->ioffsetx;
+                const int64_t x_overlap_end_shifted = x_overlap_end + l->ioffsetx;
+                const int64_t y_overlap_start_shifted = y_overlap_start + l->ioffsety;
+                const int64_t y_overlap_end_shifted = y_overlap_end + l->ioffsety;
+                const int64_t z_overlap_start_shifted = z_overlap_start + l->ioffsetz;
+                const int64_t z_overlap_end_shifted = z_overlap_end + l->ioffsetz;
+
+                uint16_t *region = reader->load_region(
+                    scale,
+                    x_overlap_start_shifted, x_overlap_end_shifted,
+                    y_overlap_start_shifted, y_overlap_end_shifted,
+                    z_overlap_start_shifted, z_overlap_end_shifted);
+
+                const int64_t cin = l->source_channel;
+                const int64_t cout = l->target_channel;
+
+                for (size_t i = xs; i < xe; i++)
+                {
+                    for (size_t j = ys; j < ye; j++)
+                    {
+                        for (size_t k = zs; k < ze; k++)
+                        {
+                            /*
+                            // Calculate the coordinates of the input and output inside their respective buffers
+                            const size_t roffset = ((x_in_chunk_offset - cxmin) * cysize * czsize) + // X
+                                                   ((y_in_chunk_offset - cymin) * czsize) +          // Y
+                                                   (z_in_chunk_offset - czmin);                      // Z
+
+                            const size_t ooffset = (c * osizey * osizex * osizez) + // C
+                                                   ((k - zs) * osizey * osizex) +   // Z
+                                                   ((j - ys) * osizex) +            // Y
+                                                   ((i - xs));                      // X
+
+                            out_buffer[ooffset] = region[roffset];
+                            */
+                        }
+                    }
+                }
+
+                free(region);
             }
         }
 
