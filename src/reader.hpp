@@ -1256,7 +1256,7 @@ public:
                 }
             }
         }
-        else if (type == DESCRIPTOR)
+        else if (type == DESCRIPTOR && parent_archive_inventory != nullptr)
         {
             for (descriptor_layer *l : descriptor_layers)
             {
@@ -1283,17 +1283,7 @@ public:
 
                 if (!overlaps)
                 {
-                    std::cout << "no overlap " 
-                        << ' ' << x_overlap_start << " " << x_overlap_end << ' '
-                        << ' ' << y_overlap_start << " " << y_overlap_end << ' '
-                        << ' ' << z_overlap_start << " " << z_overlap_end << ' '
-                        << std::endl;
                     // This layer is not included in the current access
-                    continue;
-                }
-
-                if (parent_archive_inventory == nullptr)
-                {
                     continue;
                 }
 
@@ -1301,7 +1291,6 @@ public:
 
                 if (reader == parent_archive_inventory->end())
                 {
-                    std::cout << "not found" << std::endl;
                     continue;
                 }
 
