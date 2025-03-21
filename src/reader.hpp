@@ -1277,9 +1277,9 @@ public:
                 const int64_t z_overlap_end = std::min(layer_end_z, static_cast<int64_t>(ze));
 
                 // True if there is an overlap between the requested region and the layer region
-                const bool overlaps = x_overlap_start <= x_overlap_end &&
-                                      y_overlap_start <= y_overlap_end &&
-                                      z_overlap_start <= z_overlap_end;
+                const bool overlaps = (x_overlap_start <= x_overlap_end) &&
+                                      (y_overlap_start <= y_overlap_end) &&
+                                      (z_overlap_start <= z_overlap_end);
 
                 if (!overlaps)
                 {
