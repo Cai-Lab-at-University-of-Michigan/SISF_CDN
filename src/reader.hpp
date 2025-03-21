@@ -1309,7 +1309,7 @@ public:
                 const int64_t z_overlap_start_shifted = z_overlap_start + l->ioffsetz;
                 const int64_t z_overlap_end_shifted = z_overlap_end + l->ioffsetz;
 
-                uint16_t *region = reader->load_region(
+                uint16_t *region = reader.second->load_region(
                     scale,
                     x_overlap_start_shifted, x_overlap_end_shifted,
                     y_overlap_start_shifted, y_overlap_end_shifted,
