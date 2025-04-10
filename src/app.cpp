@@ -1597,8 +1597,8 @@ int main(int argc, char *argv[])
 			}
 		}
 		
-		std::vector<basic_json> ids = {};
-		std::vector<basic_json> values = {};
+		std::vector<json> ids = {};
+		std::vector<json> values = {};
 		
 		std::vector<std::string> mesh_files = glob_tool(DATA_PATH + data_id + "/mesh/*:0:0");
 		
