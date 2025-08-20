@@ -657,7 +657,7 @@ pixtype *decode_stack_native(size_t sizex, size_t sizey, size_t sizez, void *buf
         tune_id,
         crf,
         film_grain,
-        1 // TODO Fix
+        0 // TODO Fix
     };
 
     std::cout << "Metadata size: " << metadata_size << " Version: " << version << std::endl;
