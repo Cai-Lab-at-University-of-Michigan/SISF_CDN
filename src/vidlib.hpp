@@ -605,9 +605,6 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
 
 pixtype *decode_stack_native(void *buffer, size_t buffer_size)
 {
-    // Allocate output buffer
-    // uint8_t *out = (uint8_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
-
     void *out;
 
     size_t offset = 0;
