@@ -660,9 +660,6 @@ pixtype *decode_stack_native(size_t sizex, size_t sizey, size_t sizez, void *buf
         0 // TODO Fix
     };
 
-    std::cout << "Metadata size: " << metadata_size << " Version: " << version << std::endl;
-    std::cout << enc_id << ", " << dec_id << ", " << width << ", " << height << std::endl;
-
     // out = offset;
     size_t buffer_leftover = buffer_size - 8 - 8 - (4 * 11);
     out = malloc(buffer_leftover);
@@ -670,8 +667,6 @@ pixtype *decode_stack_native(size_t sizex, size_t sizey, size_t sizez, void *buf
     memcpy(out, offset, buffer_leftover);
 
     size_t outsize = ffmpeg_native(!FFMPEG_FLAG_COMPRESS, cd_values, compressed_size, &out);
-
-    std::cout << "Decompressed " << outsize << " vs. " << (int)sizex * sizey * sizez << std::endl;
 
     return (pixtype *)out;
 }
