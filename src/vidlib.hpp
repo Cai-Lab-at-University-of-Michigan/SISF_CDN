@@ -612,7 +612,6 @@ pixtype *decode_stack_native(void *buffer, size_t buffer_size)
 
     size_t offset = 0;
 
-    void *offset = buffer;
     uint32_t metadata_size = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
     uint32_t version = *((uint32_t *)(buffer + offset));
