@@ -23,7 +23,7 @@ extern "C"
 #include <libavutil/opt.h>
 
 #include <ffmpeg_utils.h>
-size_t ffmpeg_native(unsigned flags, const unsigned int cd_values[], size_t buf_size, void **buf);
+    size_t ffmpeg_native(unsigned flags, const unsigned int cd_values[], size_t buf_size, void **buf);
 }
 
 #define IMAGE_GAIN 10
@@ -43,7 +43,6 @@ std::string decode_params = "-framerate 24/1 -i - -framerate 24/1 -f rawvideo -p
 const size_t target_framerate = 24;
 
 typedef uint8_t pixtype;
-
 
 void write_threaded(void *buffer, size_t buffer_size, subprocess::Popen *p)
 {
@@ -71,7 +70,6 @@ void read_threaded(void **buffer_ret, size_t *buffer_size, FILE *file, size_t si
     buffer_size[0] = current_size;
     buffer_ret[0] = buffer;
 }
-
 
 pixtype *uint16_to_pixtype(uint16_t *buffer, size_t len)
 {
@@ -354,7 +352,8 @@ pixtype *decode_stack_264(size_t sizex, size_t sizey, size_t sizez, void *buffer
                     break;
                 }
 
-                if(frame_cnt < sizez) { // Ignore z buffer
+                if (frame_cnt < sizez)
+                { // Ignore z buffer
                     for (size_t x = 0; x < sizex; x++)
                     {
                         for (size_t y = 0; y < sizey; y++)
@@ -386,7 +385,8 @@ pixtype *decode_stack_264(size_t sizex, size_t sizey, size_t sizez, void *buffer
             break;
         }
 
-        if(frame_cnt < sizez) { // Ignore z buffer
+        if (frame_cnt < sizez)
+        { // Ignore z buffer
             for (size_t x = 0; x < sizex; x++)
             {
                 for (size_t y = 0; y < sizey; y++)
@@ -437,11 +437,11 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
     AVIOContext *ioContext = avio_alloc_context(
         static_cast<unsigned char *>(av_malloc(av_context_buffer_size)), // Internal buffer
         av_context_buffer_size,                                          // Buffer size
-        0,                                             // Write flag (0 for read-only)
-        &memBuffer,                                    // Opaque pointer
-        memorybuffer_read_packet,                      // Read callback
-        nullptr,                                       // Write callback (not needed)
-        nullptr                                        // Seek callback (optional)
+        0,                                                               // Write flag (0 for read-only)
+        &memBuffer,                                                      // Opaque pointer
+        memorybuffer_read_packet,                                        // Read callback
+        nullptr,                                                         // Write callback (not needed)
+        nullptr                                                          // Seek callback (optional)
     );
 
     if (!ioContext)
@@ -545,7 +545,8 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
                     break;
                 }
 
-                if(frame_cnt < sizez) { // Ignore z buffer
+                if (frame_cnt < sizez)
+                { // Ignore z buffer
                     for (size_t x = 0; x < sizex; x++)
                     {
                         for (size_t y = 0; y < sizey; y++)
@@ -577,7 +578,8 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
             break;
         }
 
-        if(frame_cnt < sizez) { // Ignore z buffer
+        if (frame_cnt < sizez)
+        { // Ignore z buffer
             for (size_t x = 0; x < sizex; x++)
             {
                 for (size_t y = 0; y < sizey; y++)
@@ -601,65 +603,75 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
     return (pixtype *)out;
 }
 
+// size_t ffmpeg_native(unsigned flags, const unsigned int cd_values[], size_t buf_size, void **buf);
 
-//size_t ffmpeg_native(unsigned flags, const unsigned int cd_values[], size_t buf_size, void **buf);
+pixtype *decode_stack_native(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
+{
+    // Allocate output buffer
+    // uint8_t *out = (uint8_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
 
+    void *out;
 
-pixtype *decode_stack_native(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size) {
-	// Allocate output buffer
-	//uint8_t *out = (uint8_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
+    void *offset = buffer;
+    uint32_t metadata_size = *((uint32_t *)(offset));
+    offset += sizeof(uint32_t);
+    uint32_t version = *((uint32_t *)(offset));
+    offset += sizeof(uint32_t);
 
-	void * out;
+    // TODO Check version match
 
-	void * offset = buffer;
-	uint32_t metadata_size = *((uint32_t *) (offset)); offset += sizeof(uint32_t);
-	uint32_t version = *((uint32_t *) (offset)); offset += sizeof(uint32_t);
+    uint32_t enc_id = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t dec_id = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t width = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t height = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t depth = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t bit_mode = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t preset_id = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t tune_id = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t crf = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t film_grain = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
+    uint32_t stored_gpu_id = *((uint32_t *)offset);
+    offset += sizeof(uint32_t);
 
-	// TODO Check version match
+    uint64_t compressed_size = *((uint64_t *)offset);
+    offset += sizeof(uint64_t);
 
-	uint32_t enc_id = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t dec_id = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t width = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t height = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t depth = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t bit_mode = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t preset_id = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t tune_id = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t crf = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t film_grain = *((uint32_t *) offset); offset += sizeof(uint32_t);
-	uint32_t stored_gpu_id = *((uint32_t *) offset); offset += sizeof(uint32_t);
+    const unsigned int cd_values[11] = {
+        enc_id,
+        dec_id,
+        width,
+        height,
+        depth,
+        bit_mode,
+        preset_id,
+        tune_id,
+        crf,
+        film_grain,
+        1 // TODO Fix
+    };
 
-	uint64_t compressed_size = *((uint64_t *) offset); offset += sizeof(uint64_t);
+    std::cout << "Metadata size: " << metadata_size << " Version: " << version << std::endl;
+    std::cout << enc_id << ", " << dec_id << ", " << width << ", " << height << std::endl;
 
-	const unsigned int cd_values[11] = {
-		enc_id,
-		dec_id,
-		width,
-		height,
-            depth,
-            bit_mode,
-            preset_id,
-            tune_id,
-	            crf,
-            	film_grain,
-	            1 // TODO Fix
-	};
+    // out = offset;
+    size_t buffer_leftover = buffer_size - 8 - 8 - (4 * 11);
+    out = malloc(buffer_leftover);
 
-	std::cout << "Metadata size: "<< metadata_size << " Version: " << version << std::endl;
-	std::cout << enc_id << ", " << dec_id << ", " << width << ", " << height << std::endl;
+    memcpy(out, offset, buffer_leftover);
 
-	//out = offset;
-	size_t buffer_leftover = buffer_size - 8 - 8 - (4*11);
-	out = malloc(buffer_leftover);
+    size_t outsize = ffmpeg_native(!FFMPEG_FLAG_COMPRESS, cd_values, compressed_size, &out);
 
-	memcpy(out, offset,  buffer_leftover);
+    std::cout << "Decompressed " << outsize << " vs. " << (int)sizex * sizey * sizez << std::endl;
 
-	size_t outsize = ffmpeg_native(!FFMPEG_FLAG_COMPRESS, cd_values, compressed_size, &out);
-
-
-	std::cout << "Decompressed " << outsize << " vs. " << (int) sizex * sizey * sizez << std::endl;
-
-
-	return (pixtype *)out;
+    return (pixtype *)out;
 }
-
