@@ -329,14 +329,6 @@ public:
                 break;
 
             case 2:
-                // Decompress with vidlib
-                read_decomp_buffer_pt = decode_stack_264(sizex, sizey, sizez, read_buffer, sel->size);
-                pix_cnt = sizex * sizey * sizez;
-                decomp_size = pix_cnt * sizeof(uint16_t);
-                read_decomp_buffer = (char *)pixtype_to_uint16(read_decomp_buffer_pt, pix_cnt);
-                free(read_decomp_buffer_pt);
-                break;
-
             case 3:
                 // Decompress with vidlib 2
                 // read_decomp_buffer_pt = decode_stack_AV1(sizex, sizey, sizez, read_buffer, sel->size);
