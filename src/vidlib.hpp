@@ -603,9 +603,7 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
     return (pixtype *)out;
 }
 
-// size_t ffmpeg_native(unsigned flags, const unsigned int cd_values[], size_t buf_size, void **buf);
-
-pixtype *decode_stack_native(size_t sizex, size_t sizey, size_t sizez, void *buffer, size_t buffer_size)
+pixtype *decode_stack_native(void *buffer, size_t buffer_size)
 {
     // Allocate output buffer
     // uint8_t *out = (uint8_t *)calloc(sizex * sizey * sizez, sizeof(uint8_t));
