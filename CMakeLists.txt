@@ -35,6 +35,8 @@ find_library(CAI_FFMPEG_LIB h5ffmpeg_shared PATH ./ffmpeg_HDF5_filter/)
 target_link_libraries(nTracer_cdn "${CAI_FFMPEG_LIB}")
 cmake_print_variables(CAI_FFMPEG_LIB)
 
+target_include_directories(nTracer_cdn PRIVATE "/usr/include/hdf5/serial/")
+
 target_compile_options(nTracer_cdn PUBLIC -O3 -march=native -Wl,--no-as-needed -ldl)
 
 
