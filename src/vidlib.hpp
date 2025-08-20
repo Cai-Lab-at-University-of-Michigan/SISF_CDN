@@ -610,38 +610,40 @@ pixtype *decode_stack_native(void *buffer, size_t buffer_size)
 
     void *out;
 
+    size_t offset = 0;
+
     void *offset = buffer;
-    uint32_t metadata_size = *((uint32_t *)(offset));
+    uint32_t metadata_size = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t version = *((uint32_t *)(offset));
+    uint32_t version = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
 
     // TODO Check version match
 
-    uint32_t enc_id = *((uint32_t *)offset);
+    uint32_t enc_id = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t dec_id = *((uint32_t *)offset);
+    uint32_t dec_id = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t width = *((uint32_t *)offset);
+    uint32_t width = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t height = *((uint32_t *)offset);
+    uint32_t height = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t depth = *((uint32_t *)offset);
+    uint32_t depth = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t bit_mode = *((uint32_t *)offset);
+    uint32_t bit_mode = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t preset_id = *((uint32_t *)offset);
+    uint32_t preset_id = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t tune_id = *((uint32_t *)offset);
+    uint32_t tune_id = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t crf = *((uint32_t *)offset);
+    uint32_t crf = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t film_grain = *((uint32_t *)offset);
+    uint32_t film_grain = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
-    uint32_t stored_gpu_id = *((uint32_t *)offset);
+    uint32_t stored_gpu_id = *((uint32_t *)(buffer + offset));
     offset += sizeof(uint32_t);
 
-    uint64_t compressed_size = *((uint64_t *)offset);
+    uint64_t compressed_size = *((uint64_t *)(buffer + offset));
     offset += sizeof(uint64_t);
 
     const unsigned int cd_values[11] = {
@@ -658,11 +660,12 @@ pixtype *decode_stack_native(void *buffer, size_t buffer_size)
         0 // TODO Fix
     };
 
-    // out = offset;
-    size_t buffer_leftover = buffer_size - 8 - 8 - (4 * 11);
+    size_t buffer_leftover = buffer_size - offset;
     out = malloc(buffer_leftover);
 
-    memcpy(out, offset, buffer_leftover);
+    // TODO check if buffer_leftover == cd_values->compressed_size
+
+    memcpy(out, buffer + offset, buffer_leftover);
 
     size_t outsize = ffmpeg_native(!FFMPEG_FLAG_COMPRESS, cd_values, compressed_size, &out);
 
