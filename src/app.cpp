@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "counter.hpp"
+#include "tiff_utils.hpp"
 
 int port = 6000;
 int THREAD_COUNT = 32;
@@ -1686,6 +1687,334 @@ int main(int argc, char *argv[])
 		}
 		
 		res.end(); });
+
+	CROW_ROUTE(app, "/<string>/<string>/tif/<string>")
+	([](crow::response &res, std::string data_id_in, std::string resolution_id, std::string tile_key)
+	 {
+		auto begin = now();
+		
+		auto [data_id, filters] = parse_filter_list(data_id_in);
+		archive_reader * reader = search_inventory(data_id);
+
+		if(reader == nullptr) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
+			return;
+		}
+
+		if(!reader->verify_protection(filters)) {
+			res.code = crow::status::FORBIDDEN;
+			res.end("403 Forbidden\n");
+			return;
+		}
+
+		unsigned int x_begin, x_end, y_begin, y_end, z_begin, z_end;
+		if (sscanf(tile_key.c_str(), "%u-%u_%u-%u_%u-%u", &x_begin, &x_end, &y_begin, &y_end, &z_begin, &z_end) != 6)
+		{
+			res.code = crow::status::BAD_REQUEST;
+			res.end("400 Bad Request -- Invalid range string\n");
+			return;
+		}
+
+		size_t scale;
+		try
+		{
+			scale = std::stoi(resolution_id);
+		}
+		catch (const std::invalid_argument &e)
+		{
+			scale = 0;
+		}
+		catch (const std::out_of_range &e)
+		{
+			scale = 0;
+		}
+
+		if (scale == 0)
+		{
+			res.code = crow::status::BAD_REQUEST;
+			res.end("400 Bad Request -- Invalid scale string\n");
+			return;
+		}
+
+		size_t chunk_sizes[3] = {x_end - x_begin, y_end - y_begin, z_end - z_begin};
+		std::tuple<size_t, size_t, size_t> image_size = reader->get_size(scale);
+
+		{
+			bool out_of_range = false;
+			if (!reader->contains_scale(scale))
+			{
+				out_of_range = true;
+			}
+			else
+			{
+				out_of_range |= x_end > std::get<0>(image_size);
+				out_of_range |= y_end > std::get<1>(image_size);
+				out_of_range |= z_end > std::get<2>(image_size);
+			}
+
+			if (out_of_range)
+			{
+				res.code = crow::status::BAD_REQUEST;
+				res.end("400 Bad Request -- Invalid data range\n");
+				return;
+			}
+		}
+
+		const size_t out_buffer_size = sizeof(uint16_t) * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2] * reader->channel_count;
+
+		enum projectfunction
+		{
+			max_project,
+			min_project,
+			avg_project
+		};
+
+		int64_t project_frames = -1; 
+		char project_axis = 0;
+		projectfunction project_mode = max_project;
+
+		for (const auto &pair : filters)
+		{
+			if (pair.second.empty())
+			{
+				continue;
+			}
+			if (pair.first == "project")
+			{
+				project_frames = std::stoi(pair.second);
+			}
+			else if (pair.first == "project_axis")
+			{
+				project_axis = pair.second.at(0);
+			}
+			else if (pair.first == "project_function")
+			{
+				if (pair.second == "max")
+				{
+					project_mode = max_project;
+				}
+				else if (pair.second == "min")
+				{
+					project_mode = min_project;
+				}
+				else if (pair.second == "avg")
+				{
+					project_mode = avg_project;
+				}
+			}
+		}
+
+		if(project_frames > 1) {
+			if(project_axis == 0) {
+				if(chunk_sizes[0] == 1) {
+					project_axis = 'x';
+				} else if (chunk_sizes[1] == 1) {
+					project_axis = 'y';
+				} else { //if (chunk_sizes[2] == 1) {
+					project_axis = 'z';
+				}
+			}
+
+			project_frames /= scale;
+			if(project_frames < 1) {
+				project_frames = 1;
+			}
+		}
+
+		uint16_t * out_buffer;
+
+		if(project_frames > 1) {
+			out_buffer = (uint16_t *) calloc(out_buffer_size, 1);
+
+			switch(project_axis) {
+				case 'x':
+				case 'y':
+				case 'z':
+					break;
+				default:
+					project_axis = 'z';
+			}
+
+			size_t x_begin_project = x_begin;
+			size_t y_begin_project = y_begin;
+			size_t z_begin_project = z_begin;
+
+			size_t x_end_project = x_end;
+			size_t y_end_project = y_end;
+			size_t z_end_project = z_end;
+
+			std::tuple<size_t, size_t, size_t> dataset_size = reader->get_size(scale);
+
+			const size_t sizex = std::get<0>(dataset_size);
+			const size_t sizey = std::get<1>(dataset_size);
+			const size_t sizez = std::get<2>(dataset_size);
+
+			switch (project_axis)
+			{
+			case 'x':
+				x_end_project += project_frames;
+				x_end_project = std::min(sizex, x_end_project);
+				break;
+			case 'y':
+				y_end_project += project_frames;
+				y_end_project = std::min(sizey, y_end_project);
+				break;
+			case 'z':
+				z_end_project += project_frames;
+				z_end_project = std::min(sizez, z_end_project);
+				break;
+			}
+
+			const size_t x_project_size = x_end_project - x_begin_project;
+			const size_t y_project_size = y_end_project - y_begin_project;
+			const size_t z_project_size = z_end_project - z_begin_project;
+
+			uint16_t * tmp_buffer = reader->load_region(
+				scale,
+				x_begin_project, x_end_project,
+				y_begin_project, y_end_project,
+				z_begin_project, z_end_project
+			);
+
+			uint16_t vout;
+			double sum;
+			for (size_t c = 0; c < reader->channel_count; c++)
+			{
+				for (size_t k = 0; k < chunk_sizes[2]; k++)
+				{
+					for (size_t j = 0; j < chunk_sizes[1]; j++)
+					{
+						for (size_t i = 0; i < chunk_sizes[0]; i++)
+						{
+							switch (project_mode)
+							{
+							case max_project:
+								vout = std::numeric_limits<uint16_t>::min();
+								break;
+							case min_project:
+								vout = std::numeric_limits<uint16_t>::max();
+								break;
+							case avg_project:
+								vout = 0;
+								sum = 0.0;
+								break;
+							}
+
+							for (size_t p = 0; p < project_frames; p++)
+							{
+								size_t new_i = i;
+								size_t new_j = j;
+								size_t new_k = k;
+
+								switch (project_axis)
+								{
+								case 'x':
+									new_i = std::min(x_project_size - 1, new_i + p);
+									break;
+								case 'y':
+									new_j = std::min(y_project_size - 1, new_j + p);
+									break;
+								case 'z':
+									new_k = std::min(z_project_size - 1, new_k + p);
+									break;
+								}
+
+								const size_t ioffset = (c * x_project_size * y_project_size * z_project_size) + // C
+													(new_k * x_project_size * y_project_size) +					// Z
+													(new_j * x_project_size) +									// Y
+													(new_i);													// X
+
+								const uint16_t vin = tmp_buffer[ioffset];
+
+								switch (project_mode)
+								{
+								case max_project:
+									vout = std::max(vin, vout);
+									break;
+								case min_project:
+									vout = std::min(vin, vout);
+									break;
+								case avg_project:
+									vout++;
+									sum += vin;
+									break;
+								}
+							}
+
+							if (project_mode == avg_project)
+							{
+								sum /= vout;
+								vout = sum;
+							}
+
+							const size_t ooffset = (c * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2]) + // C
+												(k * chunk_sizes[0] * chunk_sizes[1]) +						// Z
+												(j * chunk_sizes[0]) +										// Y
+												(i);														// X
+
+							out_buffer[ooffset] = vout;
+						}
+					}
+				}
+			}
+
+			free(tmp_buffer);
+		} else {
+			// Load unprojected data
+			out_buffer = reader->load_region(
+				scale,
+				x_begin, x_end,
+				y_begin, y_end,
+				z_begin, z_end
+			);
+		}
+
+		for(const auto& pair : filters) {
+			filter_run(
+				out_buffer,
+				out_buffer_size,
+				{chunk_sizes[0], chunk_sizes[1], chunk_sizes[2]},
+				reader->channel_count,
+				pair.first,
+				pair.second
+			);
+		}
+
+		// ============ NEW TIFF CONVERSION CODE ============
+		try {
+			// interpolate Voxel Size
+			std::tuple<size_t, size_t, size_t> res_scaled = reader->get_res(scale);
+			double resx = std::get<0>(res_scaled) / 1000.0;
+			double resy = std::get<1>(res_scaled) / 1000.0;
+			double resz = std::get<2>(res_scaled) / 1000.0;
+
+			// Convert to TIFF format
+			std::string tiff_data = create_auto_tiff(
+				out_buffer,
+				chunk_sizes[0],  			// width
+				chunk_sizes[1], 	 		// height  
+				chunk_sizes[2],  			// depth
+				reader->channel_count,  	// channels
+				resx, resy, resz, "micron"	// physical_resolution
+			);
+			
+			// Set appropriate headers for TIFF response
+			res.set_header("Content-Type", "image/tiff");
+			res.set_header("Content-Disposition", "attachment; filename=\"roi_" + data_id + "_" + tile_key + ".tif\"");
+			
+			res.body = tiff_data;
+			free(out_buffer);
+			
+		} catch (const std::exception& e) {
+			// Fallback to original binary format if TIFF creation fails
+			res.body = std::string((char *) out_buffer, out_buffer_size);
+			free(out_buffer);
+		}
+
+		res.end(); 
+		
+		log_time(data_id, "READ", scale, x_end-x_begin, y_end-y_begin, z_end-z_begin, begin); });
 
 	// @app.route("/data/<data_id>/<resolution>/<key>-<key>-<key>")
 	// This has to be last in the route list because it acts as a wildcard
