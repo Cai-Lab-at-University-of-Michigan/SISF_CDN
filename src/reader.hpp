@@ -453,7 +453,6 @@ public:
         global_chunk_cache_mutex.unlock();
 
         free(new_entry);
-        free(sel);
         free(compressed_data);
     }
 
