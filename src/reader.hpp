@@ -427,7 +427,7 @@ public:
 
         file.seekp(0, std::ios::end);
         size_t new_offset = file.tellp();
-        //file.seekp(sel->offset);
+        // file.seekp(sel->offset);
         file.write((char *)compressed_data, compressed_size);
         file.close();
 
@@ -437,7 +437,7 @@ public:
 
         replace_meta_entry(id, new_entry);
 
-        // Delete the prexisting values in the cache 
+        // Delete the prexisting values in the cache
         for (size_t i = 0; i < global_cache_size; i++)
         {
             if (global_chunk_cache[i].chunk == id)
@@ -1576,13 +1576,12 @@ public:
         }
 
         // TODO load chunks back
-        for(auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
+        for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
         {
             std::tuple<size_t, size_t, size_t, size_t, size_t> id_tuple = it->first;
 
-
-            //std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
-            //chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
+            // std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
+            // chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
 
             packed_reader *chunk_writer = get_mchunk(1, std::get<0>(id_tuple), std::get<1>(id_tuple), std::get<2>(id_tuple), std::get<3>(id_tuple));
 
@@ -1590,7 +1589,7 @@ public:
 
             chunk_writer->overwrite_chunk(std::get<4>(id_tuple), it->second, chunk_size);
             free(it->second);
-        }   
+        }
     }
 
     void print_info()
