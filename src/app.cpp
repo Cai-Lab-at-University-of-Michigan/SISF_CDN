@@ -724,7 +724,7 @@ int main(int argc, char *argv[])
 			return;
 		}
 
-		if(!(reader->type == ARCHIVE_TYPE::SISF))
+		if(!(reader->type == ArchiveType::SISF))
 		{
 			res.code = crow::status::FORBIDDEN;
 			res.end("403 Forbidden\n");
