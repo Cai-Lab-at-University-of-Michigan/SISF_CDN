@@ -786,7 +786,20 @@ int main(int argc, char *argv[])
 				return;
 			}
 		}
-	
+
+		size_t size_of_insert = chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2] * sizeof(uint16_t);
+
+		std::string insert = req.body;
+
+		if(insert.size() != size_of_insert)
+		{
+			res.code = crow::status::BAD_REQUEST;
+			res.end("400 Bad Request -- Invalid insert size\n");
+			return;
+		}
+
+		
+
 		// TODO Verify input
 
 		//reader->replace_region(
