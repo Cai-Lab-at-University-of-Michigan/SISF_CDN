@@ -731,6 +731,13 @@ int main(int argc, char *argv[])
 			return;
 		}
 
+		if(reader->channel_count != 1)
+		{
+			res.code = crow::status::FORBIDDEN;
+			res.end("403 Forbidden\n");
+			return;
+		}
+
 		if (!reader->verify_protection(filters) || !reader->is_protected || READ_ONLY_MODE)
 		{
 			res.code = crow::status::FORBIDDEN;
@@ -806,7 +813,7 @@ int main(int argc, char *argv[])
 		}
 
 		reader->replace_region(
-			x_begin, x_end, y_begin, y_end, z_begin, z_end, insert.c_str()
+			1, x_begin, x_end, y_begin, y_end, z_begin, z_end, insert.c_str()
 		);
 
 		res.code = crow::status::OK;
