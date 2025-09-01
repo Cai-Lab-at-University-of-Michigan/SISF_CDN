@@ -711,6 +711,8 @@ int main(int argc, char *argv[])
 	CROW_ROUTE(app, "/<string>/write/<string>/<string>").methods(crow::HTTPMethod::POST)
 	([](crow::request &req, crow::response &res, std::string data_id_in, std::string resolution_id, std::string tile_key)
 	 {
+		std::cout << "Got request: " << req.body << std::endl;
+
 		// std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 		archive_reader *reader = search_inventory(data_id);
