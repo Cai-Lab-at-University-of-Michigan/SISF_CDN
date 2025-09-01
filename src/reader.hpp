@@ -1362,7 +1362,7 @@ public:
         const size_t osizex = xe - xs;
         const size_t osizey = ye - ys;
         const size_t osizez = ze - zs;
-        const size_t buffer_size = osizex * osizey * osizez * sizeof(uint16_t) * self->channel_count;
+        const size_t buffer_size = osizex * osizey * osizez * sizeof(uint16_t) * channel_count;
 
         // Define map for storing already decompressed chunks
         std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache;
@@ -1481,7 +1481,7 @@ public:
                                                ((j - ys) * osizex) +            // Y
                                                ((i - xs));                      // X
 
-                        //out_buffer[ooffset] = chunk[coffset];
+                        // out_buffer[ooffset] = chunk[coffset];
                     }
                 }
             }
