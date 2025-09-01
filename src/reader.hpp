@@ -1482,10 +1482,13 @@ public:
                                                ((i - xs));                      // X
 
                         // out_buffer[ooffset] = chunk[coffset];
+                        chunk[coffset] = ((uint16_t *)data)[ooffset];
                     }
                 }
             }
         }
+
+        // TODO load chunks back
 
         if (chunk_identifier != nullptr)
         {
