@@ -415,7 +415,7 @@ public:
         }
 
         {
-            std::lock_guard<std::mutex> lk(global_chunk_cache_mutex); // RAII class: mutex acquisition is initialization
+            global_chunk_cache_mutex.lock();
 
             // Write to file
             std::fstream file(data_fname, std::ios::in | std::ios::out | std::ios::binary);
@@ -452,6 +452,8 @@ public:
                     }
                 }
             }
+
+            global_chunk_cache_mutex.unlock();
         }
 
         free(compressed_data);
