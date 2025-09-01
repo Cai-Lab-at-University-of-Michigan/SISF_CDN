@@ -414,46 +414,46 @@ public:
             return;
         }
 
-        global_chunk_cache_mutex.lock();
-
-        // Write to file
-        std::fstream file(data_fname, std::ios::in | std::ios::out | std::ios::binary);
-        if (file.fail())
         {
-            std::cerr << "Fopen failed (write)" << std::endl;
-            free(compressed_data);
-            return;
-        }
+            std::lock_guard<std::mutex> lk(global_chunk_cache_mutex); // RAII class: mutex acquisition is initialization
 
-        file.seekp(0, std::ios::end);
-        size_t new_offset = file.tellp();
-        // file.seekp(sel->offset);
-        file.write((char *)compressed_data, compressed_size);
-        file.close();
-
-        metadata_entry *new_entry = (metadata_entry *)malloc(sizeof(metadata_entry));
-        new_entry->offset = new_offset;
-        new_entry->size = compressed_size;
-
-        replace_meta_entry(id, new_entry);
-
-        // Delete the prexisting values in the cache
-        for (size_t i = 0; i < global_cache_size; i++)
-        {
-            if (global_chunk_cache[i].chunk == id)
+            // Write to file
+            std::fstream file(data_fname, std::ios::in | std::ios::out | std::ios::binary);
+            if (file.fail())
             {
-                if (global_chunk_cache[i].mchunk == this_mchunk_id)
+                std::cerr << "Fopen failed (write)" << std::endl;
+                free(compressed_data);
+                return;
+            }
+
+            file.seekp(0, std::ios::end);
+            size_t new_offset = file.tellp();
+            // file.seekp(sel->offset);
+            file.write((char *)compressed_data, compressed_size);
+            file.close();
+
+            metadata_entry *new_entry = (metadata_entry *)malloc(sizeof(metadata_entry));
+            new_entry->offset = new_offset;
+            new_entry->size = compressed_size;
+
+            replace_meta_entry(id, new_entry);
+            free(new_entry);
+
+            // Delete the prexisting values in the cache
+            for (size_t i = 0; i < global_cache_size; i++)
+            {
+                if (global_chunk_cache[i].chunk == id)
                 {
-                    if (global_chunk_cache[i].ptr != 0)
-                        free(global_chunk_cache[i].ptr);
-                    global_chunk_cache[i].ptr = 0;
+                    if (global_chunk_cache[i].mchunk == this_mchunk_id)
+                    {
+                        if (global_chunk_cache[i].ptr != 0)
+                            free(global_chunk_cache[i].ptr);
+                        global_chunk_cache[i].ptr = 0;
+                    }
                 }
             }
         }
 
-        global_chunk_cache_mutex.unlock();
-
-        free(new_entry);
         free(compressed_data);
     }
 
