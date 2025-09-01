@@ -444,7 +444,8 @@ public:
             {
                 if (global_chunk_cache[i].mchunk == this_mchunk_id)
                 {
-                    free(global_chunk_cache[i].ptr);
+                    if (global_chunk_cache[i].ptr != 0)
+                        free(global_chunk_cache[i].ptr);
                     global_chunk_cache[i].ptr = 0;
                 }
             }
