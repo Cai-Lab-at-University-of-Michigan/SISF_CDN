@@ -1351,6 +1351,15 @@ public:
         return out_buffer;
     }
 
+    void *replace_region(
+       // size_t scale,
+        size_t xs, size_t xe,
+        size_t ys, size_t ye,
+        size_t zs, size_t ze,
+        const char * data)
+    {
+    }
+
     void print_info()
     {
         std::cout << '[' << fname << "] " << " dtype=" << dtype << " channels=" << channel_count << " chunks=(" << mchunkx << ','
