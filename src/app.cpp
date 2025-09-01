@@ -31,7 +31,7 @@
 
 #include "counter.hpp"
 
-int port = 6000;
+int port = 100;
 int THREAD_COUNT = 32;
 bool READ_ONLY_MODE = false;
 
