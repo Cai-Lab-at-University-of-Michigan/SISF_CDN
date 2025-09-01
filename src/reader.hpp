@@ -1445,6 +1445,7 @@ public:
 
         // Define map for storing already decompressed chunks
         std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache;
+        std::map<uint16_t *, std::tuple<size_t, size_t, size_t>> chunk_sizes;
 
         // Scaled metachunk size
         const size_t mcx = mchunkx / scale;
@@ -1543,6 +1544,8 @@ public:
                             {
                                 chunk = chunk_reader->load_chunk(sub_chunk_id, cxsize, cysize, czsize);
                                 chunk_cache[*chunk_identifier] = chunk;
+
+                                chunk_sizes[chunk] = std::make_tuple(cxsize, cysize, czsize);
                             }
 
                             // Store this ID as the most recent chunk
@@ -1577,11 +1580,15 @@ public:
         {
             std::tuple<size_t, size_t, size_t, size_t, size_t> id_tuple = it->first;
 
+
             //std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
             //chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
 
             packed_reader *chunk_writer = get_mchunk(1, std::get<0>(id_tuple), std::get<1>(id_tuple), std::get<2>(id_tuple), std::get<3>(id_tuple));
-            chunk_writer->overwrite_chunk(std::get<4>(id_tuple), it->second);
+
+            size_t chunk_size = std::get<0>(chunk_sizes[it->second]) * std::get<1>(chunk_sizes[it->second]) * std::get<2>(chunk_sizes[it->second]) * sizeof(uint16_t);
+
+            chunk_writer->overwrite_chunk(std::get<4>(id_tuple), it->second, chunk_size);
             free(it->second);
         }   
     }
