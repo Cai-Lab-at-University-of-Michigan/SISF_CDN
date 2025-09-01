@@ -406,7 +406,7 @@ public:
         size_t compressed_size = ZSTD_compressBound(data_size);
         void *compressed_data = malloc(compressed_size);
 
-        compressed_size = ZSTD_compress(compressed_data, compressed_size, data, data_size);
+        compressed_size = ZSTD_compress(compressed_data, compressed_size, data, data_size, 5);
         if (ZSTD_isError(compressed_size))
         {
             std::cerr << "ZSTD_compress failed" << std::endl;
