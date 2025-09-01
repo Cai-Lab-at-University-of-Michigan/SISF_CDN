@@ -377,6 +377,11 @@ public:
         return out;
     }
 
+    void overwrite_chunk(size_t id, uint16_t *data)
+    {
+        
+    }
+
     uint16_t read_pixel(size_t i, size_t j, size_t k)
     {
         const size_t xmin = ((size_t)chunkx) * (i / ((size_t)chunkx));
@@ -1488,17 +1493,23 @@ public:
             }
         }
 
-        // TODO load chunks back
-
         if (chunk_identifier != nullptr)
         {
             delete chunk_identifier;
         }
 
-        for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
+        // TODO load chunks back
+        for(auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
         {
+            std::tuple<size_t, size_t, size_t, size_t, size_t> id_tuple = it->first;
+
+            //std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
+            //chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
+
+            packed_reader *chunk_writer = get_mchunk(1, std::get<0>(id_tuple), std::get<1>(id_tuple), std::get<2>(id_tuple), std::get<3>(id_tuple));
+            chunk_writer->overwrite_chunk(std::get<4>(id_tuple), it->second);
             free(it->second);
-        }
+        }   
     }
 
     void print_info()
