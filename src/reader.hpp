@@ -246,6 +246,29 @@ public:
         return out;
     }
 
+    void replace_meta_entry(size_t id, metadata_entry *new_entry)
+    {
+        const size_t offset = header_size + (entry_file_line_size * id);
+
+        const size_t retry_count = 5;
+        for (size_t i = 0; i < retry_count; i++)
+        {
+            std::fstream file(meta_fname, std::ios::in | std::ios::out | std::ios::binary);
+
+            if (file.fail())
+            {
+                std::cerr << "Fopen failed (metadata)" << std::endl;
+                continue;
+            }
+
+            file.seekp(offset);
+            file.write((char *)&(new_entry->offset), sizeof(uint64_t));
+            file.write((char *)&(new_entry->size), sizeof(uint32_t));
+            file.close();
+            break;
+        }
+    }
+
     std::mutex chunk_cache_mutex;
     std::deque<std::tuple<size_t, uint16_t *>> chunk_cache;
 
@@ -377,9 +400,61 @@ public:
         return out;
     }
 
-    void overwrite_chunk(size_t id, uint16_t *data)
+    void overwrite_chunk(size_t id, uint16_t *data, size_t data_size)
     {
-        
+        // compress data using ZSTD
+        size_t compressed_size = ZSTD_compressBound(data_size);
+        void *compressed_data = malloc(compressed_size);
+
+        compressed_size = ZSTD_compress(compressed_data, compressed_size, data, data_size);
+        if (ZSTD_isError(compressed_size))
+        {
+            std::cerr << "ZSTD_compress failed" << std::endl;
+            free(compressed_data);
+            return;
+        }
+
+        global_chunk_cache_mutex.lock();
+
+        // Write to file
+        std::fstream file(data_fname, std::ios::in | std::ios::out | std::ios::binary);
+        if (file.fail())
+        {
+            std::cerr << "Fopen failed (write)" << std::endl;
+            free(compressed_data);
+            return;
+        }
+
+        file.seekp(0, std::ios::end);
+        size_t new_offset = file.tellp();
+        //file.seekp(sel->offset);
+        file.write((char *)compressed_data, compressed_size);
+        file.close();
+
+        metadata_entry *new_entry = (metadata_entry *)malloc(sizeof(metadata_entry));
+        new_entry->offset = new_offset;
+        new_entry->size = compressed_size;
+
+        replace_meta_entry(id, new_entry);
+
+        // Delete the prexisting values in the cache 
+        for (size_t i = 0; i < global_cache_size; i++)
+        {
+            if (global_chunk_cache[i].chunk == id)
+            {
+                if (global_chunk_cache[i].mchunk == this_mchunk_id)
+                {
+                    free(global_chunk_cache[i].ptr);
+                    global_chunk_cache[i].ptr = 0;
+                }
+            }
+        }
+
+        global_chunk_cache_mutex.unlock();
+
+        free(new_entry);
+        free(sel);
+        free(compressed_data);
     }
 
     uint16_t read_pixel(size_t i, size_t j, size_t k)
