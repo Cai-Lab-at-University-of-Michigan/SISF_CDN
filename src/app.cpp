@@ -708,7 +708,7 @@ int main(int argc, char *argv[])
 		res.end(out.str()); });
 
 	// @app.route("/data/<data_id>/<resolution>/<key>-<key>-<key>")
-	CROW_ROUTE(app, "/<string>/write/<string>/<string>").methods(crow::HTTPMethod::POST)
+	CROW_ROUTE(app, "/<string>/write/<string>/<string>").methods(crow::HTTPMethod::PATCH)
 	([](crow::request &req, crow::response &res, std::string data_id_in, std::string resolution_id, std::string tile_key)
 	 {
 		std::cout << "Got request: " << req.body << std::endl;
