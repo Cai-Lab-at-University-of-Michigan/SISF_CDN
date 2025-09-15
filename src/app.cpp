@@ -708,9 +708,8 @@ int main(int argc, char *argv[])
 		res.end(out.str()); });
 
 	// @app.route("/data/<data_id>/<resolution>/<key>-<key>-<key>")
-	CROW_ROUTE(app, "/<string>/write/<string>/<string>").methods(crow::HTTPMethod::PATCH)
-	([](crow::request &req, crow::response &res, std::string data_id_in, std::string resolution_id, std::string tile_key)
-	 {
+	CROW_ROUTE(app, "/<string>/write/<string>/<string>").methods(crow::HTTPMethod::PATCH)([](crow::request &req, crow::response &res, std::string data_id_in, std::string resolution_id, std::string tile_key)
+																						  {
 		// std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
 		archive_reader *reader = search_inventory(data_id);
@@ -816,8 +815,7 @@ int main(int argc, char *argv[])
 
 		res.code = crow::status::OK;
 		res.body = "done.";
-		res.end();
-	});
+		res.end(); });
 
 	// @app.route("/meanshift/<data_id>/<point>/")
 	CROW_ROUTE(app, "/<string>/meanshift/<string>")
