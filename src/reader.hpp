@@ -584,6 +584,7 @@ class archive_reader
 {
 public:
     bool is_protected = false;
+    bool is_valid = true;
     bool metadata_json = false;
 
     std::string fname; // "./example_dset"
