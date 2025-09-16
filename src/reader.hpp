@@ -59,6 +59,7 @@
 
 #define CHUNK_TIMER 0
 #define DEBUG_SLICING 0
+#define IO_RETRY_COUNT 5
 
 size_t mchunk_uuid = 0;
 std::mutex mchunk_uuid_mutex;
@@ -225,8 +226,7 @@ public:
 
         const size_t offset = header_size + (entry_file_line_size * id);
 
-        const size_t retry_count = 5;
-        for (size_t i = 0; i < retry_count; i++)
+        for (size_t i = 0; i < IO_RETRY_COUNT; i++)
         {
             std::ifstream file(meta_fname, std::ios::in | std::ios::binary);
 
@@ -250,8 +250,7 @@ public:
     {
         const size_t offset = header_size + (entry_file_line_size * id);
 
-        const size_t retry_count = 5;
-        for (size_t i = 0; i < retry_count; i++)
+        for (size_t i = 0; i < IO_RETRY_COUNT; i++)
         {
             std::fstream file(meta_fname, std::ios::in | std::ios::out | std::ios::binary);
 
@@ -318,9 +317,8 @@ public:
             size_t buffer_size = sel->size;
             uint16_t *read_buffer = (uint16_t *)malloc(buffer_size);
 
-            const size_t retry_count = 10;
             bool read_failed = true;
-            for (size_t i = 0; i < retry_count; i++)
+            for (size_t i = 0; i < IO_RETRY_COUNT; i++)
             {
                 std::ifstream file(data_fname, std::ios::in | std::ios::binary);
 
