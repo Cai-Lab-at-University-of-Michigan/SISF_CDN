@@ -139,6 +139,7 @@ class packed_reader
 {
 private:
     const size_t entry_file_line_size = 8 + 4;
+    const size_t header_size_expected = sizeof(uint16_t) * 7 + sizeof(uint64_t) * 9;
 
 public:
     bool is_valid;
@@ -213,7 +214,6 @@ public:
         header_size = file.tellg();
         file.close();
 
-        const header_size_expected = sizeof(uint16_t) * 7 + sizeof(uint64_t) * 9;
         if(header_size != header_size_expected || bytes_read != header_size_expected) {
             std::cerr << "Metadata read failed (short read)" << std::endl;
             return;
