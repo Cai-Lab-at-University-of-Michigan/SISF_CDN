@@ -45,6 +45,7 @@ typedef std::tuple<float, float, float, float, int> swc_line;
 typedef std::tuple<int, float, float, float, float, int> swc_line_input;
 
 std::unordered_map<std::string, archive_reader *> archive_inventory;
+std::mutex archive_inventory_mutex;
 
 void load_inventory()
 {
@@ -60,6 +61,11 @@ void load_inventory()
 
 			loc = froot.find_last_of('/');
 			std::string dset_name = froot.substr(loc + 1);
+
+			if (archive_inventory.count(dset_name) != 0)
+			{
+				continue;
+			}
 
 			try
 			{
@@ -85,6 +91,11 @@ void load_inventory()
 			loc = froot.find_last_of('/');
 			std::string dset_name = froot.substr(loc + 1);
 
+			if (archive_inventory.count(dset_name) != 0)
+			{
+				continue;
+			}
+
 			try
 			{
 				archive_inventory[dset_name] = new archive_reader(froot, SISF);
@@ -109,6 +120,11 @@ void load_inventory()
 			loc = froot.find_last_of('/');
 			std::string dset_name = froot.substr(loc + 1);
 
+			if (archive_inventory.count(dset_name) != 0)
+			{
+				continue;
+			}
+
 			try
 			{
 				archive_inventory[dset_name] = new archive_reader(froot, SISF_JSON);
@@ -132,6 +148,11 @@ void load_inventory()
 
 			loc = froot.find_last_of('/');
 			std::string dset_name = froot.substr(loc + 1);
+
+			if(archive_inventory.count(dset_name) != 0)
+			{
+				continue;
+			}
 
 			// We do not allow duplicate dataset names
 			if (archive_inventory.count(dset_name) != 0)
@@ -159,13 +180,24 @@ void load_inventory()
 archive_reader *search_inventory(std::string key)
 {
 	auto archive_search = archive_inventory.find(key);
-
-	if (archive_search == archive_inventory.end())
+	if (archive_search != archive_inventory.end())
 	{
-		return nullptr;
+		return archive_search->second;
 	}
 
-	return archive_search->second;
+	{
+		// Lock changes and check disk for new inventory
+		std::lock_guard<std::mutex> lock(archive_inventory_mutex);
+		load_inventory();
+	}
+
+	archive_search = archive_inventory.find(key);
+	if (archive_search != archive_inventory.end())
+	{
+		return archive_search->second;
+	}
+
+	return nullptr;
 }
 
 int main(int argc, char *argv[])
