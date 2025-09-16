@@ -195,14 +195,18 @@ public:
         file.read((char *)&cropstartz, sizeof(uint64_t));
         file.read((char *)&cropendz, sizeof(uint64_t));
 
+        header_size = file.tellg();
+        file.close();
+
+        
+
         countx = (sizex + ((size_t)chunkx) - 1) / ((size_t)chunkx);
         county = (sizey + ((size_t)chunky) - 1) / ((size_t)chunky);
         countz = (sizez + ((size_t)chunkz) - 1) / ((size_t)chunkz);
 
         max_chunk_size *= channel_count * chunkx * chunky * chunkz * sizeof(uint16_t);
 
-        header_size = file.tellg();
-        file.close();
+        
     }
 
     ~packed_reader()
