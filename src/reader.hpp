@@ -238,8 +238,16 @@ public:
 
             file.seekg(offset);
             file.read((char *)&(out->offset), sizeof(uint64_t));
+            std::streamsize bytes_read = file.gcount();
             file.read((char *)&(out->size), sizeof(uint32_t));
+            bytes_read += file.gcount();
             file.close();
+
+            if(bytes_read != sizeof(uint32_t) + sizeof(uint64_t)) {
+                std::cerr << "Metadata read failed (short read)" << std::endl;
+                continue;
+            }
+
             break;
         }
 
