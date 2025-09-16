@@ -1152,6 +1152,12 @@ public:
 
             out = new packed_reader(random_id, chunk_meta_name, chunk_data_name);
 
+            if (!out->is_valid)
+            {
+                delete out;
+                out = 0;
+            }
+
             mchunk_buffer[id_tuple] = out;
         }
         mchunk_buffer_mutex.unlock();
