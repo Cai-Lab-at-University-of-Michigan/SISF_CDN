@@ -331,7 +331,8 @@ public:
                 }
 
                 file.seekg(sel->offset);
-                size_t bytes_read = file.read((char *)read_buffer, sel->size);
+                file.read((char *)read_buffer, sel->size);
+                std::streamsize bytes_read = file.gcount();
                 file.close();
                 if (bytes_read != sel->size)
                 {
