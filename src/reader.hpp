@@ -257,7 +257,7 @@ public:
 
             if (file.fail())
             {
-                std::cerr << "Fopen failed (metadata)" << std::endl;
+                std::cerr << "Fopen failed (metadata write)" << std::endl;
                 continue;
             }
 
@@ -319,6 +319,7 @@ public:
             uint16_t *read_buffer = (uint16_t *)malloc(buffer_size);
 
             const size_t retry_count = 10;
+            bool read_failed = true;
             for (size_t i = 0; i < retry_count; i++)
             {
                 std::ifstream file(data_fname, std::ios::in | std::ios::binary);
@@ -330,9 +331,24 @@ public:
                 }
 
                 file.seekg(sel->offset);
-                file.read((char *)read_buffer, sel->size);
+                size_t bytes_read = file.read((char *)read_buffer, sel->size);
                 file.close();
+                if (bytes_read != sel->size)
+                {
+                    std::cerr << "Read failed (short read)" << std::endl;
+                    continue;
+                }
+                read_failed = false;
                 break;
+            }
+
+            // Check for read failure
+            if (read_failed)
+            {
+                std::cerr << "Read failed (max retries)" << std::endl;
+                free(read_buffer);
+                free(sel);
+                return out;
             }
 
             // Decompress
