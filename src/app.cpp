@@ -149,7 +149,7 @@ void load_inventory()
 			loc = froot.find_last_of('/');
 			std::string dset_name = froot.substr(loc + 1);
 
-			if(archive_inventory.count(dset_name) != 0)
+			if (archive_inventory.count(dset_name) != 0)
 			{
 				continue;
 			}
@@ -182,7 +182,10 @@ archive_reader *search_inventory(std::string key)
 	auto archive_search = archive_inventory.find(key);
 	if (archive_search != archive_inventory.end())
 	{
-		return archive_search->second;
+		if (archive_search->second->is_valid)
+		{
+			return archive_search->second;
+		}
 	}
 
 	{
@@ -194,7 +197,10 @@ archive_reader *search_inventory(std::string key)
 	archive_search = archive_inventory.find(key);
 	if (archive_search != archive_inventory.end())
 	{
-		return archive_search->second;
+		if (archive_search->second->is_valid)
+		{
+			return archive_search->second;
+		}
 	}
 
 	return nullptr;
