@@ -1590,10 +1590,10 @@ int main(int argc, char *argv[])
 		packed_reader * chunk_reader = reader->get_mchunk(scale, channel, chunk_i, chunk_j, chunk_k);
 
 		if(chunk_reader == nullptr || chunk_reader == 0) {
-                                    res.code = crow::status::NOT_FOUND;
+            res.code = crow::status::NOT_FOUND;
 			res.end("404 Not Found\n");
 			return;
-                                }
+        }
 
 		uint16_t * out_buffer = (uint16_t*) malloc(out_buffer_size);
 
