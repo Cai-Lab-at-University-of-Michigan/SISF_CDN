@@ -171,8 +171,8 @@ public:
 
         if (file.fail())
         {
-             std::cerr << "Fopen failed (chunk metadata)" << std::endl;
-             return;
+            std::cerr << "Fopen failed (chunk metadata)" << std::endl;
+            return;
         }
 
         std::streamsize bytes_read = 0;
@@ -184,7 +184,7 @@ public:
         bytes_read += file.gcount();
         file.read((char *)&compression_type, sizeof(uint16_t));
         bytes_read += file.gcount();
-    
+
         file.read((char *)&chunkx, sizeof(uint16_t));
         bytes_read += file.gcount();
         file.read((char *)&chunky, sizeof(uint16_t));
@@ -214,7 +214,8 @@ public:
         header_size = file.tellg();
         file.close();
 
-        if(header_size != header_size_expected || bytes_read != header_size_expected) {
+        if (header_size != header_size_expected || bytes_read != header_size_expected)
+        {
             std::cerr << "Metadata read failed (short read)" << std::endl;
             return;
         }
@@ -266,7 +267,8 @@ public:
             bytes_read += file.gcount();
             file.close();
 
-            if(bytes_read != sizeof(uint32_t) + sizeof(uint64_t)) {
+            if (bytes_read != sizeof(uint32_t) + sizeof(uint64_t))
+            {
                 std::cerr << "Metadata read failed (short read)" << std::endl;
                 continue;
             }
@@ -1136,7 +1138,7 @@ public:
         mchunk_buffer_mutex.lock();
         packed_reader *out = mchunk_buffer[id_tuple];
 
-        if (out == 0)
+        if (out == 0 || out == nullptr)
         {
             std::stringstream ss;
             ss << "chunk_" << i << '_' << j << '_' << k << '.' << channel << '.' << scale << 'X';
@@ -1155,7 +1157,7 @@ public:
             if (!out->is_valid)
             {
                 delete out;
-                out = 0;
+                out = nullptr;
             }
 
             mchunk_buffer[id_tuple] = out;
@@ -1240,6 +1242,11 @@ public:
                             {
                                 force = true;
                                 chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
+
+                                if (chunk_reader == nullptr || chunk_reader == 0)
+                                {
+                                    continue;
+                                }
 
                                 last_x = chunk_id_x;
                                 last_y = chunk_id_y;

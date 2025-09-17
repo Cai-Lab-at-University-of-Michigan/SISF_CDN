@@ -1513,6 +1513,12 @@ int main(int argc, char *argv[])
 
 			packed_reader * raw_reader = reader->get_mchunk(scale, channel, chunk_i, chunk_j, chunk_k);
 
+			if(raw_reader == nullptr || raw_reader == 0) {
+				res.code = crow::status::NOT_FOUND;
+				res.end("404 Not Found\n");
+				return;
+			}
+
 			to_add["size"] = {
 				raw_reader->sizex,
 				raw_reader->sizey,
@@ -1582,6 +1588,12 @@ int main(int argc, char *argv[])
 		const size_t out_buffer_size = sizeof(uint16_t) * chunk_sizes[0] * chunk_sizes[1] * chunk_sizes[2] * reader->channel_count;
 
 		packed_reader * chunk_reader = reader->get_mchunk(scale, channel, chunk_i, chunk_j, chunk_k);
+
+		if(chunk_reader == nullptr || chunk_reader == 0) {
+                                    res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
+			return;
+                                }
 
 		uint16_t * out_buffer = (uint16_t*) malloc(out_buffer_size);
 
