@@ -171,7 +171,7 @@ public:
 
         if (file.fail())
         {
-            std::cerr << "Fopen failed (chunk metadata)" << std::endl;
+            //std::cerr << "Fopen failed (chunk metadata)" << std::endl;
             return;
         }
 
