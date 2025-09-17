@@ -171,7 +171,7 @@ public:
 
         if (file.fail())
         {
-            //std::cerr << "Fopen failed (chunk metadata)" << std::endl;
+            std::cerr << "Fopen failed (chunk metadata)" << std::endl;
             return;
         }
 
@@ -1136,9 +1136,12 @@ public:
         std::tuple<size_t, size_t, size_t, size_t, size_t> id_tuple = std::make_tuple(scale, channel, i, j, k);
 
         mchunk_buffer_mutex.lock();
-        packed_reader *out = mchunk_buffer[id_tuple];
 
-        if (out == 0 || out == nullptr)
+        size_t initial_count = mchunk_buffer.size();
+        packed_reader *out = mchunk_buffer[id_tuple];
+        size_t final_count = mchunk_buffer.size();
+
+        if ((out == 0) && (initial_count == final_count))
         {
             std::stringstream ss;
             ss << "chunk_" << i << '_' << j << '_' << k << '.' << channel << '.' << scale << 'X';
