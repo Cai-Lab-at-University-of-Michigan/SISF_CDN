@@ -1191,6 +1191,7 @@ public:
         {
             // Define map for storing already decompressed chunks
             std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache;
+            std::set<std::tuple<size_t, size_t, size_t, size_t, size_t>> back_mchunks;
 
             // Scaled metachunk size
             const size_t mcx = mchunkx / scale;
@@ -1244,10 +1245,20 @@ public:
                                 last_c != c)
                             {
                                 force = true;
-                                chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
+
+                                bool is_bad = back_mchunks.count({scale, c, chunk_id_x, chunk_id_y, chunk_id_z}) > 0;
+
+                                if(!is_bad) {
+                                    chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
+                                } else {
+                                    chunk_reader = nullptr;
+                                }
 
                                 if (chunk_reader == nullptr || chunk_reader == 0)
                                 {
+                                    if(!is_bad) {
+                                        back_mchunks.insert({scale, c, chunk_id_x, chunk_id_y, chunk_id_z});
+                                    }
                                     continue;
                                 }
 
