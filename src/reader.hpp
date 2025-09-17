@@ -1137,11 +1137,9 @@ public:
 
         mchunk_buffer_mutex.lock();
 
-        size_t initial_count = mchunk_buffer.size();
         packed_reader *out = mchunk_buffer[id_tuple];
-        size_t final_count = mchunk_buffer.size();
 
-        if ((out == 0)) //  && (initial_count != final_count)) // verify that the entry count changed
+        if (out == 0 || out == nullptr)
         {
             std::stringstream ss;
             ss << "chunk_" << i << '_' << j << '_' << k << '.' << channel << '.' << scale << 'X';
