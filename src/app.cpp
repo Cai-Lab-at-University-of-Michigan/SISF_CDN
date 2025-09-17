@@ -1482,7 +1482,7 @@ int main(int argc, char *argv[])
 		std::vector<json> scales;
 		for(size_t scale : reader->scales) {
 			std::tuple<size_t, size_t, size_t> res_scaled = reader->get_res(scale);
-			std::vector<uint32_t> res = {
+			std::vector<uint32_t> resolution = {
 				(uint32_t) std::get<0>(res_scaled),
 				(uint32_t) std::get<1>(res_scaled),
 				(uint32_t) std::get<2>(res_scaled)
@@ -1502,7 +1502,7 @@ int main(int argc, char *argv[])
 
 			to_add["encoding"] = "raw";
 			to_add["key"] = std::to_string(scale);
-			to_add["resolution"] = res;
+			to_add["resolution"] = resolution;
 
 			//std::tuple<size_t, size_t, size_t> sizes = reader->get_size(scale);
 			//to_add["size"] = {
