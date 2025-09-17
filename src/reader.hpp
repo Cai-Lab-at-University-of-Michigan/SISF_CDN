@@ -357,7 +357,7 @@ public:
 
                 if (file.fail())
                 {
-                    std::cerr << "Fopen failed" << std::endl;
+                    //std::cerr << "Fopen failed" << std::endl;
                     continue;
                 }
 
@@ -367,7 +367,7 @@ public:
                 file.close();
                 if (bytes_read != sel->size)
                 {
-                    std::cerr << "Read failed (short read)" << std::endl;
+                    //std::cerr << "Read failed (short read)" << std::endl;
                     continue;
                 }
                 read_failed = false;
@@ -377,7 +377,7 @@ public:
             // Check for read failure
             if (read_failed)
             {
-                std::cerr << "Read failed (max retries)" << std::endl;
+                //std::cerr << "Read failed (max retries)" << std::endl;
                 free(read_buffer);
                 free(sel);
                 return out;
