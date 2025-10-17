@@ -414,7 +414,7 @@ public:
                 height = std::get<1>(std::get<2>(decode_result));
                 depth = std::get<2>(std::get<2>(decode_result));
 
-                read_decomp_buffer = uint8_to_uint16_crop(read_decomp_buffer_pt, decomp_size, width, height, depth, sizex, sizey, sizez);
+                read_decomp_buffer = (char *) uint8_to_uint16_crop(read_decomp_buffer_pt, decomp_size, width, height, depth, sizex, sizey, sizez);
                 decomp_size = sizex * sizey * sizez * sizeof(uint16_t);
 
                 free(read_decomp_buffer_pt);
