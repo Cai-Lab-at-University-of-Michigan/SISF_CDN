@@ -84,7 +84,7 @@ using json = nlohmann::json;
 std::chrono::duration cache_lock_timeout = std::chrono::milliseconds(10);
 
 std::timed_mutex global_chunk_cache_mutex;
-size_t global_cache_size = 5000;
+size_t global_cache_size = 100;
 global_chunk_line *global_chunk_cache = (global_chunk_line *)calloc(global_cache_size, sizeof(global_chunk_line));
 size_t global_chunk_cache_last = 0;
 
