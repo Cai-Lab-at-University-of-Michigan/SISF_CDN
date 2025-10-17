@@ -126,11 +126,15 @@ uint16_t *uint8_to_uint16_crop(uint8_t *buffer, size_t buffer_size, size_t ixsiz
                 size_t ioffset = (x * iysize * izsize) + (y * izsize) + z;
                 size_t ooffset = (x * oysize * ozsize) + (y * ozsize) + z;
 
-                if(ioffset < buffer_size) {
-                    out[ooffset] = buffer[ioffset];
-                } else {
-                    out[ooffset] = 0;
+                uint16_t v = 0;
+                if (ioffset < buffer_size)
+                {
+                    v = buffer[ioffset];
                 }
+
+                v *= v;
+
+                out[ooffset] = v;
             }
         }
     }
