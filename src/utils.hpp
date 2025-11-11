@@ -623,7 +623,7 @@ void filter_run(uint16_t *data, size_t data_size, std::tuple<size_t, size_t, siz
 
     if (filter_name == "poissonnoise")
     {
-        //float param = std::stof(filter_param);
+        // float param = std::stof(filter_param);
 
         std::random_device rd;
         std::mt19937 gen(rd());
