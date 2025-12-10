@@ -420,13 +420,12 @@ public:
                     decomp_size = sizex * sizey * sizez * sizeof(uint16_t);
                     free(read_decomp_buffer_pt);
                 }
-                else
-                    (std::get<3>(decode_result) == sizeof(uint16_t))
-                    {
-                        read_decomp_buffer = (char *)uint16_to_uint16_crop((uint16_t *)read_decomp_buffer_pt, decomp_size, width, height, depth, sizex, sizey, sizez);
-                        decomp_size = sizex * sizey * sizez * sizeof(uint16_t);
-                        free(read_decomp_buffer_pt);
-                    }
+                else if (std::get<3>(decode_result) == sizeof(uint16_t))
+                {
+                    read_decomp_buffer = (char *)uint16_to_uint16_crop((uint16_t *)read_decomp_buffer_pt, decomp_size, width, height, depth, sizex, sizey, sizez);
+                    decomp_size = sizex * sizey * sizez * sizeof(uint16_t);
+                    free(read_decomp_buffer_pt);
+                }
                 else
                 {
                     std::cerr << "decode_stack_native returned unexpected pixel size" << std::endl;
