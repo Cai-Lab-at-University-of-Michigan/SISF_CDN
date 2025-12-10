@@ -659,7 +659,7 @@ pixtype *decode_stack_AV1(size_t sizex, size_t sizey, size_t sizez, void *buffer
     return (pixtype *)out;
 }
 
-std::tuple<pixtype *, size_t, std::tuple<uint32_t, uint32_t, uint32_t>> decode_stack_native(void *buffer, size_t buffer_size)
+std::tuple<pixtype *, size_t, std::tuple<uint32_t, uint32_t, uint32_t>, size_t> decode_stack_native(void *buffer, size_t buffer_size)
 {
     void *out;
 
