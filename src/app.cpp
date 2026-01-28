@@ -1119,13 +1119,13 @@ int main(int argc, char *argv[])
 		for(uint64_t i = 0; i < point_count; i++) {
 			float x,y,z;
 
-			x = (float) (1000 * rand());
-			y = (float) (1000 * rand());
-			z = (float) (1000 * rand());
+			x = (float32_t) (1000 * rand());
+			y = (float32_t) (1000 * rand());
+			z = (float32_t) (1000 * rand());
 
-			res.write(std::string((char*) &x, sizeof(float)));
-			res.write(std::string((char*) &y, sizeof(float)));
-			res.write(std::string((char*) &z, sizeof(float)));
+			res.write(std::string((char*) &x, sizeof(float32_t)));
+			res.write(std::string((char*) &y, sizeof(float32_t)));
+			res.write(std::string((char*) &z, sizeof(float32_t)));
 
 			//float a,b,c = 1.0f;
 			//res.write(std::string((char*) &a, sizeof(float)));
