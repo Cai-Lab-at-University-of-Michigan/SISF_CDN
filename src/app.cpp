@@ -1127,10 +1127,10 @@ int main(int argc, char *argv[])
 			res.write(std::string((char*) &y, sizeof(float)));
 			res.write(std::string((char*) &z, sizeof(float)));
 
-			float a,b,c = 1.0f;
-			res.write(std::string((char*) &a, sizeof(float)));
-			res.write(std::string((char*) &b, sizeof(float)));
-			res.write(std::string((char*) &c, sizeof(float)));
+			//float a,b,c = 1.0f;
+			//res.write(std::string((char*) &a, sizeof(float)));
+			//res.write(std::string((char*) &b, sizeof(float)));
+			//res.write(std::string((char*) &c, sizeof(float)));
 		}
 
 		for(uint64_t i = 0; i < point_count; i++) {
