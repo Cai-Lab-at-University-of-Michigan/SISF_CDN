@@ -1117,7 +1117,12 @@ int main(int argc, char *argv[])
 		res.write(std::string((char*) &point_count, sizeof(uint64_t)));
 
 		for(uint64_t i = 0; i < point_count; i++) {
-			float x,y,z = (float) i;
+			float x,y,z;
+
+			x = (float) (1000 * rand());
+			y = (float) (1000 * rand());
+			z = (float) (1000 * rand());
+
 			res.write(std::string((char*) &x, sizeof(float)));
 			res.write(std::string((char*) &y, sizeof(float)));
 			res.write(std::string((char*) &z, sizeof(float)));
