@@ -1087,7 +1087,7 @@ int main(int argc, char *argv[])
 			{"relationships", json::array()},
 			//{"by_id", json::object()},
 			{"by_id", {
-				{"key", "id"}
+				{"key", "by_id"}
 			}},
 			{"spatial", spatial_index}
 		};
