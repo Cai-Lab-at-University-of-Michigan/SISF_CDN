@@ -1080,7 +1080,10 @@ int main(int argc, char *argv[])
 		unsigned long long size = ((sizeof(float) * 3) + sizeof(unsigned long long));
     	size *= 100; // 100 points
 
-    	res.write(response.dump());
+    	res.write(std::string((char*) &id, sizeof(unsigned long long)));
+		res.write(std::string((char*) &offset, sizeof(unsigned long long)));
+		res.write(std::string((char*) &size, sizeof(unsigned long long)));
+
     	res.end(); });
 
 	CROW_ROUTE(app, "/echo").methods("POST"_method)([](const crow::request &req)
