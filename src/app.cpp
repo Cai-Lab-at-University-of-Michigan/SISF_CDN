@@ -1084,7 +1084,7 @@ int main(int argc, char *argv[])
 		res.end(); });
 
 	CROW_ROUTE(app, "/<string>/pointcloud/spatial0/<string>")
-	([](crow::response &res, std::string data_id_in, std::sting request_chunk)
+	([](crow::response &res, std::string data_id_in, std::string request_chunk)
 	 {	
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		//auto [data_id, filters] = parse_filter_list(data_id_in);
@@ -1106,7 +1106,7 @@ int main(int argc, char *argv[])
 		for(size_t i = 0; i < point_count; i++) {
 			unsigned long long id = i;
 			res.write(std::string((char*) &id, sizeof(unsigned long long)));
-			
+
 			float x,y,z = (float) i;
 			res.write(std::string((char*) &x, sizeof(float)));
 			res.write(std::string((char*) &y, sizeof(float)));
