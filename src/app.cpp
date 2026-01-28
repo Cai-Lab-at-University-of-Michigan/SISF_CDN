@@ -1058,12 +1058,24 @@ int main(int argc, char *argv[])
                 {"limit", 100}
             });
 
+		json properties = json::array();
+
+		/*
+		for(char c = 'a'; c <= 'd'; c++) 
+		{
+			properties.push_back({
+				{"id", str::string(1, c)},
+				{"type", "float32"}
+			});
+		}
+		*/
+
     	json response = {
 			//{"type", "segmentation"},
 			//{"@type", "neuroglancer_skeletons"},
 			//{"segment_properties", "segment_properties"}
 			{"@type", "neuroglancer_annotations_v1"},
-			{"annotation_type", "point"},
+			{"annotation_type", "POINT"},
 			{"dimensions", {
 				{"x", {100, "nm"}},
 				{"y", {100, "nm"}},
@@ -1071,7 +1083,7 @@ int main(int argc, char *argv[])
 			}},
 			{"lower_bound", {0, 0, 0}},
 			{"upper_bound", {1000,1000,1000}}, //{reader->sizex, reader->sizey, reader->sizez}},
-			{"properties", json::array()},
+			{"properties", properties},
 			{"relationships", json::array()},
 			//{"by_id", json::object()},
 			{"by_id", {
@@ -1100,17 +1112,24 @@ int main(int argc, char *argv[])
 		res.write(std::string((char*) &size, sizeof(unsigned long long)));
 		*/
 
-		uint32_t point_count = 100;
-		res.write(std::string((char*) &point_count, sizeof(uint32_t)));
+		uint64_t point_count = 1000000;
 
-		for(size_t i = 0; i < point_count; i++) {
-			unsigned long long id = i;
-			res.write(std::string((char*) &id, sizeof(unsigned long long)));
+		res.write(std::string((char*) &point_count, sizeof(uint64_t)));
 
+		for(uint64_t i = 0; i < point_count; i++) {
 			float x,y,z = (float) i;
 			res.write(std::string((char*) &x, sizeof(float)));
 			res.write(std::string((char*) &y, sizeof(float)));
 			res.write(std::string((char*) &z, sizeof(float)));
+
+			float a,b,c = 1.0f;
+			res.write(std::string((char*) &a, sizeof(float)));
+			res.write(std::string((char*) &b, sizeof(float)));
+			res.write(std::string((char*) &c, sizeof(float)));
+		}
+
+		for(uint64_t i = 0; i < point_count; i++) {
+			res.write(std::string((char*) &i, sizeof(uint64_t)));
 		}
 
     	res.end(); });
