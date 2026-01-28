@@ -1065,9 +1065,9 @@ int main(int argc, char *argv[])
 			{"@type", "neuroglancer_annotations_v1"},
 			{"annotation_type", "point"},
 			{"dimensions", {
-				{"x", {1, "nm"}},
-				{"y", {1, "nm"}},
-				{"z", {1, "nm"}}
+				{"x", {100, "nm"}},
+				{"y", {100, "nm"}},
+				{"z", {100, "nm"}}
 			}},
 			{"lower_bound", {0, 0, 0}},
 			{"upper_bound", {1000,1000,1000}}, //{reader->sizex, reader->sizey, reader->sizez}},
