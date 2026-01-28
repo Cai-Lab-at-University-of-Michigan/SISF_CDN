@@ -1037,6 +1037,52 @@ int main(int argc, char *argv[])
     	res.write(response.dump());
     	res.end(); });
 
+	CROW_ROUTE(app, "/<string>/pointcloud/info")
+	([](crow::response &res, std::string data_id_in)
+	 {
+		//std::string, std::vector<std::pair<std::string, std::string>>
+		auto [data_id, filters] = parse_filter_list(data_id_in);
+		archive_reader * reader = search_inventory(data_id);
+
+		if(reader == nullptr) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
+			return;
+		}
+
+    	json response = {
+			//{"type", "segmentation"},
+			//{"@type", "neuroglancer_skeletons"},
+			//{"segment_properties", "segment_properties"}
+			{"@type": "neuroglancer_annotations_v1"},
+			{"annotation_type": "point"},
+			{"dimensions": {
+				{"x", {1, "nm"}},
+				{"y", {1, "nm"}},
+				{"z", {1, "nm"}}
+			}},
+			{"lower_bound": {0, 0, 0}},
+			{"upper_bound": {100,100,100}}, //{reader->sizex, reader->sizey, reader->sizez}},
+			{"properties": json::array()},
+		};
+
+		res.write(response.dump());
+		res.end(); });
+
+	CROW_ROUTE(app, "/<string>/pointcloud/spatial_index")
+	([](crow::response &res, std::string data_id_in)
+	 {	
+		//std::string, std::vector<std::pair<std::string, std::string>>
+		//auto [data_id, filters] = parse_filter_list(data_id_in);
+
+		unsigned long long id = 0;
+		unsigned long long offset = 0;
+		unsigned long long size = ((sizeof(float) * 3) + sizeof(unsigned long long));
+    	size *= 100; // 100 points
+
+    	res.write(response.dump());
+    	res.end(); });
+
 	CROW_ROUTE(app, "/echo").methods("POST"_method)([](const crow::request &req)
 													{
 		crow::multipart::message msg(req);
@@ -1450,6 +1496,24 @@ int main(int argc, char *argv[])
     	}
     	
     	res.end(); });
+
+	CROW_ROUTE(app, "/<string>/pointcloud/<int>")
+	([](crow::response &res, std::string data_id_in, int skeleton_id)
+	 {
+		//std::string, std::vector<std::pair<std::string, std::string>>
+		auto [data_id, filters] = parse_filter_list(data_id_in);
+
+		for(size_t i = 0; i < 100; i++) {
+			unsigned long long id = i;
+			res.write(std::string((char*) id, sizeof(unsigned long long)));
+
+			float x,y,z = (float) i;
+			res.write(std::string((char*) &x, sizeof(float)));
+			res.write(std::string((char*) &y, sizeof(float)));
+			res.write(std::string((char*) &z, sizeof(float)));
+		}
+	
+		res.end(); });
 
 	//	ENDPOINT: /<string>/raw_access/<c>,<i>,<j>,<k>/info
 	CROW_ROUTE(app, "/<string>/raw_access/<string>/info")
