@@ -1064,6 +1064,7 @@ int main(int argc, char *argv[])
 			{"lower_bound", {0, 0, 0}},
 			{"upper_bound", {100,100,100}}, //{reader->sizex, reader->sizey, reader->sizez}},
 			{"properties", json::array()},
+			{"relationships", json::array()}
 		};
 
 		res.write(response.dump());
