@@ -1050,6 +1050,14 @@ int main(int argc, char *argv[])
 			return;
 		}
 
+		json spatial_index = json::array();
+		spatial_index.push_back({
+                {"key", "spatial0"},
+                {"grid_shape", {1, 1, 1}},
+                {"chunk_size", {1000, 1000, 1000}},
+                {"limit", 100}
+            });
+
     	json response = {
 			//{"type", "segmentation"},
 			//{"@type", "neuroglancer_skeletons"},
@@ -1062,13 +1070,14 @@ int main(int argc, char *argv[])
 				{"z", {1, "nm"}}
 			}},
 			{"lower_bound", {0, 0, 0}},
-			{"upper_bound", {100,100,100}}, //{reader->sizex, reader->sizey, reader->sizez}},
+			{"upper_bound", {1000,1000,1000}}, //{reader->sizex, reader->sizey, reader->sizez}},
 			{"properties", json::array()},
 			{"relationships", json::array()},
+			//{"by_id", json::object()},
 			{"by_id", {
 				{"key", "id"}
 			}},
-			{"spatial", json::array()}
+			{"spatial", spatial_index}
 		};
 
 		res.write(response.dump());
