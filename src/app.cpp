@@ -1067,7 +1067,8 @@ int main(int argc, char *argv[])
 			{"relationships", json::array()},
 			{"by_id", {
 				{"key", "id"}
-			}}
+			}},
+			{"spatial", json::array()}
 		};
 
 		res.write(response.dump());
