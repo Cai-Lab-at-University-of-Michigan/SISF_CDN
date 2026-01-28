@@ -1083,12 +1083,13 @@ int main(int argc, char *argv[])
 		res.write(response.dump());
 		res.end(); });
 
-	CROW_ROUTE(app, "/<string>/pointcloud/spatial_index")
-	([](crow::response &res, std::string data_id_in)
+	CROW_ROUTE(app, "/<string>/pointcloud/spatial0/<string>")
+	([](crow::response &res, std::string data_id_in, std::sting request_chunk)
 	 {	
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		//auto [data_id, filters] = parse_filter_list(data_id_in);
 
+		/*
 		unsigned long long id = 0;
 		unsigned long long offset = 0;
 		unsigned long long size = ((sizeof(float) * 3) + sizeof(unsigned long long));
@@ -1097,6 +1098,20 @@ int main(int argc, char *argv[])
     	res.write(std::string((char*) &id, sizeof(unsigned long long)));
 		res.write(std::string((char*) &offset, sizeof(unsigned long long)));
 		res.write(std::string((char*) &size, sizeof(unsigned long long)));
+		*/
+
+		uint32_t point_count = 100;
+		res.write(std::string((char*) &point_count, sizeof(uint32_t)));
+
+		for(size_t i = 0; i < point_count; i++) {
+			unsigned long long id = i;
+			res.write(std::string((char*) &id, sizeof(unsigned long long)));
+			
+			float x,y,z = (float) i;
+			res.write(std::string((char*) &x, sizeof(float)));
+			res.write(std::string((char*) &y, sizeof(float)));
+			res.write(std::string((char*) &z, sizeof(float)));
+		}
 
     	res.end(); });
 
