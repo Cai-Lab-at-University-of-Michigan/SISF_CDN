@@ -648,12 +648,17 @@ void filter_run(uint16_t *data, size_t data_size, std::tuple<size_t, size_t, siz
     }
 }
 
-std::vector<std::vector<float>> read_csv(std::string filename)
+std::vector<std::vector<float>> read_csv(std::string filename, size_t max_rows = std::numeric_limits<size_t>::max())
 {
     std::vector<std::vector<float>> data;
     std::ifstream file(filename);
 
     if (!file.is_open())
+    {
+        return data;
+    }
+
+    if (max_rows == 0)
     {
         return data;
     }
@@ -715,6 +720,11 @@ std::vector<std::vector<float>> read_csv(std::string filename)
         if (!parse_failed && !row.empty())
         {
             data.push_back(std::move(row));
+
+            if (data.size() >= max_rows)
+            {
+                break;
+            }
         }
     }
 
