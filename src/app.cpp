@@ -1059,8 +1059,6 @@ int main(int argc, char *argv[])
             });
 
 		json properties = json::array();
-
-		/*
 		for(char c = 'a'; c <= 'd'; c++) 
 		{
 			properties.push_back({
@@ -1068,7 +1066,6 @@ int main(int argc, char *argv[])
 				{"type", "float32"}
 			});
 		}
-		*/
 
     	json response = {
 			//{"type", "segmentation"},
@@ -1076,20 +1073,19 @@ int main(int argc, char *argv[])
 			//{"segment_properties", "segment_properties"}
 			{"@type", "neuroglancer_annotations_v1"},
 			{"annotation_type", "POINT"},
-			{"dimensions", {
-				{"x", {100, "nm"}},
-				{"y", {100, "nm"}},
-				{"z", {100, "nm"}}
-			}},
-			{"lower_bound", {0, 0, 0}},
-			{"upper_bound", {1000,1000,1000}}, //{reader->sizex, reader->sizey, reader->sizez}},
 			{"properties", properties},
 			{"relationships", json::array()},
-			//{"by_id", json::object()},
 			{"by_id", {
 				{"key", "by_id"}
 			}},
-			{"spatial", spatial_index}
+			{"spatial", spatial_index},
+			{"dimensions", {
+				{"x", {1e-9, "m"}},
+				{"y", {1e-9, "m"}},
+				{"z", {1e-9, "m"}}
+			}},
+			{"lower_bound", {0, 0, 0}},
+			{"upper_bound", {1000,1000,1000}}	
 		};
 
 		res.write(response.dump());
