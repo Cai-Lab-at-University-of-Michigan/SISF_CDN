@@ -1557,20 +1557,12 @@ int main(int argc, char *argv[])
 	CROW_ROUTE(app, "/<string>/pointcloud/<int>")
 	([](crow::response &res, std::string data_id_in, int skeleton_id)
 	 {
-		//std::string, std::vector<std::pair<std::string, std::string>>
-		auto [data_id, filters] = parse_filter_list(data_id_in);
+		 // std::string, std::vector<std::pair<std::string, std::string>>
+		 // auto [data_id, filters] = parse_filter_list(data_id_in);
 
-		for(size_t i = 0; i < 100; i++) {
-			unsigned long long id = i;
-			res.write(std::string((char*) id, sizeof(unsigned long long)));
-
-			float x,y,z = (float) i;
-			res.write(std::string((char*) &x, sizeof(float)));
-			res.write(std::string((char*) &y, sizeof(float)));
-			res.write(std::string((char*) &z, sizeof(float)));
-		}
-	
-		res.end(); });
+		 res.code = crow::status::NOT_FOUND;
+		 res.end("404 Not Found\n");
+	 });
 
 	//	ENDPOINT: /<string>/raw_access/<c>,<i>,<j>,<k>/info
 	CROW_ROUTE(app, "/<string>/raw_access/<string>/info")
