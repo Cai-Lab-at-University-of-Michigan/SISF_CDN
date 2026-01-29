@@ -1123,7 +1123,12 @@ int main(int argc, char *argv[])
 			res.write(std::string((char*) &y, sizeof(float)));
 			res.write(std::string((char*) &z, sizeof(float)));
 
-			float a,b,c = 1.0f;
+			float a,b,c;
+			
+			a = 1.0f;
+			b = 1.0f;
+			c = 1.0f;
+			
 			res.write(std::string((char*) &a, sizeof(float)));
 			res.write(std::string((char*) &b, sizeof(float)));
 			res.write(std::string((char*) &c, sizeof(float)));
