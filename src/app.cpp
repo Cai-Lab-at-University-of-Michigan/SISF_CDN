@@ -1059,7 +1059,7 @@ int main(int argc, char *argv[])
             });
 
 		json properties = json::array();
-		for(char c = 'a'; c <= 'd'; c++) 
+		for(char c = 'a'; c < 'd'; c++) 
 		{
 			properties.push_back({
 				{"id", std::string(1, c)},
