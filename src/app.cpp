@@ -1115,9 +1115,9 @@ int main(int argc, char *argv[])
 		for(uint64_t i = 0; i < point_count; i++) {
 			float x,y,z;
 
-			x = (float) (1000 * rand());
-			y = (float) (1000 * rand());
-			z = (float) (1000 * rand());
+			x = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			y = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			z = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 
 			res.write(std::string((char*) &x, sizeof(float)));
 			res.write(std::string((char*) &y, sizeof(float)));
