@@ -1108,25 +1108,25 @@ int main(int argc, char *argv[])
 		res.write(std::string((char*) &size, sizeof(unsigned long long)));
 		*/
 
-		uint64_t point_count = 1000000;
+		uint64_t point_count = 100;
 
 		res.write(std::string((char*) &point_count, sizeof(uint64_t)));
 
 		for(uint64_t i = 0; i < point_count; i++) {
 			float x,y,z;
 
-			x = (float) (1000 * rand());
-			y = (float) (1000 * rand());
-			z = (float) (1000 * rand());
+			x = (float) i; // (1000 * rand());
+			y = (float) i; // (1000 * rand());
+			z = (float) i; // (1000 * rand());
 
 			res.write(std::string((char*) &x, sizeof(float)));
 			res.write(std::string((char*) &y, sizeof(float)));
 			res.write(std::string((char*) &z, sizeof(float)));
 
-			//float a,b,c = 1.0f;
-			//res.write(std::string((char*) &a, sizeof(float)));
-			//res.write(std::string((char*) &b, sizeof(float)));
-			//res.write(std::string((char*) &c, sizeof(float)));
+			float a,b,c = 1.0f;
+			res.write(std::string((char*) &a, sizeof(float)));
+			res.write(std::string((char*) &b, sizeof(float)));
+			res.write(std::string((char*) &c, sizeof(float)));
 		}
 
 		for(uint64_t i = 0; i < point_count; i++) {
