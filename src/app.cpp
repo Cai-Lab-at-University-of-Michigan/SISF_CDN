@@ -1585,8 +1585,7 @@ int main(int argc, char *argv[])
 		 // auto [data_id, filters] = parse_filter_list(data_id_in);
 
 		 res.code = crow::status::NOT_FOUND;
-		 res.end("404 Not Found\n");
-	 });
+		 res.end("404 Not Found\n"); });
 
 	//	ENDPOINT: /<string>/raw_access/<c>,<i>,<j>,<k>/info
 	CROW_ROUTE(app, "/<string>/raw_access/<string>/info")
