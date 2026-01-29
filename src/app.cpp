@@ -1062,7 +1062,7 @@ int main(int argc, char *argv[])
 		for(char c = 'a'; c <= 'd'; c++) 
 		{
 			properties.push_back({
-				{"id", str::string(1, c)},
+				{"id", std::string(1, c)},
 				{"type", "float32"}
 			});
 		}
