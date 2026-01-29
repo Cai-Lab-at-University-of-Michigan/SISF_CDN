@@ -1050,7 +1050,7 @@ int main(int argc, char *argv[])
 			return;
 		}
 
-		std::vector<string> csv_file = glob_tool(DATA_PATH + data_id + "/pointclouds/" + pointcloud_id + ".csv");
+		std::vector<std::string> csv_file = glob_tool(DATA_PATH + data_id + "/pointclouds/" + pointcloud_id + ".csv");
 
 		if(csv_file.size() != 1) {
 			res.code = crow::status::NOT_FOUND;
