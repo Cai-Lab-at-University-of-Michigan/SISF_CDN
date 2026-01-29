@@ -1037,8 +1037,8 @@ int main(int argc, char *argv[])
     	res.write(response.dump());
     	res.end(); });
 
-	CROW_ROUTE(app, "/<string>/pointcloud/info")
-	([](crow::response &res, std::string data_id_in)
+	CROW_ROUTE(app, "/<string>/pointcloud/<string>/info")
+	([](crow::response &res, std::string data_id_in, std::string pointcloud_id)
 	 {
 		//std::string, std::vector<std::pair<std::string, std::string>>
 		auto [data_id, filters] = parse_filter_list(data_id_in);
@@ -1050,6 +1050,25 @@ int main(int argc, char *argv[])
 			return;
 		}
 
+		std::vector<string> csv_file = glob_tool(DATA_PATH + data_id + "/pointclouds/" + pointcloud_id + ".csv");
+
+		if(csv_file.size() != 1) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
+			return;
+		}
+
+		auto csv_data = read_csv(csv_file[0], 1);
+
+		// x,y,z,a,b,c
+		if( csv_data.size() == 0 || csv_data[0].size() < 3 ) {
+			res.code = crow::status::BAD_REQUEST;
+			res.end("400 Bad Request -- Invalid CSV format\n");
+			return;
+		}
+
+		size_t parameter_count = csv_data[0].size() - 3;
+
 		json spatial_index = json::array();
 		spatial_index.push_back({
                 {"key", "spatial0"},
@@ -1059,10 +1078,10 @@ int main(int argc, char *argv[])
             });
 
 		json properties = json::array();
-		for(char c = 'a'; c < 'd'; c++) 
+		for(size_t i = 0; i < parameter_count; i++) 
 		{
 			properties.push_back({
-				{"id", std::string(1, c)},
+				{"id", std::string(1, 'a' + i)},
 				{"type", "float32"}
 			});
 		}
@@ -1091,47 +1110,52 @@ int main(int argc, char *argv[])
 		res.write(response.dump());
 		res.end(); });
 
-	CROW_ROUTE(app, "/<string>/pointcloud/spatial0/<string>")
-	([](crow::response &res, std::string data_id_in, std::string request_chunk)
+	CROW_ROUTE(app, "/<string>/pointcloud/<string>/spatial0/<string>")
+	([](crow::response &res, std::string data_id_in, std::string pointcloud_id, std::string request_chunk)
 	 {	
 		//std::string, std::vector<std::pair<std::string, std::string>>
-		//auto [data_id, filters] = parse_filter_list(data_id_in);
+		auto [data_id, filters] = parse_filter_list(data_id_in);
+		archive_reader * reader = search_inventory(data_id);
 
-		/*
-		unsigned long long id = 0;
-		unsigned long long offset = 0;
-		unsigned long long size = ((sizeof(float) * 3) + sizeof(unsigned long long));
-    	size *= 100; // 100 points
+		if(reader == nullptr) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
+			return;
+		}
 
-    	res.write(std::string((char*) &id, sizeof(unsigned long long)));
-		res.write(std::string((char*) &offset, sizeof(unsigned long long)));
-		res.write(std::string((char*) &size, sizeof(unsigned long long)));
-		*/
+		std::vector<string> csv_file = glob_tool(DATA_PATH + data_id + "/pointclouds/" + pointcloud_id + ".csv");
 
-		uint64_t point_count = 1e6; // 1 million points
+		if(csv_file.size() != 1) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found\n");
+			return;
+		}
+
+		auto csv_data = read_csv(csv_file[0], 1);
+
+		// x,y,z,a,b,c
+		if( csv_data.size() == 0 || csv_data[0].size() < 3 ) {
+			res.code = crow::status::BAD_REQUEST;
+			res.end("400 Bad Request -- Invalid CSV format\n");
+			return;
+		}
+
+		size_t col_count = csv_data[0].size();
+		uint64_t point_count = csv_data.size();
 
 		res.write(std::string((char*) &point_count, sizeof(uint64_t)));
 
-		for(uint64_t i = 0; i < point_count; i++) {
-			float x,y,z;
+		for(auto row : csv_data) {
+			for(size_t col = 0; col < col_count; col++) {
+				float val;
+				if(row.size() > col) {
+					val = 0.0;
+				} else {
+					val = row[col];
+				}
 
-			x = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-			y = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-			z = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-
-			res.write(std::string((char*) &x, sizeof(float)));
-			res.write(std::string((char*) &y, sizeof(float)));
-			res.write(std::string((char*) &z, sizeof(float)));
-
-			float a,b,c;
-			
-			a = 1.0f;
-			b = 1.0f;
-			c = 1.0f;
-			
-			res.write(std::string((char*) &a, sizeof(float)));
-			res.write(std::string((char*) &b, sizeof(float)));
-			res.write(std::string((char*) &c, sizeof(float)));
+				res.write(std::string((char*) &val, sizeof(float)));
+			}
 		}
 
 		for(uint64_t i = 0; i < point_count; i++) {
