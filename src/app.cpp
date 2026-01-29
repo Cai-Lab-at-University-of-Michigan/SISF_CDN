@@ -1108,7 +1108,7 @@ int main(int argc, char *argv[])
 		res.write(std::string((char*) &size, sizeof(unsigned long long)));
 		*/
 
-		uint64_t point_count = 100_000;
+		uint64_t point_count = 1e6; // 1 million points
 
 		res.write(std::string((char*) &point_count, sizeof(uint64_t)));
 
