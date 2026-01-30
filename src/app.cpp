@@ -1154,8 +1154,11 @@ int main(int argc, char *argv[])
 					val = row[col];
 				}
 
+				std::cout << val << '\t';
+
 				res.write(std::string((char*) &val, sizeof(float)));
 			}
+			std::cout << std::endl;
 		}
 
 		for(uint64_t i = 0; i < point_count; i++) {
