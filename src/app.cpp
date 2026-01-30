@@ -1159,11 +1159,13 @@ int main(int argc, char *argv[])
 
 		float * point_data_ptr = (float*) ((char*) out_buffer + sizeof(uint64_t));
 
+		size_t i = 0;
 		for(auto row : csv_data) {
 			for(size_t col = 0; col < col_count; col++) {
 				float val = (col >= row.size()) ? 0.0f : row[col];
-				point_data_ptr[ (&row - &csv_data[0]) * col_count + col ] = val;
+				point_data_ptr[ (i * col_count) + col ] = val;
 			}
+			i++;
 		}
 
 		//for(uint64_t i = 0; i < point_count; i++) {
