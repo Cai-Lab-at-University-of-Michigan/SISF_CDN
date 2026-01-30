@@ -1143,6 +1143,35 @@ int main(int argc, char *argv[])
 		size_t col_count = csv_data[0].size();
 		uint64_t point_count = csv_data.size();
 
+		size_t out_size = sizeof(uint64_t) + // point count
+						  csv_data.size() * csv_data[0].size() * sizeof(float) + // points
+						  csv_data.size() * sizeof(uint64_t); // ids
+
+		void* out_buffer = calloc(1, out_size);
+
+		if(out_buffer == nullptr) {
+			res.code = crow::status::INTERNAL_SERVER_ERROR;
+			res.end("500 Internal Server Error -- Memory allocation failed\n");
+			return;
+		}
+
+		((uint64_t*) out_buffer)[0] = point_count;
+
+		for(auto row : csv_data) {
+			for(size_t col = 0; col < col_count; col++) {
+				float val = (col >= row.size()) ? 0.0f : row[col];
+				((float*) ((char*) out_buffer + sizeof(uint64_t) + ( (&row - &csv_data[0]) * col_count + col ) * sizeof(float)))[0] = val;
+			}
+		}
+
+		for(uint64_t i = 0; i < point_count; i++) {
+			((uint64_t*) ((char*) out_buffer + sizeof(uint64_t) + point_count * col_count * sizeof(float)))[i] = i;
+		}
+
+		res.body = std::string((char *) out_buffer, out_size);
+		free(out_buffer);
+		
+		/*
 		res.write(std::string((char*) &point_count, sizeof(uint64_t)));
 
 		for(auto row : csv_data) {
@@ -1155,6 +1184,7 @@ int main(int argc, char *argv[])
 		for(uint64_t i = 0; i < point_count; i++) {
 			res.write(std::string((char*) &i, sizeof(uint64_t)));
 		}
+		*/
 
     	res.end(); });
 
