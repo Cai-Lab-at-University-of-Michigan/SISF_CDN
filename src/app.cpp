@@ -1131,7 +1131,7 @@ int main(int argc, char *argv[])
 			return;
 		}
 
-		auto csv_data = read_csv(csv_file[0], 1);
+		auto csv_data = read_csv(csv_file[0]);
 
 		// x,y,z,a,b,c
 		if( csv_data.size() == 0 || csv_data[0].size() < 3 ) {
