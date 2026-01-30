@@ -1147,15 +1147,10 @@ int main(int argc, char *argv[])
 
 		for(auto row : csv_data) {
 			for(size_t col = 0; col < col_count; col++) {
-				float val;
-				if(col >=row.size()) {
-					val = 0.0;
-				} else {
-					val = row[col];
-				}
+				float val = (col >= row.size()) ? 0.0f : row[col];
 				res.write(std::string((char*) &val, sizeof(float)));
 			}
- 		}
+		}
 
 		for(uint64_t i = 0; i < point_count; i++) {
 			res.write(std::string((char*) &i, sizeof(uint64_t)));
