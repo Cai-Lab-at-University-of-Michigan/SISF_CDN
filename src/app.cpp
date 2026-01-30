@@ -1174,28 +1174,9 @@ int main(int argc, char *argv[])
 			id_data_ptr[i] = i;
 		}
 
-		res.body = std::string((char *) out_buffer, out_size); // - (sizeof(uint64_t) * point_count));
-
-		//for(uint64_t i = 0; i < point_count; i++) {
-		//	res.body += std::string((char*) &i, sizeof(uint64_t));
-		//}
+		res.body = std::string((char *) out_buffer, out_size);
 
 		free(out_buffer);
-		
-		/*
-		res.write(std::string((char*) &point_count, sizeof(uint64_t)));
-
-		for(auto row : csv_data) {
-			for(size_t col = 0; col < col_count; col++) {
-				float val = (col >= row.size()) ? 0.0f : row[col];
-				res.write(std::string((char*) &val, sizeof(float)));
-			}
-		}
-
-		for(uint64_t i = 0; i < point_count; i++) {
-			res.write(std::string((char*) &i, sizeof(uint64_t)));
-		}
-		*/
 
     	res.end(); });
 
