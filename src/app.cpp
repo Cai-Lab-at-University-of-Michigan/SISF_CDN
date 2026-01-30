@@ -1164,9 +1164,9 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		for(uint64_t i = 0; i < point_count; i++) {
-			((uint64_t*) ((char*) out_buffer + sizeof(uint64_t) + point_count * col_count * sizeof(float)))[i] = i;
-		}
+		//for(uint64_t i = 0; i < point_count; i++) {
+		//	((uint64_t*) ((char*) out_buffer + sizeof(uint64_t) + point_count * col_count * sizeof(float)))[i] = i;
+		//}
 
 		res.body = std::string((char *) out_buffer, out_size);
 		free(out_buffer);
