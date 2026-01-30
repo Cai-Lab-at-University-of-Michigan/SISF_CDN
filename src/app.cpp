@@ -1157,7 +1157,7 @@ int main(int argc, char *argv[])
 
 		((uint64_t*) out_buffer)[0] = point_count;
 
-		float * point_data_ptr = (float*) (out_buffer + sizeof(uint64_t));
+		float * point_data_ptr = (float*) ((char*) out_buffer + sizeof(uint64_t));
 
 		for(auto row : csv_data) {
 			for(size_t col = 0; col < col_count; col++) {
