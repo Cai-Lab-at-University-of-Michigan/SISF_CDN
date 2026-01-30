@@ -1144,7 +1144,7 @@ int main(int argc, char *argv[])
 		uint64_t point_count = csv_data.size();
 
 		size_t out_size = sizeof(uint64_t) + // point count
-						  csv_data.size() * csv_data[0].size() * sizeof(float) + // points
+						  csv_data.size() * col_count * sizeof(float) + // points
 						  csv_data.size() * sizeof(uint64_t); // ids
 
 		void* out_buffer = calloc(1, out_size);
@@ -1168,10 +1168,10 @@ int main(int argc, char *argv[])
 			i++;
 		}
 
-		uint64_t * id_data_ptr = (uint64_t*) (point_data_ptr + (point_count * col_count * sizeof(float)));
-		
+		uint64_t * id_data_ptr = (uint64_t*) ((char*) out_buffer + sizeof(uint64_t) + (point_count * col_count * sizeof(float)));
+
 		for(uint64_t i = 0; i < point_count; i++) {
-			id_data_ptr[i] = i;
+		//	id_data_ptr[i] = i;
 		}
 
 		res.body = std::string((char *) out_buffer, out_size);
