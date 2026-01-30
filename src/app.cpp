@@ -1174,11 +1174,11 @@ int main(int argc, char *argv[])
 			id_data_ptr[i] = i;
 		}
 
-		res.body = std::string((char *) out_buffer, out_size - (sizeof(uint64_t) * point_count));
+		res.body = std::string((char *) out_buffer, out_size); // - (sizeof(uint64_t) * point_count));
 
-		for(uint64_t i = 0; i < point_count; i++) {
-			res.body += std::string((char*) &i, sizeof(uint64_t));
-		}
+		//for(uint64_t i = 0; i < point_count; i++) {
+		//	res.body += std::string((char*) &i, sizeof(uint64_t));
+		//}
 
 		free(out_buffer);
 		
