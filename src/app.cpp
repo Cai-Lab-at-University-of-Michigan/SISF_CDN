@@ -1148,7 +1148,7 @@ int main(int argc, char *argv[])
 		for(auto row : csv_data) {
 			for(size_t col = 0; col < col_count; col++) {
 				float val;
-				if(row.size() > col) {
+				if(col >=row.size()) {
 					val = 0.0;
 				} else {
 					val = row[col];
