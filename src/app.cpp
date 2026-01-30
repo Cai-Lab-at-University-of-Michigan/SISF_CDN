@@ -1160,7 +1160,7 @@ int main(int argc, char *argv[])
 		for(auto row : csv_data) {
 			for(size_t col = 0; col < col_count; col++) {
 				float val = (col >= row.size()) ? 0.0f : row[col];
-				((float*) ((char*) out_buffer + sizeof(uint64_t) + ( (&row - &csv_data[0]) * col_count + col ) * sizeof(float)))[0] = val;
+				//((float*) ((char*) out_buffer + sizeof(uint64_t) + ( (&row - &csv_data[0]) * col_count + col ) * sizeof(float)))[0] = val;
 			}
 		}
 
