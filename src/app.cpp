@@ -1046,15 +1046,25 @@ int main(int argc, char *argv[])
 
 		if(reader == nullptr) {
 			res.code = crow::status::NOT_FOUND;
-			res.end("404 Not Found\n");
+			res.end("404 Not Found -- dataset invalid\n");
 			return;
 		}
+
+		std::vector<std::string> point_metadata = glob_tool(DATA_PATH + data_id + "/pointclouds/" + pointcloud_id + ".json");
+
+		if(point_metadata.size() != 1) {
+			res.code = crow::status::NOT_FOUND;
+			res.end("404 Not Found -- pointcloud metadata missing\n");
+			return;
+		}
+
+		// Read metadata json
 
 		std::vector<std::string> csv_file = glob_tool(DATA_PATH + data_id + "/pointclouds/" + pointcloud_id + ".csv");
 
 		if(csv_file.size() != 1) {
 			res.code = crow::status::NOT_FOUND;
-			res.end("404 Not Found\n");
+			res.end("404 Not Found -- pointcloud data missing\n");
 			return;
 		}
 
@@ -1099,9 +1109,9 @@ int main(int argc, char *argv[])
 			}},
 			{"spatial", spatial_index},
 			{"dimensions", {
-				{"x", {1e-9, "m"}},
-				{"y", {1e-9, "m"}},
-				{"z", {1e-9, "m"}}
+				{"x", {1e-9, "m"}}, // nm
+				{"y", {1e-9, "m"}}, // nm
+				{"z", {1e-9, "m"}} // nm
 			}},
 			{"lower_bound", {0, 0, 0}},
 			{"upper_bound", {1000,1000,1000}}	
@@ -1119,7 +1129,7 @@ int main(int argc, char *argv[])
 
 		if(reader == nullptr) {
 			res.code = crow::status::NOT_FOUND;
-			res.end("404 Not Found\n");
+			res.end("404 Not Found -- dataset invalid\n");
 			return;
 		}
 
@@ -1127,7 +1137,7 @@ int main(int argc, char *argv[])
 
 		if(csv_file.size() != 1) {
 			res.code = crow::status::NOT_FOUND;
-			res.end("404 Not Found\n");
+			res.end("404 Not Found -- pointcloud data missing\n");
 			return;
 		}
 
