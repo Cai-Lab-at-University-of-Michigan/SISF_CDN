@@ -648,6 +648,24 @@ void filter_run(uint16_t *data, size_t data_size, std::tuple<size_t, size_t, siz
     }
 }
 
+size_t count_rows(std::string filename) {
+    std::ifstream file(filename);
+
+    if (!file.is_open())
+    {
+        return 0;
+    }
+
+    size_t count = 0;
+    std::string line;
+    while (std::getline(file, line))
+    {
+        count++;
+    }
+
+    return count;
+}
+
 std::vector<std::vector<float>> read_csv(std::string filename, size_t max_rows = std::numeric_limits<size_t>::max())
 {
     std::vector<std::vector<float>> data;
