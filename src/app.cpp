@@ -1059,6 +1059,23 @@ int main(int argc, char *argv[])
 		}
 
 		// Read metadata json
+		std::string metadata_path = point_metadata[0];
+		std::ifstream metadata_file(metadata_path);
+		if (!metadata_file) {
+			res.code = 404;
+			res.end("Metadata file not found");
+			return;
+		}
+		
+		json size;
+
+		try {
+			json info_json = json::parse(metadata_file);
+			size = info_json["size"];
+		} catch (const std::exception& e) {
+			res.code = 500;
+			res.end("Error parsing metadata file: " + std::string(e.what()));
+		}
 
 		std::vector<std::string> csv_file = glob_tool(DATA_PATH + data_id + "/pointclouds/" + pointcloud_id + ".csv");
 
@@ -1083,7 +1100,7 @@ int main(int argc, char *argv[])
 		spatial_index.push_back({
                 {"key", "spatial0"},
                 {"grid_shape", {1, 1, 1}},
-                {"chunk_size", {1000, 1000, 1000}},
+                {"chunk_size", size}, //{1000, 1000, 1000}},
                 {"limit", 100}
             });
 
@@ -1097,9 +1114,6 @@ int main(int argc, char *argv[])
 		}
 
     	json response = {
-			//{"type", "segmentation"},
-			//{"@type", "neuroglancer_skeletons"},
-			//{"segment_properties", "segment_properties"}
 			{"@type", "neuroglancer_annotations_v1"},
 			{"annotation_type", "POINT"},
 			{"properties", properties},
@@ -1114,7 +1128,7 @@ int main(int argc, char *argv[])
 				{"z", {1e-9, "m"}} // nm
 			}},
 			{"lower_bound", {0, 0, 0}},
-			{"upper_bound", {1000,1000,1000}}	
+			{"upper_bound", size} //{1000,1000,1000}}	
 		};
 
 		res.write(response.dump());
