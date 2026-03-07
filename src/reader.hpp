@@ -1118,6 +1118,21 @@ public:
 
     std::tuple<size_t, size_t, size_t> get_size(size_t scale)
     {
+        // Try to read actual size from .meta file for this scale
+        // No assumption for uniform downsampling
+        packed_reader* sample = get_mchunk(scale, 0, 0, 0, 0);
+        if (sample != nullptr && sample->is_valid) {
+            size_t tile_size_x = sample->cropendx - sample->cropstartx;
+            size_t tile_size_y = sample->cropendy - sample->cropstarty;
+            size_t tile_size_z = sample->cropendz - sample->cropstartz;
+            
+            return std::make_tuple(
+                tile_size_x * this->mcountx,
+                tile_size_y * this->mcounty,
+                tile_size_z * this->mcountz
+            );
+        }
+        
         size_t size_x_out = sizex / scale;
         size_t size_y_out = sizey / scale;
         size_t size_z_out = sizez / scale;
