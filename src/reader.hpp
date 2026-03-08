@@ -131,6 +131,18 @@ std::vector<std::string> glob_tool(const std::string &pattern)
     return filenames;
 }
 
+// Return time_t of given files modification time,
+// 0 if file does not exist or error occurs
+time_t get_file_mtime(std::string filename)
+{
+    struct stat result;
+    if (stat(filename.c_str(), &result) == 0)
+    {
+        return result.st_mtime;
+    }
+    return 0;
+}
+
 struct metadata_entry
 {
     uint64_t offset;
