@@ -1138,7 +1138,7 @@ int main(int argc, char *argv[])
 			else if (std::holds_alternative<int64_t>(first_value))
 			{
 				properties.push_back({{"id", std::string(1, 'a' + i)},
-									  {"type", "uint32"}});
+									  {"type", "uint64"}});
 			}
 		}
 
