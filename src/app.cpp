@@ -1110,7 +1110,7 @@ int main(int argc, char *argv[])
 		auto [headers, csv_data] = read_csv(csv_file[0], 1);
 
 		// x,y,z,a,b,c
-		if (csv_data.size() == 0 || csv_data[0].size() < 3 || headers.size() < 3)
+		if (csv_data.size() == 0 || csv_data[0].size() < 3 || headers.size() < 3 || headers.size() != csv_data[0].size())
 		{
 			res.code = crow::status::BAD_REQUEST;
 			res.end("400 Bad Request -- Invalid CSV format\n");
@@ -1180,7 +1180,7 @@ int main(int argc, char *argv[])
 		auto [headers, csv_data] = read_csv(csv_file[0]);
 
 		// x,y,z,a,b,c
-		if( csv_data.size() == 0 || csv_data[0].size() < 3 || headers.size() < 3 ) {
+		if( csv_data.size() == 0 || csv_data[0].size() < 3 || headers.size() < 3 || headers.size() != csv_data[0].size() ) {
 			res.code = crow::status::BAD_REQUEST;
 			res.end("400 Bad Request -- Invalid CSV format\n");
 			return;
