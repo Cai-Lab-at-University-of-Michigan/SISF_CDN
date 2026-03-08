@@ -210,7 +210,7 @@ public:
 
     void clear_cache_lines()
     {
-        std::lock_guard<std::mutex> lock(global_chunk_cache_mutex);
+        global_chunk_cache_mutex.lock();
         for (size_t i = 0; i < global_cache_size; i++)
         {
             if (global_chunk_cache[i].mchunk == this_mchunk_id)
@@ -222,6 +222,7 @@ public:
                 global_chunk_cache[i].ptr = 0;
             }
         }
+        global_chunk_cache_mutex.unlock();
     }
 
     void reload_metadata(bool reset_cache = true)
