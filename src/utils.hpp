@@ -15,6 +15,8 @@
 
 #include <cctype>
 
+#include <sys/stat.h>
+
 #include <random>
 
 std::string read_env_variable(std::string name)
@@ -762,4 +764,16 @@ std::pair<std::vector<std::string>, std::vector<std::vector<std::variant<int64_t
     }
 
     return std::make_pair(headers, data);
+}
+
+// Return time_t of given files modification time,
+// 0 if file does not exist or error occurs
+time_t get_file_mtime(std::string filename)
+{
+    struct stat result;
+    if (stat(filename.c_str(), &result) == 0)
+    {
+        return result.st_mtime;
+    }
+    return 0;
 }
