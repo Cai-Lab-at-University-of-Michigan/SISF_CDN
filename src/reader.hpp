@@ -188,7 +188,7 @@ public:
             check_mtime_hasmodified();
         }
 
-        reload_metadata(reset_cache = false);
+        reload_metadata(false);
     }
 
     ~packed_reader()
