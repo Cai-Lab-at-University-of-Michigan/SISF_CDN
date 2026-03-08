@@ -1140,21 +1140,21 @@ int main(int argc, char *argv[])
 				properties.push_back({{"id", std::string(1, 'a' + i)},
 									  {"type", "int64"}});
 			}
+		}
 
-			json response = {
-				{"@type", "neuroglancer_annotations_v1"},
-				{"annotation_type", "POINT"},
-				{"properties", properties},
-				{"relationships", json::array()},
-				{"by_id", {{"key", "by_id"}}},
-				{"spatial", spatial_index},
-				{"dimensions", dimensions},
-				{"lower_bound", {0, 0, 0}},
-				{"upper_bound", size}};
+		json response = {
+			{"@type", "neuroglancer_annotations_v1"},
+			{"annotation_type", "POINT"},
+			{"properties", properties},
+			{"relationships", json::array()},
+			{"by_id", {{"key", "by_id"}}},
+			{"spatial", spatial_index},
+			{"dimensions", dimensions},
+			{"lower_bound", {0, 0, 0}},
+			{"upper_bound", size}};
 
-			res.write(response.dump());
-			res.end();
-		} });
+		res.write(response.dump());
+		res.end(); });
 
 	CROW_ROUTE(app, "/<string>/pointcloud/<string>/spatial0/<string>")
 	([](crow::response &res, std::string data_id_in, std::string pointcloud_id, std::string request_chunk)
