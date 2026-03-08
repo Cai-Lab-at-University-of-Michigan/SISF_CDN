@@ -727,7 +727,7 @@ std::vector<std::vector<std::variant<int64_t, double>>> read_csv(std::string fil
 
             try
             {
-                if (true || value.find('.') != std::string::npos)
+                if (value.find('.') != std::string::npos)
                 {
                     row.push_back(std::stod(value));
                 }
