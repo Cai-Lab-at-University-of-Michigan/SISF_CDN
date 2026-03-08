@@ -1107,10 +1107,10 @@ int main(int argc, char *argv[])
 			return;
 		}
 
-		auto csv_data = read_csv(csv_file[0], 1);
+		auto [headers, csv_data] = read_csv(csv_file[0], 1);
 
 		// x,y,z,a,b,c
-		if (csv_data.size() == 0 || csv_data[0].size() < 3)
+		if (csv_data.size() == 0 || csv_data[0].size() < 3 || headers.size() < 3)
 		{
 			res.code = crow::status::BAD_REQUEST;
 			res.end("400 Bad Request -- Invalid CSV format\n");
@@ -1132,12 +1132,12 @@ int main(int argc, char *argv[])
 
 			if (std::holds_alternative<double>(first_value))
 			{
-				properties.push_back({{"id", std::string(1, 'a' + i)},
+				properties.push_back({{"id", headers[i + 3]},
 									  {"type", "float32"}});
 			}
 			else if (std::holds_alternative<int64_t>(first_value))
 			{
-				properties.push_back({{"id", std::string(1, 'a' + i)},
+				properties.push_back({{"id", headers[i + 3]},
 									  {"type", "uint32"}});
 			}
 		}
@@ -1177,10 +1177,10 @@ int main(int argc, char *argv[])
 			return;
 		}
 
-		auto csv_data = read_csv(csv_file[0]);
+		auto [headers, csv_data] = read_csv(csv_file[0]);
 
 		// x,y,z,a,b,c
-		if( csv_data.size() == 0 || csv_data[0].size() < 3 ) {
+		if( csv_data.size() == 0 || csv_data[0].size() < 3 || headers.size() < 3 ) {
 			res.code = crow::status::BAD_REQUEST;
 			res.end("400 Bad Request -- Invalid CSV format\n");
 			return;

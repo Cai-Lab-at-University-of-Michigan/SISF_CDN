@@ -667,19 +667,20 @@ size_t count_rows(std::string filename) {
     return count;
 }
 
-std::vector<std::vector<std::variant<int64_t, double>>> read_csv(std::string filename, size_t max_rows = std::numeric_limits<size_t>::max())
+std::pair<std::vector<std::string>, std::vector<std::vector<std::variant<int64_t, double>>>> read_csv(std::string filename, size_t max_rows = std::numeric_limits<size_t>::max())
 {
     std::vector<std::vector<std::variant<int64_t, double>>> data;
+    std::vector<std::string> headers;
     std::ifstream file(filename);
 
     if (!file.is_open())
     {
-        return data;
+        return std::make_pair(headers, data);
     }
 
     if (max_rows == 0)
     {
-        return data;
+        return std::make_pair(headers, data);
     }
 
     auto trim_in_place = [](std::string &value)
@@ -710,6 +711,12 @@ std::vector<std::vector<std::variant<int64_t, double>>> read_csv(std::string fil
             continue;
         }
 
+        if (headers.empty())
+        {
+            headers = raw_values;
+            continue;
+        }
+
         std::vector<std::variant<int64_t, double>> row;
         row.reserve(raw_values.size());
 
@@ -721,7 +728,7 @@ std::vector<std::vector<std::variant<int64_t, double>>> read_csv(std::string fil
 
             if (value.empty())
             {
-                row.push_back(0.0);
+                row.push_back(0);
                 continue;
             }
 
@@ -754,5 +761,5 @@ std::vector<std::vector<std::variant<int64_t, double>>> read_csv(std::string fil
         }
     }
 
-    return data;
+    return std::make_pair(headers, data);
 }
