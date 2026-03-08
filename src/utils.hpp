@@ -2,6 +2,7 @@
 #include <sstream>
 #include <fstream>
 
+#include <variant>
 #include <string>
 #include <algorithm> // std::sort
 #include <limits>
@@ -666,9 +667,9 @@ size_t count_rows(std::string filename) {
     return count;
 }
 
-std::vector<std::vector<float>> read_csv(std::string filename, size_t max_rows = std::numeric_limits<size_t>::max())
+std::vector<std::vector<std::variant<int64_t, double>>> read_csv(std::string filename, size_t max_rows = std::numeric_limits<size_t>::max())
 {
-    std::vector<std::vector<float>> data;
+    std::vector<std::vector<std::variant<int64_t, double>>> data;
     std::ifstream file(filename);
 
     if (!file.is_open())
@@ -709,7 +710,7 @@ std::vector<std::vector<float>> read_csv(std::string filename, size_t max_rows =
             continue;
         }
 
-        std::vector<float> row;
+        std::vector<std::variant<int64_t, double>> row;
         row.reserve(raw_values.size());
 
         bool parse_failed = false;
@@ -720,13 +721,20 @@ std::vector<std::vector<float>> read_csv(std::string filename, size_t max_rows =
 
             if (value.empty())
             {
-                row.push_back(0.0f);
+                row.push_back(0.0);
                 continue;
             }
 
             try
             {
-                row.push_back(std::stof(value));
+                if (value.find('.') != std::string::npos)
+                {
+                    row.push_back(std::stod(value));
+                }
+                else
+                {
+                    row.push_back(std::stoll(value));
+                }
             }
             catch (...)
             {
