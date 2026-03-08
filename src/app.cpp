@@ -2,9 +2,8 @@
 
 #include <nlohmann/json.hpp>
 
-#include "utils.hpp"
 #include "reader.hpp"
-
+#include "utils.hpp"
 
 // #include "hdf5_reader.hpp"
 #include "sqlite_tools.hpp"
