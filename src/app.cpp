@@ -1138,7 +1138,7 @@ int main(int argc, char *argv[])
 			else if (std::holds_alternative<int64_t>(first_value))
 			{
 				properties.push_back({{"id", std::string(1, 'a' + i)},
-									  {"type", "uint64"}});
+									  {"type", "uint32"}});
 			}
 		}
 
@@ -1192,7 +1192,7 @@ int main(int argc, char *argv[])
 			if(std::holds_alternative<double>(csv_data[0][i])) {
 				row_size += sizeof(float);
 			} else if (std::holds_alternative<int64_t>(csv_data[0][i])) {
-				row_size += sizeof(int64_t);
+				row_size += sizeof(int32_t);
 			} else {
 				res.code = crow::status::BAD_REQUEST;
 				res.end("400 Bad Request -- Unsupported data type in CSV\n");
@@ -1235,8 +1235,8 @@ int main(int argc, char *argv[])
 						*reinterpret_cast<float*>(write_ptr) = static_cast<float>(std::get<double>(row[col]));
 						write_ptr += sizeof(float);
 					} else if (std::holds_alternative<int64_t>(row[col])) {
-						*reinterpret_cast<int64_t*>(write_ptr) = std::get<int64_t>(row[col]);
-						write_ptr += sizeof(int64_t);
+						*reinterpret_cast<int32_t*>(write_ptr) = std::get<int64_t>(row[col]);
+						write_ptr += sizeof(int32_t);
 					}
 				} else {
 					// Default to float 0 for missing columns - check first row for type
@@ -1244,8 +1244,8 @@ int main(int argc, char *argv[])
 						*reinterpret_cast<float*>(write_ptr) = 0.0f;
 						write_ptr += sizeof(float);
 					} else {
-						*reinterpret_cast<int64_t*>(write_ptr) = 0;
-						write_ptr += sizeof(int64_t);
+						*reinterpret_cast<int32_t*>(write_ptr) = 0;
+						write_ptr += sizeof(int32_t);
 					}
 				}
 			}
