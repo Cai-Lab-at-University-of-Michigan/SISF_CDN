@@ -1,3 +1,13 @@
+/*
+
+SISF CDN - Scalable Image Stack Format Content Delivery Network
+Copyright 2023-2026 by the Regents of the University of Michigan
+Licensed under the terms specified in LICENSE.md
+
+@author: Logan A Walker, PhD <loganaw@umich.edu>
+
+*/
+
 #include <sqlite3.h>
 #include <string>
 #include <iostream>

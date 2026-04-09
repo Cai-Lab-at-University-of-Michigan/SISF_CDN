@@ -1,3 +1,13 @@
+/*
+
+SISF CDN - Scalable Image Stack Format Content Delivery Network
+Copyright 2023-2026 by the Regents of the University of Michigan
+Licensed under the terms specified in LICENSE.md
+
+@author: Logan A Walker, PhD <loganaw@umich.edu>
+
+*/
+
 #include "crow.h"
 
 #include <nlohmann/json.hpp>
@@ -38,7 +48,7 @@ bool READ_ONLY_MODE = false;
 std::string DATA_PATH = "./data/";
 std::string SERVER_ROOT = "https://server/";
 
-const std::string VERSION_STRING = "V0.12.0";
+const std::string VERSION_STRING = "V0.12.1";
 
 using json = nlohmann::json;
 
