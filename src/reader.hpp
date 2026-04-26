@@ -1193,6 +1193,10 @@ public:
         size_y_out -= dilation_y;
         size_z_out -= dilation_z;
 
+        size_x_out = std::max(size_x_out, (size_t)1);
+        size_y_out = std::max(size_y_out, (size_t)1);
+        size_z_out = std::max(size_z_out, (size_t)1);
+
         // std::cout << "Scale: " << scale << " " << dilation_x << " " << dilation_y << " " << dilation_z << std::endl;
 
         return std::make_tuple(size_x_out, size_y_out, size_z_out);
