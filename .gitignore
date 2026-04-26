@@ -37,3 +37,6 @@ src/util/traces.sql
 # CMake
 CMakeFiles/
 CMakeCache.txt
+
+# Test data
+data
