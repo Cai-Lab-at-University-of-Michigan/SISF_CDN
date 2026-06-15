@@ -124,6 +124,18 @@ With each build, a Docker image is built and released at: [https://hub.docker.co
 sudo docker run -d --mount type=bind,source=/<your_data_folder>/,target=/data geeklogan/sisf_cdn
 ```
 
+The data folder should be a folder of subfolders, each subfolder representing a SISF image as represented below in the summary of the SISF schema. See [pySISF](https://github.com/Cai-Lab-at-University-of-Michigan/pySISF) for a toolkit built to create these files.
+
+## Expected Install Time and System Requirements
+
+In testing, a complete build of the applet can be completed in around 5-10 minutes on a standard desktop computer, whereas a docker installation does not requires only pulling the image.
+
+To run the `SISF_CDN`, very little system resources are required at a minimum. If you are running the software on a system with a small number of CPU cores, the number of worker threads can be reduced using the `THREAD_COUNT` environment variable.
+
+## Sample Data
+
+See the documentation for [pySISF](https://github.com/Cai-Lab-at-University-of-Michigan/pySISF) for an example dataset, or use one of the example scripts to create one from your own data.
+
 ## Metadata Schema
 
 ### Introduction
